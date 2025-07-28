@@ -1,6 +1,6 @@
 from datetime import date
 
-from sqlalchemy import CheckConstraint, TEXT
+from sqlalchemy import CheckConstraint, TEXT, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column
 
 from .base import Base
@@ -24,4 +24,7 @@ class Task(Base):
     hour_before_reminder: Mapped[int]
     date_of_completion: Mapped[date | None] = mapped_column(
         default=None,
+    )
+    user_id: Mapped[int] = mapped_column(
+        ForeignKey("users.id", ondelete="CASCADE"),
     )
