@@ -1,6 +1,7 @@
 import logging
 
 from pydantic import BaseModel
+from sqlalchemy import select
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -22,9 +23,7 @@ class BaseDAO[M: Base]:
         """
         self._session = session
         if self.model is None:
-            raise ValueError(
-                "Модель должна быть указана в дочернем классе"
-            )
+            raise ValueError("Модель должна быть указана в дочернем классе")
 
     async def add(self, values: BaseModel) -> M:
         """
@@ -40,11 +39,34 @@ class BaseDAO[M: Base]:
             new_instance = self.model(**values_dict)
             self._session.add(new_instance)
             await self._session.flush()
-            logger.info(
-                "Запись %s успешно добавлена.", self.model.__name__
-            )
+            logger.info("Запись %s успешно добавлена.", self.model.__name__)
             return new_instance
         except SQLAlchemyError as e:
             await self._session.rollback()
             logger.error("Ошибка при добавлении записи %s", e)
+            raise
+
+    async def find_one_or_none(self, filters: BaseModel) -> M | None:
+        filter_dict = filters.model_dump(exclude_unset=True)
+        logger.info(
+            "Поиск одной записи %s по фильтрам: %s",
+            self.model.__name__,
+            filter_dict,
+        )
+        try:
+            query = select(self.model).filter_by(**filter_dict)
+            result = await self._session.execute(query)
+            record = result.scalar_one_or_none()
+            logger.info(
+                "Запись %s по фильтрам: %s",
+                "найдена" if record else "не найдена",
+                filter_dict,
+            )
+            return record
+        except SQLAlchemyError as e:
+            logger.error(
+                "Ошибка при поиске записи по фильтрам %s: %s",
+                filter_dict,
+                e,
+            )
             raise

@@ -3,14 +3,15 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.dao.users import UsersDao
-from core.schemas.users import SignUpSchema, CredentialsSchema, TokenSchema
-from .auth import hash_password, get_access_token
+from core.schemas.result import ResultSchema
+from core.schemas.users import UserInSchema, CredentialsSchema, TokenSchema, UserSchema
+from .auth import hash_password, get_access_token, validate_password
 from fastapi import status
 
 
 async def create_user(
     session: AsyncSession,
-    user_in: SignUpSchema,
+    user_in: UserInSchema,
 ) -> TokenSchema:
 
     credentials = CredentialsSchema(
@@ -25,3 +26,34 @@ async def create_user(
             detail="Пользователь уже существует",
         )
     return TokenSchema(access_token=get_access_token(user_id=user.id))
+
+
+async def create_new_access_token(
+    session: AsyncSession,
+    user_in: UserInSchema,
+) -> TokenSchema:
+    unauthed_exc = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Неверный логин или пароль",
+    )
+    user = await UsersDao(session=session).find_one_or_none(
+        UserSchema(username=user_in.username)
+    )
+    if not user:
+        raise unauthed_exc
+    if not validate_password(password=user_in.password, hashed_password=user.password):
+        raise unauthed_exc
+    return TokenSchema(access_token=get_access_token(user_id=user.id))
+
+
+async def verify_existence_user(
+    session: AsyncSession,
+    username: str,
+) -> ResultSchema:
+    """
+    Проверяет, существует ли пользователь в базе
+    """
+    user = await UsersDao(session=session).find_one_or_none(
+        UserSchema(username=username)
+    )
+    return ResultSchema(result=bool(user))

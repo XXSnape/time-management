@@ -1,12 +1,15 @@
 from pydantic import BaseModel
 
 
-class SignUpSchema(BaseModel):
+class UserSchema(BaseModel):
     username: str
+
+
+class UserInSchema(UserSchema):
     password: str
 
 
-class CredentialsSchema(SignUpSchema):
+class CredentialsSchema(UserInSchema):
     password: bytes
 
 

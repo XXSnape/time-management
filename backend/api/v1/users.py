@@ -2,9 +2,10 @@ import logging
 
 from fastapi import APIRouter
 
-from core.dependencies.db import SessionWithCommit
-from core.schemas.users import SignUpSchema, TokenSchema
-from services.users import create_user
+from core.dependencies.db import SessionWithCommit, SessionWithoutCommit
+from core.schemas.result import ResultSchema
+from core.schemas.users import UserInSchema, TokenSchema
+from services import users
 from fastapi import status
 
 
@@ -20,10 +21,39 @@ router = APIRouter(tags=["Пользователи"])
     response_model=TokenSchema,
 )
 async def sign_up(
-    credentials: SignUpSchema,
+    user_in: UserInSchema,
     session: SessionWithCommit,
 ):
-    return await create_user(
+    return await users.create_user(
         session=session,
-        user_in=credentials,
+        user_in=user_in,
+    )
+
+
+@router.post(
+    "/access_token/",
+    status_code=status.HTTP_201_CREATED,
+    response_model=TokenSchema,
+)
+async def create_new_access_token(
+    user_in: UserInSchema,
+    session: SessionWithoutCommit,
+):
+    """
+    Роутер для перевыпуска токена
+    """
+    return await users.create_new_access_token(
+        session=session,
+        user_in=user_in,
+    )
+
+
+@router.get("/{username}", response_model=ResultSchema)
+async def check_username_for_existence(
+    username: str,
+    session: SessionWithoutCommit,
+):
+    return await users.verify_existence_user(
+        username=username,
+        session=session,
     )
