@@ -6,9 +6,12 @@ from dotenv import load_dotenv
 from pydantic import BaseModel
 from pydantic_settings import (
     BaseSettings,
+    SettingsConfigDict,
 )
 
-LOG_DEFAULT_FORMAT = "[%(asctime)s.%(msecs)03d] %(module)10s:%(lineno)-3d %(levelname)-7s - %(message)s"
+LOG_DEFAULT_FORMAT = (
+    "[%(asctime)s.%(msecs)03d] %(module)10s:%(lineno)-3d %(levelname)-7s - %(message)s"
+)
 
 load_dotenv()
 
@@ -27,7 +30,6 @@ class AuthJWTSettings(BaseSettings):
     public_key_path: Path = BASE_DIR / "certs" / "public.pem"
     access_token_expire_minutes: int = 30
     algorithm: str = "RS256"
-
 
 
 class RunConfig(BaseModel):
@@ -62,14 +64,13 @@ class LoggingConfig(BaseModel):
         return logging.getLevelNamesMapping()[self.log_level.upper()]
 
 
-
 class ApiV1Prefix(BaseModel):
     """
     Префиксы для API версии 1.
     """
 
     prefix: str = "/v1"
-    users: str = '/users'
+    users: str = "/users"
     affairs: str = "/affairs"
 
 
@@ -82,11 +83,16 @@ class ApiPrefix(BaseModel):
     v1: ApiV1Prefix = ApiV1Prefix()
 
 
-class DatabaseConfig(BaseModel):
+class DatabaseConfig(BaseSettings):
     """
     Конфигурация базы данных.
     """
 
+    db_host: str
+    db_port: int
+    postgres_user: str
+    postgres_password: str
+    postgres_db: str
     echo: bool = False
 
     naming_convention: dict[str, str] = {
@@ -117,6 +123,9 @@ class Settings(BaseSettings):
     logging: LoggingConfig = LoggingConfig()
     api: ApiPrefix = ApiPrefix()
     db: DatabaseConfig = DatabaseConfig()
+    model_config = SettingsConfigDict(
+        case_sensitive=False,
+    )
 
 
 settings = Settings()
