@@ -22,3 +22,6 @@ class Task(Base):
     deadline_date: Mapped[date]
     deadline_time: Mapped[int]
     hour_before_reminder: Mapped[int]
+    date_of_completion: Mapped[date | None] = mapped_column(
+        default=None,
+    )
