@@ -4,7 +4,7 @@
 
 import logging
 from collections.abc import AsyncGenerator
-from typing import TypeAlias, Annotated
+from typing import Annotated, TypeAlias
 
 from fastapi import Depends
 from sqlalchemy.ext.asyncio import (

@@ -1,12 +1,12 @@
-from fastapi import HTTPException
+from fastapi import HTTPException, status
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.dao.users import UsersDao
 from core.schemas.result import ResultSchema
-from core.schemas.users import UserInSchema, CredentialsSchema, TokenSchema, UserSchema
-from .auth import hash_password, get_access_token, validate_password
-from fastapi import status
+from core.schemas.users import CredentialsSchema, TokenSchema, UserInSchema, UserSchema
+
+from .auth import get_access_token, hash_password, validate_password
 
 
 async def create_user(

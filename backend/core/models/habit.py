@@ -1,6 +1,8 @@
-from sqlalchemy import TEXT, func, ForeignKey
-from sqlalchemy.orm import Mapped, mapped_column
 from datetime import date
+
+from sqlalchemy import TEXT, ForeignKey, func
+from sqlalchemy.orm import Mapped, mapped_column
+
 from .base import Base
 
 

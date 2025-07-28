@@ -5,9 +5,8 @@ from contextlib import asynccontextmanager
 import uvicorn
 from fastapi import FastAPI
 
-from core.config import settings
-
 from api import router as api_router
+from core.config import settings
 from core.dependencies.db import db_helper
 
 logging.basicConfig(

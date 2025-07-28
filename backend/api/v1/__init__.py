@@ -5,7 +5,6 @@ from core.config import settings
 from .affairs import router as affairs_router
 from .users import router as users_router
 
-
 router = APIRouter(
     prefix=settings.api.v1.prefix,
 )
