@@ -8,7 +8,7 @@ from fastapi import FastAPI
 from core.config import settings
 
 from api import router as api_router
-from core.dependencies.helper import db_helper
+from core.dependencies.db import db_helper
 
 logging.basicConfig(
     level=settings.logging.log_level_value,

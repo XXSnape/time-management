@@ -4,7 +4,9 @@
 
 import logging
 from collections.abc import AsyncGenerator
+from typing import TypeAlias, Annotated
 
+from fastapi import Depends
 from sqlalchemy.ext.asyncio import (
     AsyncSession,
     async_sessionmaker,
@@ -72,3 +74,11 @@ db_helper = DBHelper(
     url=settings.db.url,
     echo=settings.db.echo,
 )
+
+SessionWithoutCommit: TypeAlias = Annotated[
+    AsyncSession, Depends(db_helper.get_async_session_without_commit)
+]
+
+SessionWithCommit: TypeAlias = Annotated[
+    AsyncSession, Depends(db_helper.get_async_session_with_commit)
+]

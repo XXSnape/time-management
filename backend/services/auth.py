@@ -9,7 +9,7 @@ def encode_jwt(
     payload: dict,
     private_key: str = settings.auth_jwt.private_key_path.read_text(),
     algorithm: str = settings.auth_jwt.algorithm,
-    expire_days: int = settings.auth_jwt.access_token_expire_minutes,
+    expire_days: int = settings.auth_jwt.access_token_expire_days,
 ) -> str:
     """
     Кодирует jwt-токен
@@ -88,7 +88,7 @@ def get_access_token(user_id: int) -> str:
     Создает токен доступа с полезной нагрузкой в виде id пользователя,
     которому принадлежит токен
     :param user_id: id пользователя
-    :return: токен дсотупа
+    :return: токен доcтупа
     """
     payload = {"sub": str(user_id)}
     token = encode_jwt(payload=payload)

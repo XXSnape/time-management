@@ -123,6 +123,7 @@ class Settings(BaseSettings):
     logging: LoggingConfig = LoggingConfig()
     api: ApiPrefix = ApiPrefix()
     db: DatabaseConfig = DatabaseConfig()
+    auth_jwt: AuthJWTSettings = AuthJWTSettings()
     model_config = SettingsConfigDict(
         case_sensitive=False,
     )
