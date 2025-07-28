@@ -28,7 +28,7 @@ class AuthJWTSettings(BaseSettings):
 
     private_key_path: Path = BASE_DIR / "certs" / "private.pem"
     public_key_path: Path = BASE_DIR / "certs" / "public.pem"
-    access_token_expire_minutes: int = 30
+    access_token_expire_days: int = 5
     algorithm: str = "RS256"
 
 
