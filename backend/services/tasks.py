@@ -1,6 +1,6 @@
 import datetime
 
-from fastapi import HTTPException
+from fastapi import HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.dao.tasks import TasksDao
@@ -10,14 +10,12 @@ from core.schemas.tasks import (
     TaskCreateSchema,
     TaskInSchema,
     TaskOutSchema,
-    TaskUpdateSchema,
     TaskSchema,
     TasksOutSchema,
     TasksWithUserSchema,
+    TaskUpdateSchema,
     TaskWithUserSchema,
 )
-from fastapi import status
-
 from core.utils.dt import get_moscow_tz_and_dt
 
 exc = HTTPException(

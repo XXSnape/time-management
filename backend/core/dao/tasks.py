@@ -1,9 +1,10 @@
-from sqlalchemy import select, or_
+from sqlalchemy import or_, select
 from sqlalchemy.orm import joinedload
 
-from .base import BaseDAO
 from core.models import Task, User
 from core.utils.dt import get_moscow_tz_and_dt
+
+from .base import BaseDAO
 
 
 class TasksDao(BaseDAO[Task]):

@@ -8,9 +8,9 @@ Create Date: 2025-07-29 14:25:05.514932
 
 from typing import Sequence, Union
 
-from alembic import op
 import sqlalchemy as sa
 
+from alembic import op
 
 # revision identifiers, used by Alembic.
 revision: str = "6a62ea39671f"
@@ -47,12 +47,8 @@ def upgrade() -> None:
         ),
         sa.Column("id", sa.Integer(), nullable=False),
         sa.PrimaryKeyConstraint("id", name=op.f("pk_users")),
-        sa.UniqueConstraint(
-            "telegram_id", name=op.f("uq_users_telegram_id")
-        ),
-        sa.UniqueConstraint(
-            "username", name=op.f("uq_users_username")
-        ),
+        sa.UniqueConstraint("telegram_id", name=op.f("uq_users_telegram_id")),
+        sa.UniqueConstraint("username", name=op.f("uq_users_username")),
     )
     op.create_table(
         "habits",
@@ -81,9 +77,7 @@ def upgrade() -> None:
         sa.Column("description", sa.TEXT(), nullable=False),
         sa.Column("deadline_date", sa.Date(), nullable=False),
         sa.Column("deadline_time", sa.Integer(), nullable=False),
-        sa.Column(
-            "hour_before_reminder", sa.Integer(), nullable=False
-        ),
+        sa.Column("hour_before_reminder", sa.Integer(), nullable=False),
         sa.Column("date_of_completion", sa.Date(), nullable=True),
         sa.Column("user_id", sa.Integer(), nullable=False),
         sa.Column("id", sa.Integer(), nullable=False),

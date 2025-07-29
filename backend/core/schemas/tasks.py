@@ -1,7 +1,7 @@
+import datetime
 from typing import Annotated
 
 from pydantic import BaseModel, Field
-import datetime
 
 from core.schemas.common import IdSchema
 from core.schemas.users import UserTelegramIdSchema

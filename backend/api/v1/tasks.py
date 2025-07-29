@@ -1,7 +1,7 @@
 import logging
 from typing import Annotated
 
-from fastapi import APIRouter, Query
+from fastapi import APIRouter, Query, status
 
 from core.dao.tasks import TasksDao
 from core.dependencies.auth import UserId
@@ -10,11 +10,10 @@ from core.schemas.result import ResultSchema
 from core.schemas.tasks import (
     TaskInSchema,
     TaskOutSchema,
-    TaskUpdateSchema,
     TasksOutSchema,
+    TaskUpdateSchema,
 )
 from services import tasks
-from fastapi import status
 
 log = logging.getLogger(__name__)
 

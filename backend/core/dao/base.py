@@ -1,7 +1,7 @@
 import logging
 
 from pydantic import BaseModel
-from sqlalchemy import select, update, delete
+from sqlalchemy import delete, select, update
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -109,13 +109,9 @@ class BaseDAO[M: Base]:
         )
         if not filter_dict:
             logger.error("Нужен хотя бы один фильтр для удаления.")
-            raise ValueError(
-                "Нужен хотя бы один фильтр для удаления."
-            )
+            raise ValueError("Нужен хотя бы один фильтр для удаления.")
         try:
-            query = delete(self.model).filter_by(
-                **filter_dict
-            )
+            query = delete(self.model).filter_by(**filter_dict)
             result = await self._session.execute(query)
             await self._session.flush()
             logger.info("Удалено %s записей.", result.rowcount)

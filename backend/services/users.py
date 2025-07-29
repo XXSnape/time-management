@@ -8,8 +8,8 @@ from core.schemas.users import (
     CredentialsSchema,
     TokenSchema,
     UserCreateSchema,
-    UserSchema,
     UserInSchema,
+    UserSchema,
 )
 
 from .auth import get_access_token, hash_password, validate_password
