@@ -40,13 +40,14 @@ class Task(Base):
     @hybrid_property
     def full_datetime(self):
         moscow_tz, _ = get_moscow_tz_and_dt()
-        return datetime(
+        res = datetime(
             year=self.deadline_date.year,
             month=self.deadline_date.month,
             day=self.deadline_date.day,
             hour=self.deadline_time,
             tzinfo=moscow_tz,
         )
+        return res
 
     @full_datetime.expression
     def full_datetime(cls):

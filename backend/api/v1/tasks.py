@@ -65,11 +65,22 @@ async def get_active_user_tasks(
 @router.get("/schedule")
 async def get_all_tasks_by_hour(
     session: SessionWithoutCommit,
-    hour: Annotated[int | None, Query(ge=0, le=23)],
 ):
     return await tasks.get_all_active_tasks_by_hour(
         session=session,
-        hour=hour,
+    )
+
+
+@router.get("/{task_id}", response_model=TaskOutSchema)
+async def get_task_by_id(
+    task_id: int,
+    user_id: UserId,
+    session: SessionWithoutCommit,
+):
+    return await tasks.get_task_by_id(
+        session=session,
+        user_id=user_id,
+        task_id=task_id,
     )
 
 

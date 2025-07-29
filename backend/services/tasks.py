@@ -75,17 +75,30 @@ async def get_active_user_tasks(
 
 async def get_all_active_tasks_by_hour(
     session: AsyncSession,
-    hour: int,
 ):
-    tasks = await TasksDao(session=session).get_active_tasks_by_hour(
-        hour=hour,
-    )
+    tasks = await TasksDao(session=session).get_active_tasks_by_hour()
     return TasksWithUserSchema(
         items=[
             TaskWithUserSchema.model_validate(task, from_attributes=True)
             for task in tasks
         ]
     )
+
+
+async def get_task_by_id(
+    session: AsyncSession,
+    user_id: int,
+    task_id: int,
+) -> TaskOutSchema:
+    task = await TasksDao(session=session).find_one_or_none(
+        TaskSchema(
+            id=task_id,
+            user_id=user_id,
+        )
+    )
+    if not task:
+        raise exc
+    return TaskOutSchema.model_validate(task, from_attributes=True)
 
 
 async def update_task(
@@ -117,6 +130,7 @@ async def delete_task(
         TaskSchema(
             id=task_id,
             user_id=user_id,
+            date_of_completion=None,
         )
     )
     if result == 0:

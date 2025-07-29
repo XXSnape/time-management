@@ -1,6 +1,6 @@
 from collections.abc import Sequence
 
-from sqlalchemy import or_, select, func
+from sqlalchemy import or_, select, func, text
 from sqlalchemy.orm import joinedload, load_only
 
 from core.models import Task, User
@@ -47,11 +47,10 @@ class TasksDao(BaseDAO[Task]):
 
     async def get_active_tasks_by_hour(
         self,
-        hour: int,
     ):
-        _, moscow_dt = get_moscow_tz_and_dt()
+        now = func.date_trunc("hour", func.timezone("UTC", func.now()))
         query = (
-            select(self.model)
+            select(self.model, Task.full_datetime)
             .options(
                 load_only(
                     self.model.name,
@@ -64,13 +63,13 @@ class TasksDao(BaseDAO[Task]):
                 ),
             )
             .where(
-                self.model.full_datetime > moscow_dt,
                 self.model.date_of_completion.is_(None),
                 User.is_active.is_(True),
                 or_(
-                    self.model.deadline_time == hour,
-                    (hour + self.model.hour_before_reminder) % 24
-                    == self.model.deadline_time,
+                    Task.full_datetime == now,
+                    Task.full_datetime
+                    - (Task.hour_before_reminder * text("INTERVAL '1 hour'"))
+                    == now,
                 ),
             )
             .order_by(self.model.id)
