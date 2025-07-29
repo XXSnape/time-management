@@ -1,7 +1,9 @@
-from typing import Self, Annotated
+from typing import Annotated
 
-from pydantic import BaseModel, model_validator, Field, ValidationError
+from pydantic import BaseModel, Field
 import datetime
+
+from core.schemas.common import IdSchema
 
 
 class TaskInSchema(BaseModel):
@@ -17,24 +19,6 @@ class TaskInSchema(BaseModel):
         Field(ge=1, le=24),
     ]
 
-    @model_validator(mode="after")
-    def check_date_and_time(self) -> Self:
-        moscow_tz = datetime.timezone(datetime.timedelta(hours=3))
-        dt = datetime.datetime(
-            year=self.deadline_date.year,
-            month=self.deadline_date.month,
-            day=self.deadline_date.day,
-            hour=self.deadline_time,
-            tzinfo=moscow_tz,
-        )
-        moscow_dt = datetime.datetime.now(moscow_tz)
-
-        if moscow_dt >= dt:
-            raise ValueError(
-                "Входящие дата и время меньше, чем текущее московское",
-            )
-        return self
-
 
 class TaskOutSchema(TaskInSchema):
     id: int
@@ -43,3 +27,23 @@ class TaskOutSchema(TaskInSchema):
 
 class TaskCreateSchema(TaskInSchema):
     user_id: int
+
+
+class TaskSchema(IdSchema):
+    user_id: int
+    date_of_completion: None = None
+
+
+class TaskUpdateSchema(TaskInSchema):
+    name: str | None = None
+    description: str | None = None
+    deadline_date: datetime.date | None = None
+    deadline_time: Annotated[
+        int | None,
+        Field(ge=0, le=23),
+    ] = None
+    hour_before_reminder: Annotated[
+        int | None,
+        Field(ge=1, le=24),
+    ] = None
+    date_of_completion: datetime.date | None = None

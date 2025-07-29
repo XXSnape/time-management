@@ -4,7 +4,7 @@ from fastapi import APIRouter
 
 from core.dependencies.auth import UserId
 from core.dependencies.db import SessionWithCommit
-from core.schemas.tasks import TaskInSchema, TaskOutSchema
+from core.schemas.tasks import TaskInSchema, TaskOutSchema, TaskUpdateSchema
 from services import tasks
 from fastapi import status
 
@@ -28,4 +28,19 @@ async def create_task(
         session=session,
         task_in=task_in,
         user_id=user_id,
+    )
+
+
+@router.put("/{task_id}")
+async def update_task(
+    updated_task_in: TaskUpdateSchema,
+    task_id: int,
+    user_id: UserId,
+    session: SessionWithCommit,
+):
+    return await tasks.update_task(
+        session=session,
+        user_id=user_id,
+        task_id=task_id,
+        updated_task_in=updated_task_in,
     )
