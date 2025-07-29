@@ -9,7 +9,11 @@ class UserInSchema(UserSchema):
     password: str
 
 
-class CredentialsSchema(UserInSchema):
+class UserCreateSchema(UserInSchema):
+    telegram_id: int
+
+
+class CredentialsSchema(UserCreateSchema):
     password: bytes
 
 

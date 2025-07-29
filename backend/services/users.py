@@ -4,18 +4,26 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.dao.users import UsersDao
 from core.schemas.result import ResultSchema
-from core.schemas.users import CredentialsSchema, TokenSchema, UserInSchema, UserSchema
+from core.schemas.users import (
+    CredentialsSchema,
+    TokenSchema,
+    UserCreateSchema,
+    UserSchema,
+    UserInSchema,
+)
 
 from .auth import get_access_token, hash_password, validate_password
 
 
 async def create_user(
     session: AsyncSession,
-    user_in: UserInSchema,
+    user_in: UserCreateSchema,
 ) -> TokenSchema:
 
     credentials = CredentialsSchema(
-        username=user_in.username, password=hash_password(user_in.password)
+        username=user_in.username,
+        password=hash_password(user_in.password),
+        telegram_id=user_in.telegram_id,
     )
     dao = UsersDao(session=session)
     try:
@@ -41,9 +49,14 @@ async def create_new_access_token(
     )
     if not user:
         raise unauthed_exc
-    if not validate_password(password=user_in.password, hashed_password=user.password):
+    if not validate_password(
+        password=user_in.password,
+        hashed_password=user.password,
+    ):
         raise unauthed_exc
-    return TokenSchema(access_token=get_access_token(user_id=user.id))
+    return TokenSchema(
+        access_token=get_access_token(user_id=user.id),
+    )
 
 
 async def verify_existence_user(
