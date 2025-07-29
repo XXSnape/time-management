@@ -18,7 +18,7 @@ logging.basicConfig(
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     """
-    Завершает соединение с базой данный.
+    Завершает соединение с базой данных.
     """
 
     yield
