@@ -62,3 +62,15 @@ class PaginatedTasksOutSchema(
 
 class TasksWithUserSchema(BaseModel):
     items: list[TaskWithUserSchema]
+
+
+class StatisticSchema(BaseModel):
+    completed: int
+    not_completed: int
+    total: int
+    performance: int
+    period: str
+
+
+class TasksStatisticSchema(BaseModel):
+    items: list[StatisticSchema]

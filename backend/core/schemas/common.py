@@ -1,6 +1,6 @@
 from typing import Annotated
 
-from pydantic import BaseModel, computed_field, Field
+from pydantic import BaseModel, Field, computed_field
 
 
 class IdSchema(BaseModel):

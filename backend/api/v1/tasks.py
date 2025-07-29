@@ -71,6 +71,14 @@ async def get_all_tasks_by_hour(
     )
 
 
+@router.get("/statistics")
+async def get_statistics(session: SessionWithoutCommit, user_id: UserId):
+    return await tasks.get_tasks_statistics(
+        session=session,
+        user_id=user_id,
+    )
+
+
 @router.get("/{task_id}", response_model=TaskOutSchema)
 async def get_task_by_id(
     task_id: int,

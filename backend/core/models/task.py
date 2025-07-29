@@ -1,10 +1,8 @@
 from datetime import date, datetime
 from typing import TYPE_CHECKING
 
-from sqlalchemy import TEXT, CheckConstraint, ForeignKey, String, func, text, DateTime
-from sqlalchemy.ext.hybrid import hybrid_property
+from sqlalchemy import TEXT, CheckConstraint, DateTime, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-
 
 from .base import Base
 

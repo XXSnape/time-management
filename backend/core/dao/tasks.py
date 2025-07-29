@@ -1,12 +1,26 @@
 import datetime
 from collections.abc import Sequence
+from datetime import timedelta
+from typing import Any, Coroutine, Sequence
 
-from sqlalchemy import or_, select, func, text, cast
+from sqlalchemy import (
+    Integer,
+    Row,
+    String,
+    and_,
+    case,
+    cast,
+    func,
+    literal,
+    or_,
+    select,
+    text,
+    union_all,
+)
 from sqlalchemy.dialects.postgresql import INTERVAL
 from sqlalchemy.orm import joinedload, load_only
 
 from core.models import Task, User
-from core.utils.dt import get_moscow_tz_and_dt
 
 from .base import BaseDAO
 
@@ -82,3 +96,63 @@ class TasksDao(BaseDAO[Task]):
         )
         result = await self._session.execute(query)
         return result.scalars().all()
+
+    async def get_statistics(
+        self, user_id: int
+    ) -> Sequence[Row[tuple[int, int, int, int, str]]]:
+        now = datetime.datetime.now(datetime.UTC)
+        completed_query = func.count(
+            case(
+                (
+                    self.model.date_of_completion.is_not(None),
+                    1,
+                ),
+                else_=None,
+            )
+        ).label("completed")
+        not_completed_query = func.count(
+            case(
+                (
+                    and_(
+                        self.model.date_of_completion.is_(None),
+                        self.model.deadline_datetime < now,
+                    ),
+                    1,
+                ),
+                else_=None,
+            ),
+        ).label("not_completed")
+        total_query = func.count().label("total")
+        performance = case(
+            (total_query == 0, 0),
+            else_=func.cast(completed_query / total_query * 100, Integer),
+        ).label("performance")
+
+        queries = []
+        for td, period in (
+            (timedelta(weeks=1), "1 Week"),
+            (timedelta(weeks=4), "1 Month"),
+            (timedelta(weeks=12), "3 Months"),
+            (timedelta(weeks=26), "6 Months"),
+            (timedelta(weeks=39), "9 Months"),
+            (timedelta(weeks=52), "1 Year"),
+            (None, "Аll time"),
+        ):
+            query = (
+                select(
+                    completed_query,
+                    not_completed_query,
+                    total_query,
+                    performance,
+                    literal(period).label("period"),
+                )
+                .select_from(self.model)
+                .where(self.model.user_id == user_id)
+            )
+            if td:
+                query = query.where(self.model.deadline_datetime >= now - td)
+            queries.append(query)
+        u = union_all(*queries)
+
+        result = await self._session.execute(u)
+        return result.all()

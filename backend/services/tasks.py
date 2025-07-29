@@ -7,17 +7,18 @@ from core.dao.tasks import TasksDao
 from core.schemas.common import IdSchema
 from core.schemas.result import ResultSchema
 from core.schemas.tasks import (
+    LittleInfoTaskOutSchema,
+    PaginatedTasksOutSchema,
+    StatisticSchema,
     TaskCreateSchema,
     TaskInSchema,
     TaskOutSchema,
     TaskSchema,
+    TasksStatisticSchema,
     TasksWithUserSchema,
     TaskUpdateSchema,
     TaskWithUserSchema,
-    PaginatedTasksOutSchema,
-    LittleInfoTaskOutSchema,
 )
-from core.utils.dt import get_moscow_tz_and_dt
 
 exc = HTTPException(
     status_code=status.HTTP_404_NOT_FOUND,
@@ -130,3 +131,15 @@ async def delete_task(
     if result == 0:
         raise exc
     return ResultSchema()
+
+
+async def get_tasks_statistics(
+    session: AsyncSession,
+    user_id: int,
+) -> TasksStatisticSchema:
+    stats = await TasksDao(session=session).get_statistics(user_id=user_id)
+    return TasksStatisticSchema(
+        items=[
+            StatisticSchema.model_validate(stat, from_attributes=True) for stat in stats
+        ]
+    )
