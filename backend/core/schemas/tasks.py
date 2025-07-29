@@ -9,11 +9,7 @@ from core.schemas.users import UserTelegramIdSchema
 
 class LittleInfoTaskSchema(BaseModel):
     name: str
-    deadline_date: datetime.date
-    deadline_time: Annotated[
-        int,
-        Field(ge=0, le=23),
-    ]
+    deadline_datetime: datetime.datetime
 
 
 class TaskInSchema(LittleInfoTaskSchema):
@@ -47,11 +43,6 @@ class TaskSchema(IdSchema):
 class TaskUpdateSchema(TaskInSchema):
     name: str | None = None
     description: str | None = None
-    deadline_date: datetime.date | None = None
-    deadline_time: Annotated[
-        int | None,
-        Field(ge=0, le=23),
-    ] = None
     hour_before_reminder: Annotated[
         int | None,
         Field(ge=1, le=24),
@@ -63,7 +54,9 @@ class TaskWithUserSchema(LittleInfoTaskOutSchema):
     user: UserTelegramIdSchema
 
 
-class PaginatedTasksOutSchema(PaginatedSchema[LittleInfoTaskOutSchema]):
+class PaginatedTasksOutSchema(
+    PaginatedSchema[LittleInfoTaskOutSchema],
+):
     pass
 
 

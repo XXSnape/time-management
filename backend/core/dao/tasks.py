@@ -1,6 +1,8 @@
+import datetime
 from collections.abc import Sequence
 
-from sqlalchemy import or_, select, func, text
+from sqlalchemy import or_, select, func, text, cast
+from sqlalchemy.dialects.postgresql import INTERVAL
 from sqlalchemy.orm import joinedload, load_only
 
 from core.models import Task, User
@@ -18,10 +20,10 @@ class TasksDao(BaseDAO[Task]):
         page: int,
         per_page: int,
     ) -> tuple[Sequence[Task], int]:
-        _, moscow_dt = get_moscow_tz_and_dt()
+        now = datetime.datetime.now(datetime.UTC)
         filters = (
             self.model.user_id == user_id,
-            self.model.full_datetime > moscow_dt,
+            self.model.deadline_datetime > now,
             self.model.date_of_completion.is_(None),
         )
         count_query = select(func.count()).where(*filters)
@@ -32,8 +34,7 @@ class TasksDao(BaseDAO[Task]):
                 load_only(
                     self.model.id,
                     self.model.name,
-                    self.model.deadline_date,
-                    self.model.deadline_time,
+                    self.model.deadline_datetime,
                 )
             )
             .where(*filters)
@@ -48,14 +49,14 @@ class TasksDao(BaseDAO[Task]):
     async def get_active_tasks_by_hour(
         self,
     ):
-        now = func.date_trunc("hour", func.timezone("UTC", func.now()))
+        current_utc_hour = func.date_trunc("hour", func.timezone("UTC", func.now()))
+
         query = (
-            select(self.model, Task.full_datetime)
+            select(self.model)
             .options(
                 load_only(
                     self.model.name,
-                    self.model.deadline_date,
-                    self.model.deadline_time,
+                    self.model.deadline_datetime,
                 ),
                 joinedload(self.model.user).load_only(
                     User.telegram_id,
@@ -66,10 +67,15 @@ class TasksDao(BaseDAO[Task]):
                 self.model.date_of_completion.is_(None),
                 User.is_active.is_(True),
                 or_(
-                    Task.full_datetime == now,
-                    Task.full_datetime
-                    - (Task.hour_before_reminder * text("INTERVAL '1 hour'"))
-                    == now,
+                    func.date_trunc("hour", Task.deadline_datetime) == current_utc_hour,
+                    func.date_trunc("hour", Task.deadline_datetime)
+                    == (
+                        current_utc_hour
+                        + (
+                            Task.hour_before_reminder
+                            * cast(text("INTERVAL '1 hour'"), INTERVAL)
+                        )
+                    ),
                 ),
             )
             .order_by(self.model.id)

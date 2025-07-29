@@ -30,18 +30,12 @@ async def create_task(
     user_id: int,
     task_in: TaskInSchema,
 ) -> TaskOutSchema:
-    moscow_tz, moscow_dt = get_moscow_tz_and_dt()
-    dt = datetime.datetime(
-        year=task_in.deadline_date.year,
-        month=task_in.deadline_date.month,
-        day=task_in.deadline_date.day,
-        hour=task_in.deadline_time,
-        tzinfo=moscow_tz,
-    )
-    if moscow_dt >= dt:
+
+    now = datetime.datetime.now(datetime.UTC)
+    if now >= task_in.deadline_datetime:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
-            detail="Входящие дата и время меньше, чем текущее московское",
+            detail="Входящие дата и время меньше, чем текущее",
         )
 
     task = await TasksDao(session=session).add(
