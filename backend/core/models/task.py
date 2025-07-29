@@ -13,7 +13,7 @@ class Task(Base):
             name="ck_time_range",
         ),
         CheckConstraint(
-            "hour_before_reminder >= 1 AND hour_before_reminder <= 23",
+            "hour_before_reminder >= 1 AND hour_before_reminder <= 24",
             name="ck_reminder_range",
         ),
     )
