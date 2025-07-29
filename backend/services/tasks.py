@@ -12,6 +12,9 @@ from core.schemas.tasks import (
     TaskOutSchema,
     TaskUpdateSchema,
     TaskSchema,
+    TasksOutSchema,
+    TasksWithUserSchema,
+    TaskWithUserSchema,
 )
 from fastapi import status
 
@@ -51,8 +54,31 @@ async def create_task(
     return TaskOutSchema.model_validate(task, from_attributes=True)
 
 
-async def get_active_tasks():
-    pass
+async def get_active_user_tasks(
+    session: AsyncSession,
+    user_id: int,
+):
+    tasks = await TasksDao(session=session).get_active_user_tasks(user_id=user_id)
+    return TasksOutSchema(
+        items=[
+            TaskOutSchema.model_validate(task, from_attributes=True) for task in tasks
+        ]
+    )
+
+
+async def get_all_active_tasks_by_hour(
+    session: AsyncSession,
+    hour: int,
+):
+    tasks = await TasksDao(session=session).get_active_tasks_by_hour(
+        hour=hour,
+    )
+    return TasksWithUserSchema(
+        items=[
+            TaskWithUserSchema.model_validate(task, from_attributes=True)
+            for task in tasks
+        ]
+    )
 
 
 async def update_task(

@@ -13,6 +13,10 @@ class UserCreateSchema(UserInSchema):
     telegram_id: int
 
 
+class UserTelegramIdSchema(BaseModel):
+    telegram_id: int
+
+
 class CredentialsSchema(UserCreateSchema):
     password: bytes
 

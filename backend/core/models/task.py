@@ -1,11 +1,16 @@
 from datetime import date, datetime
+from typing import TYPE_CHECKING
 
 from sqlalchemy import TEXT, CheckConstraint, ForeignKey, extract, func, String
 from sqlalchemy.ext.hybrid import hybrid_property
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from .base import Base
 from core.utils.dt import get_moscow_tz_and_dt
+
+
+if TYPE_CHECKING:
+    from .user import User
 
 
 class Task(Base):
@@ -30,6 +35,7 @@ class Task(Base):
     user_id: Mapped[int] = mapped_column(
         ForeignKey("users.id", ondelete="CASCADE"),
     )
+    user: Mapped["User"] = relationship(back_populates="tasks")
 
     @hybrid_property
     def full_datetime(self):

@@ -1,6 +1,7 @@
 import logging
+from typing import Annotated
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Query
 
 from core.dao.tasks import TasksDao
 from core.dependencies.auth import UserId
@@ -39,15 +40,24 @@ async def create_task(
 
 
 @router.get("")
-async def get_active_tasks(
+async def get_active_user_tasks(
     user_id: UserId,
     session: SessionWithoutCommit,
 ):
-    tasks = await TasksDao(session=session).get_active_tasks(user_id=user_id)
-    return TasksOutSchema(
-        items=[
-            TaskOutSchema.model_validate(task, from_attributes=True) for task in tasks
-        ]
+    return await tasks.get_active_user_tasks(
+        session=session,
+        user_id=user_id,
+    )
+
+
+@router.get("/schedule")
+async def get_all_tasks_by_hour(
+    session: SessionWithoutCommit,
+    hour: Annotated[int | None, Query(ge=0, le=23)],
+):
+    return await tasks.get_all_active_tasks_by_hour(
+        session=session,
+        hour=hour,
     )
 
 

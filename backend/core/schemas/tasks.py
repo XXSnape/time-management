@@ -4,6 +4,7 @@ from pydantic import BaseModel, Field
 import datetime
 
 from core.schemas.common import IdSchema
+from core.schemas.users import UserTelegramIdSchema
 
 
 class TaskInSchema(BaseModel):
@@ -49,5 +50,13 @@ class TaskUpdateSchema(TaskInSchema):
     date_of_completion: datetime.date | None = None
 
 
+class TaskWithUserSchema(TaskOutSchema):
+    user: UserTelegramIdSchema
+
+
 class TasksOutSchema(BaseModel):
     items: list[TaskOutSchema]
+
+
+class TasksWithUserSchema(BaseModel):
+    items: list[TaskWithUserSchema]
