@@ -11,10 +11,11 @@ from core.schemas.tasks import (
     TaskInSchema,
     TaskOutSchema,
     TaskSchema,
-    TasksOutSchema,
     TasksWithUserSchema,
     TaskUpdateSchema,
     TaskWithUserSchema,
+    PaginatedTasksOutSchema,
+    LittleInfoTaskOutSchema,
 )
 from core.utils.dt import get_moscow_tz_and_dt
 
@@ -55,12 +56,20 @@ async def create_task(
 async def get_active_user_tasks(
     session: AsyncSession,
     user_id: int,
+    page: int,
+    per_page: int,
 ):
-    tasks = await TasksDao(session=session).get_active_user_tasks(user_id=user_id)
-    return TasksOutSchema(
+    tasks, total_count = await TasksDao(session=session).get_active_user_tasks(
+        user_id=user_id, page=page, per_page=per_page
+    )
+    return PaginatedTasksOutSchema(
         items=[
-            TaskOutSchema.model_validate(task, from_attributes=True) for task in tasks
-        ]
+            LittleInfoTaskOutSchema.model_validate(task, from_attributes=True)
+            for task in tasks
+        ],
+        total_count=total_count,
+        page=page,
+        per_page=per_page,
     )
 
 

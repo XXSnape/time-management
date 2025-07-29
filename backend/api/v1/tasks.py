@@ -3,14 +3,12 @@ from typing import Annotated
 
 from fastapi import APIRouter, Query, status
 
-from core.dao.tasks import TasksDao
 from core.dependencies.auth import UserId
 from core.dependencies.db import SessionWithCommit, SessionWithoutCommit
 from core.schemas.result import ResultSchema
 from core.schemas.tasks import (
     TaskInSchema,
     TaskOutSchema,
-    TasksOutSchema,
     TaskUpdateSchema,
 )
 from services import tasks
@@ -42,10 +40,25 @@ async def create_task(
 async def get_active_user_tasks(
     user_id: UserId,
     session: SessionWithoutCommit,
+    page: Annotated[
+        int,
+        Query(
+            ge=1,
+            le=1_000_000,
+            description="Страница для пагинации (начиная с 1)",
+        ),
+    ] = 1,
+    per_page: Annotated[
+        int,
+        Query(
+            ge=1,
+            le=100,
+            description="Количество записей на странице (макс. 100)",
+        ),
+    ] = 10,
 ):
     return await tasks.get_active_user_tasks(
-        session=session,
-        user_id=user_id,
+        session=session, user_id=user_id, page=page, per_page=per_page
     )
 
 
