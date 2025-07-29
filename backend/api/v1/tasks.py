@@ -5,4 +5,4 @@ from fastapi import APIRouter
 log = logging.getLogger(__name__)
 
 
-router = APIRouter(tags=["Задачи и привычки"])
+router = APIRouter(tags=["Задачи"])
