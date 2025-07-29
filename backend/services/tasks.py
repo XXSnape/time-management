@@ -5,6 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.dao.tasks import TasksDao
 from core.schemas.common import IdSchema
+from core.schemas.result import ResultSchema
 from core.schemas.tasks import (
     TaskCreateSchema,
     TaskInSchema,
@@ -14,13 +15,20 @@ from core.schemas.tasks import (
 )
 from fastapi import status
 
+from core.utils.dt import get_moscow_tz_and_dt
+
+exc = HTTPException(
+    status_code=status.HTTP_404_NOT_FOUND,
+    detail="Действующая задача не найдена",
+)
+
 
 async def create_task(
     session: AsyncSession,
     user_id: int,
     task_in: TaskInSchema,
 ) -> TaskOutSchema:
-    moscow_tz = datetime.timezone(datetime.timedelta(hours=3))
+    moscow_tz, moscow_dt = get_moscow_tz_and_dt()
     dt = datetime.datetime(
         year=task_in.deadline_date.year,
         month=task_in.deadline_date.month,
@@ -28,7 +36,6 @@ async def create_task(
         hour=task_in.deadline_time,
         tzinfo=moscow_tz,
     )
-    moscow_dt = datetime.datetime.now(moscow_tz)
     if moscow_dt >= dt:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
@@ -42,6 +49,10 @@ async def create_task(
         )
     )
     return TaskOutSchema.model_validate(task, from_attributes=True)
+
+
+async def get_active_tasks():
+    pass
 
 
 async def update_task(
@@ -59,9 +70,22 @@ async def update_task(
     )
 
     if not task:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Действующая задача не найдена",
-        )
+        raise exc
     await dao.update(filters=IdSchema(id=task_id), values=updated_task_in)
     return TaskOutSchema.model_validate(task, from_attributes=True)
+
+
+async def delete_task(
+    session: AsyncSession,
+    user_id: int,
+    task_id: int,
+) -> ResultSchema:
+    result = await TasksDao(session=session).delete(
+        TaskSchema(
+            id=task_id,
+            user_id=user_id,
+        )
+    )
+    if result == 0:
+        raise exc
+    return ResultSchema()

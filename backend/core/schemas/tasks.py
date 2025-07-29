@@ -47,3 +47,7 @@ class TaskUpdateSchema(TaskInSchema):
         Field(ge=1, le=24),
     ] = None
     date_of_completion: datetime.date | None = None
+
+
+class TasksOutSchema(BaseModel):
+    items: list[TaskOutSchema]

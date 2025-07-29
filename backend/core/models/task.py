@@ -1,9 +1,11 @@
-from datetime import date
+from datetime import date, datetime
 
-from sqlalchemy import TEXT, CheckConstraint, ForeignKey
+from sqlalchemy import TEXT, CheckConstraint, ForeignKey, extract, func, String
+from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import Mapped, mapped_column
 
 from .base import Base
+from core.utils.dt import get_moscow_tz_and_dt
 
 
 class Task(Base):
@@ -28,3 +30,29 @@ class Task(Base):
     user_id: Mapped[int] = mapped_column(
         ForeignKey("users.id", ondelete="CASCADE"),
     )
+
+    @hybrid_property
+    def full_datetime(self):
+        moscow_tz, _ = get_moscow_tz_and_dt()
+        return datetime(
+            year=self.deadline_date.year,
+            month=self.deadline_date.month,
+            day=self.deadline_date.day,
+            hour=self.deadline_time,
+            tzinfo=moscow_tz,
+        )
+
+    @full_datetime.expression
+    def full_datetime(cls):
+        return func.timezone(
+            "UTC+3",
+            func.to_timestamp(
+                func.concat(
+                    func.to_char(cls.deadline_date, "YYYY-MM-DD"),
+                    " ",
+                    func.lpad(func.cast(cls.deadline_time, String), 2, "0"),
+                    ":00:00",
+                ),
+                "YYYY-MM-DD HH24:MI:SS",
+            ),
+        )
