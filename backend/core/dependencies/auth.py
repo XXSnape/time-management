@@ -1,4 +1,4 @@
-from typing import Annotated
+from typing import Annotated, TypeAlias
 
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
@@ -27,7 +27,7 @@ def get_token_payload(
     except InvalidTokenError as e:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail=f"invalid token error",
+            detail="Некорректный токен",
         )
     return payload
 
@@ -41,3 +41,6 @@ def get_user_id(
     :return: id пользователя
     """
     return int(payload.get("sub"))
+
+
+UserId: TypeAlias = Annotated[int, Depends(get_user_id)]
