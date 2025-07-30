@@ -23,3 +23,7 @@ class CredentialsSchema(UserCreateSchema):
 
 class TokenSchema(BaseModel):
     access_token: str
+
+
+class UserActivitySchema(BaseModel):
+    is_active: bool

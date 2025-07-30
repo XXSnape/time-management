@@ -11,6 +11,7 @@ from core.schemas.users import (
     TokenSchema,
     UserCreateSchema,
     UserInSchema,
+    UserActivitySchema,
 )
 from services import users
 
@@ -61,4 +62,20 @@ async def check_username_for_existence(
     return await users.verify_existence_user(
         username=username,
         session=session,
+    )
+
+
+@router.patch(
+    "/{telegram_id}",
+    response_model=ResultSchema,
+)
+async def change_activity(
+    user_activity: UserActivitySchema,
+    telegram_id: int,
+    session: SessionWithCommit,
+):
+    return await users.make_user_inactive_or_active(
+        telegram_id=telegram_id,
+        session=session,
+        user_activity=user_activity,
     )

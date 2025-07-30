@@ -10,6 +10,8 @@ from core.schemas.users import (
     UserCreateSchema,
     UserInSchema,
     UserSchema,
+    UserActivitySchema,
+    UserTelegramIdSchema,
 )
 
 from .auth import get_access_token, hash_password, validate_password
@@ -72,3 +74,20 @@ async def verify_existence_user(
         UserSchema(username=username)
     )
     return ResultSchema(result=bool(user))
+
+
+async def make_user_inactive_or_active(
+    telegram_id: int,
+    session: AsyncSession,
+    user_activity: UserActivitySchema,
+) -> ResultSchema:
+    result = await UsersDao(session=session).update(
+        filters=UserTelegramIdSchema(telegram_id=telegram_id),
+        values=user_activity,
+    )
+    if result == 0:
+        raise HTTPException(
+            detail="Пользователь не найден",
+            status_code=status.HTTP_404_NOT_FOUND,
+        )
+    return ResultSchema()
