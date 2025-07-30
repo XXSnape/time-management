@@ -1,11 +1,19 @@
 import logging
+from typing import Annotated
 
-from fastapi import APIRouter, status
+from fastapi import APIRouter, status, Query
 
 from core.dao.habits import HabitsDAO
 from core.dependencies.auth import UserId
-from core.dependencies.db import SessionWithCommit
-from core.schemas.habits import HabitOutSchema, HabitInSchema, HabitUpdateSchema
+from core.dependencies.db import (
+    SessionWithCommit,
+    SessionWithoutCommit,
+)
+from core.schemas.habits import (
+    HabitOutSchema,
+    HabitInSchema,
+    HabitUpdateSchema,
+)
 from services import habits
 from services.common import delete_entity
 
@@ -63,4 +71,33 @@ async def delete_habit(
         entity_id=habit_id,
         dao=HabitsDAO,
         exc=habits.exc,
+    )
+
+
+@router.get("")
+async def get_active_user_habits(
+    user_id: UserId,
+    session: SessionWithoutCommit,
+    page: Annotated[
+        int,
+        Query(
+            ge=1,
+            le=1_000_000,
+            description="Страница для пагинации (начиная с 1)",
+        ),
+    ] = 1,
+    per_page: Annotated[
+        int,
+        Query(
+            ge=1,
+            le=100,
+            description="Количество записей на странице (макс. 100)",
+        ),
+    ] = 10,
+):
+    return await habits.get_active_user_habits(
+        session=session,
+        user_id=user_id,
+        page=page,
+        per_page=per_page,
     )

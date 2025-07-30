@@ -13,10 +13,15 @@ from core.schemas.habits import (
     HabitOutSchema,
     HabitUpdateSchema,
     HabitIdSchema,
+    PaginatedHabitsOutSchema,
+    LittleInfoHabitOutSchema,
 )
 from core.utils.enums import Weekday
 
-exc = HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Привычка не найдена")
+exc = HTTPException(
+    status_code=status.HTTP_404_NOT_FOUND,
+    detail="Привычка не найдена",
+)
 
 
 async def create_schedulers_and_timers(
@@ -30,13 +35,21 @@ async def create_schedulers_and_timers(
         schedule_dao = SchedulesDAO(session=session)
         await schedule_dao.delete(habit_id_schema)
         await schedule_dao.add_many(
-            [ScheduleSchema(day=day, habit_id=habit_id) for day in days]
+            [
+                ScheduleSchema(day=day, habit_id=habit_id)
+                for day in days
+            ]
         )
     if hours:
         timers_dao = TimersDAO(session=session)
         await timers_dao.delete(habit_id_schema)
         await timers_dao.add_many(
-            [TimerSchema(notification_hour=hour, habit_id=habit_id) for hour in hours]
+            [
+                TimerSchema(
+                    notification_hour=hour, habit_id=habit_id
+                )
+                for hour in hours
+            ]
         )
 
 
@@ -50,9 +63,14 @@ async def create_habit(
         HabitCreateSchema(**habit_in.model_dump(), user_id=user_id),
     )
     await create_schedulers_and_timers(
-        session=session, habit_id=habit.id, days=habit_in.days, hours=habit_in.hours
+        session=session,
+        habit_id=habit.id,
+        days=habit_in.days,
+        hours=habit_in.hours,
     )
-    created_habit = await dao.get_habit_with_all_data(IdSchema(id=habit.id))
+    created_habit = await dao.get_habit_with_all_data(
+        IdSchema(id=habit.id)
+    )
     return HabitOutSchema.model_validate(
         created_habit,
         from_attributes=True,
@@ -85,8 +103,35 @@ async def update_habit(
         days=updated_habit_in.days,
         hours=updated_habit_in.hours,
     )
-    updated_habit = await dao.get_habit_with_all_data(IdSchema(id=habit_id))
+    updated_habit = await dao.get_habit_with_all_data(
+        IdSchema(id=habit_id)
+    )
     return HabitOutSchema.model_validate(
         updated_habit,
         from_attributes=True,
+    )
+
+
+async def get_active_user_habits(
+    session: AsyncSession,
+    user_id: int,
+    page: int,
+    per_page: int,
+) -> PaginatedHabitsOutSchema:
+    habits, total_count = await HabitsDAO(
+        session=session
+    ).get_active_user_habits(
+        user_id=user_id, page=page, per_page=per_page
+    )
+    return PaginatedHabitsOutSchema(
+        items=[
+            LittleInfoHabitOutSchema.model_validate(
+                habit,
+                from_attributes=True,
+            )
+            for habit in habits
+        ],
+        total_count=total_count,
+        page=page,
+        per_page=per_page,
     )

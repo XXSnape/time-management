@@ -1,5 +1,5 @@
-from sqlalchemy import select
-from sqlalchemy.orm import selectinload
+from sqlalchemy import select, func
+from sqlalchemy.orm import selectinload, load_only
 
 from .base import BaseDAO
 from core.models import Habit, Tracker
@@ -21,3 +21,32 @@ class HabitsDAO(BaseDAO[Habit]):
         )
         result = await self._session.execute(query)
         return result.scalar_one_or_none()
+
+    async def get_active_user_habits(
+        self,
+        user_id: int,
+        page: int,
+        per_page: int,
+    ):
+        filters = (
+            self.model.user_id == user_id,
+            self.model.date_of_completion.is_(None),
+        )
+        count_query = select(func.count()).where(*filters)
+        count_result = (await self._session.execute(count_query)).scalar_one()
+        query = (
+            select(self.model)
+            .options(
+                load_only(
+                    self.model.id,
+                    self.model.name,
+                )
+            )
+            .where(*filters)
+            .offset((page - 1) * per_page)
+            .limit(per_page)
+            .order_by(self.model.id)
+        )
+
+        result = await self._session.execute(query)
+        return result.scalars().all(), count_result

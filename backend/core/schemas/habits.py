@@ -3,7 +3,7 @@ from typing import Annotated
 
 from pydantic import BaseModel, Field
 
-from core.schemas.common import IdSchema
+from core.schemas.common import IdSchema, PaginatedSchema
 from core.utils.enums import Weekday
 
 
@@ -14,8 +14,11 @@ class HabitIdSchema(BaseModel):
     habit_id: int
 
 
-class HabitSchema(BaseModel):
+class HabitNameSchema(BaseModel):
     name: str
+
+
+class HabitSchema(HabitNameSchema):
     purpose: str
 
 
@@ -48,10 +51,15 @@ class HabitOutSchema(IdSchema, HabitInSchema):
     performance: int
 
 
-class HabitBaseInfo(IdSchema, HabitSchema):
-    created: datetime.date
-    number_of_executions: int = 0
-
-
 class HabitCreateSchema(HabitSchema):
     user_id: int
+
+
+class LittleInfoHabitOutSchema(IdSchema, HabitNameSchema):
+    pass
+
+
+class PaginatedHabitsOutSchema(
+    PaginatedSchema[LittleInfoHabitOutSchema],
+):
+    pass
