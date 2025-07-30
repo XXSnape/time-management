@@ -14,8 +14,11 @@ from core.schemas.habits import (
     HabitOutSchema,
     HabitUpdateSchema,
     TrackerInSchema,
+    PaginatedHabitsOutSchema,
+    HabitsWithUserSchema,
 )
 from core.schemas.result import ResultSchema
+from core.utils.enums import Weekday
 from services import habits
 from services.common import delete_entity
 
@@ -76,7 +79,37 @@ async def delete_habit(
     )
 
 
-@router.get("")
+@router.post(
+    "/{habit_id}/mark",
+    response_model=ResultSchema,
+    status_code=status.HTTP_201_CREATED,
+)
+async def mark_habit(
+    habit_id: int,
+    user_id: UserId,
+    tracker_in: TrackerInSchema,
+    session: SessionWithCommit,
+):
+    return await habits.mark_habit(
+        tracker_in=tracker_in,
+        habit_id=habit_id,
+        user_id=user_id,
+        session=session,
+    )
+
+
+@router.get("/schedules", response_model=HabitsWithUserSchema)
+async def get_habits_on_schedule(
+    day: Weekday,
+    hour: Annotated[int, Query(ge=0, le=23)],
+    session: SessionWithoutCommit,
+):
+    return await habits.get_habits_on_schedule(
+        session=session, day=day, hour=hour
+    )
+
+
+@router.get("", response_model=PaginatedHabitsOutSchema)
 async def get_active_user_habits(
     user_id: UserId,
     session: SessionWithoutCommit,
@@ -113,23 +146,4 @@ async def get_habit_by_id(
 ):
     return await habits.get_habit_by_id(
         session=session, user_id=user_id, habit_id=habit_id
-    )
-
-
-@router.post(
-    "/mark/{habit_id}",
-    response_model=ResultSchema,
-    status_code=status.HTTP_201_CREATED,
-)
-async def mark_habit(
-    habit_id: int,
-    user_id: UserId,
-    tracker_in: TrackerInSchema,
-    session: SessionWithCommit,
-):
-    return await habits.mark_habit(
-        tracker_in=tracker_in,
-        habit_id=habit_id,
-        user_id=user_id,
-        session=session,
     )

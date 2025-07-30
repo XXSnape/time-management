@@ -19,6 +19,8 @@ from core.schemas.habits import (
     TimerSchema,
     TrackerInSchema,
     TrackerCreateSchema,
+    HabitsWithUserSchema,
+    HabitWithUserSchema,
 )
 from core.schemas.result import ResultSchema
 from core.utils.enums import Weekday
@@ -181,3 +183,21 @@ async def mark_habit(
             detail="За эту дату и время привычка уже отмечена",
         )
     return ResultSchema()
+
+
+async def get_habits_on_schedule(
+    session: AsyncSession,
+    day: Weekday,
+    hour: int,
+):
+    habits = await HabitsDAO(session=session).get_habits_on_schedule(
+        day=day, hour=hour
+    )
+    return HabitsWithUserSchema(
+        items=[
+            HabitWithUserSchema.model_validate(
+                habit, from_attributes=True
+            )
+            for habit in habits
+        ]
+    )

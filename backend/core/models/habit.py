@@ -15,6 +15,7 @@ if TYPE_CHECKING:
     from .schedule import Schedule
     from .timer import Timer
     from .tracker import Tracker
+    from .user import User
 
 
 class Habit(Base):
@@ -47,6 +48,7 @@ class Habit(Base):
         "schedules",
         "day",
     )
+    user: Mapped["User"] = relationship(back_populates="habits")
 
     @hybrid_property
     def completed(self) -> int:

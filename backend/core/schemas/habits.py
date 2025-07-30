@@ -4,6 +4,7 @@ from typing import Annotated
 from pydantic import BaseModel, Field
 
 from core.schemas.common import IdSchema, PaginatedSchema
+from core.schemas.users import UserTelegramIdSchema
 from core.utils.enums import Weekday
 
 type HourLimits = Annotated[int, Field(ge=0, le=23)]
@@ -55,6 +56,14 @@ class HabitCreateSchema(HabitSchema):
 
 class LittleInfoHabitOutSchema(IdSchema, HabitNameSchema):
     pass
+
+
+class HabitWithUserSchema(LittleInfoHabitOutSchema):
+    user: UserTelegramIdSchema
+
+
+class HabitsWithUserSchema(BaseModel):
+    items: list[HabitWithUserSchema]
 
 
 class PaginatedHabitsOutSchema(

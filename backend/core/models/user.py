@@ -7,6 +7,7 @@ from .base import Base
 
 if TYPE_CHECKING:
     from .task import Task
+    from .habit import Habit
 
 
 class User(Base):
@@ -20,4 +21,9 @@ class User(Base):
     is_active: Mapped[bool] = mapped_column(
         default=True, server_default="1"
     )
-    tasks: Mapped["Task"] = relationship(back_populates="user")
+    tasks: Mapped[list["Task"]] = relationship(
+        back_populates="user",
+    )
+    habits: Mapped[list["Habit"]] = relationship(
+        back_populates="user"
+    )

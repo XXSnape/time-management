@@ -69,7 +69,7 @@ async def get_active_user_tasks(
     )
 
 
-@router.get("/schedule")
+@router.get("/schedules")
 async def get_all_tasks_by_hour(
     session: SessionWithoutCommit,
 ):

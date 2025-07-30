@@ -1,16 +1,21 @@
+from collections.abc import Sequence
+
 from pydantic import BaseModel
 from sqlalchemy import func, select
-from sqlalchemy.orm import load_only, selectinload
+from sqlalchemy.orm import load_only, selectinload, joinedload
 
-from core.models import Habit, Tracker
+from core.models import Habit, Tracker, Schedule, Timer, User
 
 from .base import BaseDAO
+from ..utils.enums import Weekday
 
 
 class HabitsDAO(BaseDAO[Habit]):
     model = Habit
 
-    async def get_habit_with_all_data(self, filter: BaseModel):
+    async def get_habit_with_all_data(
+        self, filter: BaseModel
+    ) -> Habit | None:
         query = (
             select(self.model)
             .options(
@@ -55,3 +60,28 @@ class HabitsDAO(BaseDAO[Habit]):
 
         result = await self._session.execute(query)
         return result.scalars().all(), count_result
+
+    async def get_habits_on_schedule(
+        self,
+        day: Weekday,
+        hour: int,
+    ) -> Sequence[Habit]:
+        query = (
+            select(self.model)
+            .options(
+                joinedload(self.model.user).load_only(
+                    User.is_active, User.telegram_id
+                )
+            )
+            .join(Schedule)
+            .join(Timer)
+            .where(
+                Schedule.day == day,
+                Timer.notification_hour == hour,
+                User.is_active.is_(True),
+            )
+        )
+
+        print("q", query)
+        result = await self._session.execute(query)
+        return result.scalars().all()
