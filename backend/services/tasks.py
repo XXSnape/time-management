@@ -115,22 +115,6 @@ async def update_task(
     return TaskOutSchema.model_validate(task, from_attributes=True)
 
 
-async def delete_task(
-    session: AsyncSession,
-    user_id: int,
-    task_id: int,
-):
-    result = await TasksDao(session=session).delete(
-        DateOfCompletionSchema(
-            id=task_id,
-            user_id=user_id,
-            date_of_completion=None,
-        )
-    )
-    if result == 0:
-        raise exc
-
-
 async def get_tasks_statistics(
     session: AsyncSession,
     user_id: int,

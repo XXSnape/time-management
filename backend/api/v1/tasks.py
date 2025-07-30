@@ -3,6 +3,7 @@ from typing import Annotated
 
 from fastapi import APIRouter, Query, status
 
+from core.dao.tasks import TasksDao
 from core.dependencies.auth import UserId
 from core.dependencies.db import SessionWithCommit, SessionWithoutCommit
 from core.schemas.tasks import (
@@ -11,6 +12,7 @@ from core.schemas.tasks import (
     TaskUpdateSchema,
 )
 from services import tasks
+from services.common import delete_entity
 
 log = logging.getLogger(__name__)
 
@@ -106,14 +108,19 @@ async def update_task(
     )
 
 
-@router.delete("/{task_id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete(
+    "/{task_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+)
 async def delete_task(
     task_id: int,
     user_id: UserId,
     session: SessionWithCommit,
 ):
-    await tasks.delete_task(
+    await delete_entity(
         session=session,
         user_id=user_id,
-        task_id=task_id,
+        entity_id=task_id,
+        dao=TasksDao,
+        exc=tasks.exc,
     )
