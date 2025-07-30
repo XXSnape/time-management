@@ -5,7 +5,6 @@ from fastapi import APIRouter, Query, status
 
 from core.dependencies.auth import UserId
 from core.dependencies.db import SessionWithCommit, SessionWithoutCommit
-from core.schemas.result import ResultSchema
 from core.schemas.tasks import (
     TaskInSchema,
     TaskOutSchema,
@@ -107,13 +106,13 @@ async def update_task(
     )
 
 
-@router.delete("/{task_id}", response_model=ResultSchema)
+@router.delete("/{task_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_task(
     task_id: int,
     user_id: UserId,
     session: SessionWithCommit,
 ):
-    return await tasks.delete_task(
+    await tasks.delete_task(
         session=session,
         user_id=user_id,
         task_id=task_id,

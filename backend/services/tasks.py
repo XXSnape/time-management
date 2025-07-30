@@ -120,7 +120,7 @@ async def delete_task(
     session: AsyncSession,
     user_id: int,
     task_id: int,
-) -> ResultSchema:
+):
     result = await TasksDao(session=session).delete(
         TaskSchema(
             id=task_id,
@@ -130,7 +130,6 @@ async def delete_task(
     )
     if result == 0:
         raise exc
-    return ResultSchema()
 
 
 async def get_tasks_statistics(
