@@ -5,7 +5,10 @@ from fastapi import APIRouter, Query, status
 
 from core.dao.tasks import TasksDao
 from core.dependencies.auth import UserId
-from core.dependencies.db import SessionWithCommit, SessionWithoutCommit
+from core.dependencies.db import (
+    SessionWithCommit,
+    SessionWithoutCommit,
+)
 from core.schemas.tasks import (
     TaskInSchema,
     TaskOutSchema,
@@ -59,7 +62,10 @@ async def get_active_user_tasks(
     ] = 10,
 ):
     return await tasks.get_active_user_tasks(
-        session=session, user_id=user_id, page=page, per_page=per_page
+        session=session,
+        user_id=user_id,
+        page=page,
+        per_page=per_page,
     )
 
 
@@ -73,7 +79,9 @@ async def get_all_tasks_by_hour(
 
 
 @router.get("/statistics")
-async def get_statistics(session: SessionWithoutCommit, user_id: UserId):
+async def get_statistics(
+    session: SessionWithoutCommit, user_id: UserId
+):
     return await tasks.get_tasks_statistics(
         session=session,
         user_id=user_id,

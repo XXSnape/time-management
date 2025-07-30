@@ -19,7 +19,9 @@ class Task(Base):
     )
     name: Mapped[str]
     description: Mapped[str] = mapped_column(TEXT)
-    deadline_datetime: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    deadline_datetime: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True)
+    )
     hour_before_reminder: Mapped[int]
     date_of_completion: Mapped[date | None] = mapped_column(
         default=None,

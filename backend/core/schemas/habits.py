@@ -6,7 +6,6 @@ from pydantic import BaseModel, Field
 from core.schemas.common import IdSchema, PaginatedSchema
 from core.utils.enums import Weekday
 
-
 type HourLimits = Annotated[int, Field(ge=0, le=23)]
 
 

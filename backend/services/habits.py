@@ -4,17 +4,17 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from core.dao.habits import HabitsDAO
 from core.dao.schedules import SchedulesDAO
 from core.dao.timers import TimersDAO
-from core.schemas.common import IdSchema, DateOfCompletionSchema
+from core.schemas.common import DateOfCompletionSchema, IdSchema
 from core.schemas.habits import (
-    HabitInSchema,
     HabitCreateSchema,
-    ScheduleSchema,
-    TimerSchema,
+    HabitIdSchema,
+    HabitInSchema,
     HabitOutSchema,
     HabitUpdateSchema,
-    HabitIdSchema,
-    PaginatedHabitsOutSchema,
     LittleInfoHabitOutSchema,
+    PaginatedHabitsOutSchema,
+    ScheduleSchema,
+    TimerSchema,
 )
 from core.utils.enums import Weekday
 

@@ -36,7 +36,9 @@ class Base(DeclarativeBase):
         """
         cols = [
             f"{field}={getattr(self, field)}"
-            for field in self.__table__.columns.keys()[: self.number_output_fields]
+            for field in self.__table__.columns.keys()[
+                : self.number_output_fields
+            ]
         ]
 
         return f"<{self.__class__.__name__} {', '.join(cols)}>"

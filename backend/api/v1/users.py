@@ -2,9 +2,16 @@ import logging
 
 from fastapi import APIRouter, status
 
-from core.dependencies.db import SessionWithCommit, SessionWithoutCommit
+from core.dependencies.db import (
+    SessionWithCommit,
+    SessionWithoutCommit,
+)
 from core.schemas.result import ResultSchema
-from core.schemas.users import TokenSchema, UserCreateSchema, UserInSchema
+from core.schemas.users import (
+    TokenSchema,
+    UserCreateSchema,
+    UserInSchema,
+)
 from services import users
 
 log = logging.getLogger(__name__)

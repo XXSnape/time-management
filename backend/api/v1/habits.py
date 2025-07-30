@@ -1,7 +1,7 @@
 import logging
 from typing import Annotated
 
-from fastapi import APIRouter, status, Query
+from fastapi import APIRouter, Query, status
 
 from core.dao.habits import HabitsDAO
 from core.dependencies.auth import UserId
@@ -10,8 +10,8 @@ from core.dependencies.db import (
     SessionWithoutCommit,
 )
 from core.schemas.habits import (
-    HabitOutSchema,
     HabitInSchema,
+    HabitOutSchema,
     HabitUpdateSchema,
 )
 from services import habits

@@ -41,7 +41,9 @@ class TasksDao(BaseDAO[Task]):
             self.model.date_of_completion.is_(None),
         )
         count_query = select(func.count()).where(*filters)
-        count_result = (await self._session.execute(count_query)).scalar_one()
+        count_result = (
+            await self._session.execute(count_query)
+        ).scalar_one()
         query = (
             select(self.model)
             .options(
@@ -63,7 +65,9 @@ class TasksDao(BaseDAO[Task]):
     async def get_active_tasks_by_hour(
         self,
     ):
-        current_utc_hour = func.date_trunc("hour", func.timezone("UTC", func.now()))
+        current_utc_hour = func.date_trunc(
+            "hour", func.timezone("UTC", func.now())
+        )
 
         query = (
             select(self.model)
@@ -81,13 +85,16 @@ class TasksDao(BaseDAO[Task]):
                 self.model.date_of_completion.is_(None),
                 User.is_active.is_(True),
                 or_(
-                    func.date_trunc("hour", Task.deadline_datetime) == current_utc_hour,
+                    func.date_trunc("hour", Task.deadline_datetime)
+                    == current_utc_hour,
                     func.date_trunc("hour", Task.deadline_datetime)
                     == (
                         current_utc_hour
                         + (
                             Task.hour_before_reminder
-                            * cast(text("INTERVAL '1 hour'"), INTERVAL)
+                            * cast(
+                                text("INTERVAL '1 hour'"), INTERVAL
+                            )
                         )
                     ),
                 ),
@@ -125,7 +132,9 @@ class TasksDao(BaseDAO[Task]):
         total_query = func.count().label("total")
         performance = case(
             (total_query == 0, 0),
-            else_=func.cast(completed_query / total_query * 100, Integer),
+            else_=func.cast(
+                completed_query / total_query * 100, Integer
+            ),
         ).label("performance")
 
         queries = []
@@ -150,7 +159,9 @@ class TasksDao(BaseDAO[Task]):
                 .where(self.model.user_id == user_id)
             )
             if td:
-                query = query.where(self.model.deadline_datetime >= now - td)
+                query = query.where(
+                    self.model.deadline_datetime >= now - td
+                )
             queries.append(query)
         u = union_all(*queries)
 

@@ -10,7 +10,9 @@ def create_private_and_public_keys() -> None:
     path = Path(__file__).resolve().parent / "certs"
     if not len(os.listdir(path)) == 0:
         return
-    subprocess.run(["openssl", "genrsa", "-out", path / "private.pem", "2048"])
+    subprocess.run(
+        ["openssl", "genrsa", "-out", path / "private.pem", "2048"]
+    )
     subprocess.run(
         [
             "openssl",

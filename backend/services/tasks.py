@@ -4,7 +4,7 @@ from fastapi import HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.dao.tasks import TasksDao
-from core.schemas.common import IdSchema, DateOfCompletionSchema
+from core.schemas.common import DateOfCompletionSchema, IdSchema
 from core.schemas.result import ResultSchema
 from core.schemas.tasks import (
     LittleInfoTaskOutSchema,
@@ -53,12 +53,16 @@ async def get_active_user_tasks(
     page: int,
     per_page: int,
 ):
-    tasks, total_count = await TasksDao(session=session).get_active_user_tasks(
+    tasks, total_count = await TasksDao(
+        session=session
+    ).get_active_user_tasks(
         user_id=user_id, page=page, per_page=per_page
     )
     return PaginatedTasksOutSchema(
         items=[
-            LittleInfoTaskOutSchema.model_validate(task, from_attributes=True)
+            LittleInfoTaskOutSchema.model_validate(
+                task, from_attributes=True
+            )
             for task in tasks
         ],
         total_count=total_count,
@@ -70,10 +74,14 @@ async def get_active_user_tasks(
 async def get_all_active_tasks_by_hour(
     session: AsyncSession,
 ):
-    tasks = await TasksDao(session=session).get_active_tasks_by_hour()
+    tasks = await TasksDao(
+        session=session
+    ).get_active_tasks_by_hour()
     return TasksWithUserSchema(
         items=[
-            TaskWithUserSchema.model_validate(task, from_attributes=True)
+            TaskWithUserSchema.model_validate(
+                task, from_attributes=True
+            )
             for task in tasks
         ]
     )
@@ -111,7 +119,9 @@ async def update_task(
 
     if not task:
         raise exc
-    await dao.update(filters=IdSchema(id=task_id), values=updated_task_in)
+    await dao.update(
+        filters=IdSchema(id=task_id), values=updated_task_in
+    )
     return TaskOutSchema.model_validate(task, from_attributes=True)
 
 
@@ -119,9 +129,14 @@ async def get_tasks_statistics(
     session: AsyncSession,
     user_id: int,
 ) -> TasksStatisticSchema:
-    stats = await TasksDao(session=session).get_statistics(user_id=user_id)
+    stats = await TasksDao(session=session).get_statistics(
+        user_id=user_id
+    )
     return TasksStatisticSchema(
         items=[
-            StatisticSchema.model_validate(stat, from_attributes=True) for stat in stats
+            StatisticSchema.model_validate(
+                stat, from_attributes=True
+            )
+            for stat in stats
         ]
     )

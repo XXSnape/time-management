@@ -1,9 +1,10 @@
-from sqlalchemy import select, func
-from sqlalchemy.orm import selectinload, load_only
+from sqlalchemy import func, select
+from sqlalchemy.orm import load_only, selectinload
 
-from .base import BaseDAO
 from core.models import Habit, Tracker
 from core.schemas.common import IdSchema
+
+from .base import BaseDAO
 
 
 class HabitsDAO(BaseDAO[Habit]):
@@ -15,7 +16,9 @@ class HabitsDAO(BaseDAO[Habit]):
             .options(
                 selectinload(self.model.timers),
                 selectinload(self.model.schedules),
-                selectinload(self.model.trackers).load_only(Tracker.is_completed),
+                selectinload(self.model.trackers).load_only(
+                    Tracker.is_completed
+                ),
             )
             .filter_by(**id_schema.model_dump())
         )
@@ -33,7 +36,9 @@ class HabitsDAO(BaseDAO[Habit]):
             self.model.date_of_completion.is_(None),
         )
         count_query = select(func.count()).where(*filters)
-        count_result = (await self._session.execute(count_query)).scalar_one()
+        count_result = (
+            await self._session.execute(count_query)
+        ).scalar_one()
         query = (
             select(self.model)
             .options(

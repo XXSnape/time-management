@@ -33,7 +33,9 @@ async def create_user(
             status_code=status.HTTP_409_CONFLICT,
             detail="Пользователь уже существует",
         )
-    return TokenSchema(access_token=get_access_token(user_id=user.id))
+    return TokenSchema(
+        access_token=get_access_token(user_id=user.id)
+    )
 
 
 async def create_new_access_token(

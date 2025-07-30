@@ -17,5 +17,7 @@ class User(Base):
     username: Mapped[str] = mapped_column(unique=True)
     password: Mapped[bytes]
     telegram_id: Mapped[int] = mapped_column(BigInteger, unique=True)
-    is_active: Mapped[bool] = mapped_column(default=True, server_default="1")
+    is_active: Mapped[bool] = mapped_column(
+        default=True, server_default="1"
+    )
     tasks: Mapped["Task"] = relationship(back_populates="user")
