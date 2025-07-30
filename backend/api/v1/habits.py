@@ -13,7 +13,9 @@ from core.schemas.habits import (
     HabitInSchema,
     HabitOutSchema,
     HabitUpdateSchema,
+    TrackerInSchema,
 )
+from core.schemas.result import ResultSchema
 from services import habits
 from services.common import delete_entity
 
@@ -100,4 +102,34 @@ async def get_active_user_habits(
         user_id=user_id,
         page=page,
         per_page=per_page,
+    )
+
+
+@router.get("/{habit_id}", response_model=HabitOutSchema)
+async def get_habit_by_id(
+    habit_id: int,
+    user_id: UserId,
+    session: SessionWithoutCommit,
+):
+    return await habits.get_habit_by_id(
+        session=session, user_id=user_id, habit_id=habit_id
+    )
+
+
+@router.post(
+    "/mark/{habit_id}",
+    response_model=ResultSchema,
+    status_code=status.HTTP_201_CREATED,
+)
+async def mark_habit(
+    habit_id: int,
+    user_id: UserId,
+    tracker_in: TrackerInSchema,
+    session: SessionWithCommit,
+):
+    return await habits.mark_habit(
+        tracker_in=tracker_in,
+        habit_id=habit_id,
+        user_id=user_id,
+        session=session,
     )

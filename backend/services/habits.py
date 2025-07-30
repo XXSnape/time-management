@@ -1,9 +1,11 @@
 from fastapi import HTTPException, status
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.dao.habits import HabitsDAO
 from core.dao.schedules import SchedulesDAO
 from core.dao.timers import TimersDAO
+from core.dao.trackers import TrackersDAO
 from core.schemas.common import DateOfCompletionSchema, IdSchema
 from core.schemas.habits import (
     HabitCreateSchema,
@@ -15,7 +17,10 @@ from core.schemas.habits import (
     PaginatedHabitsOutSchema,
     ScheduleSchema,
     TimerSchema,
+    TrackerInSchema,
+    TrackerCreateSchema,
 )
+from core.schemas.result import ResultSchema
 from core.utils.enums import Weekday
 
 exc = HTTPException(
@@ -135,3 +140,44 @@ async def get_active_user_habits(
         page=page,
         per_page=per_page,
     )
+
+
+async def get_habit_by_id(
+    session: AsyncSession,
+    user_id: int,
+    habit_id: int,
+) -> HabitOutSchema:
+    habit = await HabitsDAO(session=session).get_habit_with_all_data(
+        DateOfCompletionSchema(user_id=user_id, id=habit_id)
+    )
+    if not habit:
+        raise exc
+    return HabitOutSchema.model_validate(
+        habit,
+        from_attributes=True,
+    )
+
+
+async def mark_habit(
+    session: AsyncSession,
+    tracker_in: TrackerInSchema,
+    user_id: int,
+    habit_id: int,
+) -> ResultSchema:
+    res = await HabitsDAO(session=session).find_one_or_none(
+        DateOfCompletionSchema(user_id=user_id, id=habit_id)
+    )
+    if not res:
+        raise exc
+    try:
+        await TrackersDAO(session=session).add(
+            TrackerCreateSchema(
+                **tracker_in.model_dump(), habit_id=habit_id
+            )
+        )
+    except IntegrityError:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="За эту дату и время привычка уже отмечена",
+        )
+    return ResultSchema()

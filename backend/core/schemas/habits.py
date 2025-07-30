@@ -44,7 +44,6 @@ class HabitUpdateSchema(BaseModel):
 
 class HabitOutSchema(IdSchema, HabitInSchema):
     created: datetime.date
-    number_of_executions: int = 0
     completed: int
     total: int
     performance: int
@@ -60,5 +59,18 @@ class LittleInfoHabitOutSchema(IdSchema, HabitNameSchema):
 
 class PaginatedHabitsOutSchema(
     PaginatedSchema[LittleInfoHabitOutSchema],
+):
+    pass
+
+
+class TrackerInSchema(BaseModel):
+    reminder_date: datetime.date
+    reminder_hour: HourLimits
+    is_completed: bool
+
+
+class TrackerCreateSchema(
+    HabitIdSchema,
+    TrackerInSchema,
 ):
     pass

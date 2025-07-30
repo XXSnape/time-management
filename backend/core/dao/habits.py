@@ -1,8 +1,8 @@
+from pydantic import BaseModel
 from sqlalchemy import func, select
 from sqlalchemy.orm import load_only, selectinload
 
 from core.models import Habit, Tracker
-from core.schemas.common import IdSchema
 
 from .base import BaseDAO
 
@@ -10,7 +10,7 @@ from .base import BaseDAO
 class HabitsDAO(BaseDAO[Habit]):
     model = Habit
 
-    async def get_habit_with_all_data(self, id_schema: IdSchema):
+    async def get_habit_with_all_data(self, filter: BaseModel):
         query = (
             select(self.model)
             .options(
@@ -20,7 +20,7 @@ class HabitsDAO(BaseDAO[Habit]):
                     Tracker.is_completed
                 ),
             )
-            .filter_by(**id_schema.model_dump())
+            .filter_by(**filter.model_dump())
         )
         result = await self._session.execute(query)
         return result.scalar_one_or_none()
