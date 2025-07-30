@@ -1,4 +1,5 @@
 from core.models import Tracker
+
 from .base import BaseDAO
 
 

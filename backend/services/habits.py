@@ -6,26 +6,11 @@ from core.dao.habits import HabitsDAO
 from core.dao.schedules import SchedulesDAO
 from core.dao.timers import TimersDAO
 from core.dao.trackers import TrackersDAO
+from core.schemas import habits as habits_schemas
 from core.schemas.common import (
+    BaseStatisticSchema,
     DateOfCompletionSchema,
     IdSchema,
-    BaseStatisticSchema,
-)
-from core.schemas.habits import (
-    HabitCreateSchema,
-    HabitIdSchema,
-    HabitInSchema,
-    HabitOutSchema,
-    HabitUpdateSchema,
-    LittleInfoHabitOutSchema,
-    PaginatedHabitsOutSchema,
-    ScheduleSchema,
-    TimerSchema,
-    TrackerInSchema,
-    TrackerCreateSchema,
-    HabitsWithUserSchema,
-    HabitWithUserSchema,
-    HabitStatisticsSchema,
 )
 from core.schemas.result import ResultSchema
 from core.utils.enums import Weekday
@@ -41,14 +26,16 @@ async def create_schedulers_and_timers(
     habit_id: int,
     days: set[Weekday] | None,
     hours: set[int] | None,
-):
-    habit_id_schema = HabitIdSchema(habit_id=habit_id)
+) -> None:
+    habit_id_schema = habits_schemas.HabitIdSchema(habit_id=habit_id)
     if days:
         schedule_dao = SchedulesDAO(session=session)
         await schedule_dao.delete(habit_id_schema)
         await schedule_dao.add_many(
             [
-                ScheduleSchema(day=day, habit_id=habit_id)
+                habits_schemas.ScheduleSchema(
+                    day=day, habit_id=habit_id
+                )
                 for day in days
             ]
         )
@@ -57,7 +44,7 @@ async def create_schedulers_and_timers(
         await timers_dao.delete(habit_id_schema)
         await timers_dao.add_many(
             [
-                TimerSchema(
+                habits_schemas.TimerSchema(
                     notification_hour=hour, habit_id=habit_id
                 )
                 for hour in hours
@@ -66,13 +53,15 @@ async def create_schedulers_and_timers(
 
 
 async def create_habit(
-    habit_in: HabitInSchema,
+    habit_in: habits_schemas.HabitInSchema,
     user_id: int,
     session: AsyncSession,
-) -> HabitOutSchema:
+) -> habits_schemas.HabitOutSchema:
     dao = HabitsDAO(session=session)
     habit = await dao.add(
-        HabitCreateSchema(**habit_in.model_dump(), user_id=user_id),
+        habits_schemas.HabitCreateSchema(
+            **habit_in.model_dump(), user_id=user_id
+        ),
     )
     await create_schedulers_and_timers(
         session=session,
@@ -83,7 +72,7 @@ async def create_habit(
     created_habit = await dao.get_habit_with_all_data(
         IdSchema(id=habit.id)
     )
-    return HabitOutSchema.model_validate(
+    return habits_schemas.HabitOutSchema.model_validate(
         created_habit,
         from_attributes=True,
     )
@@ -93,8 +82,8 @@ async def update_habit(
     session: AsyncSession,
     habit_id: int,
     user_id: int,
-    updated_habit_in: HabitUpdateSchema,
-):
+    updated_habit_in: habits_schemas.HabitUpdateSchema,
+) -> habits_schemas.HabitOutSchema:
     dao = HabitsDAO(session=session)
     habit = await dao.find_one_or_none(
         DateOfCompletionSchema(
@@ -118,7 +107,7 @@ async def update_habit(
     updated_habit = await dao.get_habit_with_all_data(
         IdSchema(id=habit_id)
     )
-    return HabitOutSchema.model_validate(
+    return habits_schemas.HabitOutSchema.model_validate(
         updated_habit,
         from_attributes=True,
     )
@@ -129,15 +118,15 @@ async def get_active_user_habits(
     user_id: int,
     page: int,
     per_page: int,
-) -> PaginatedHabitsOutSchema:
+) -> habits_schemas.PaginatedHabitsOutSchema:
     habits, total_count = await HabitsDAO(
         session=session
     ).get_active_user_habits(
         user_id=user_id, page=page, per_page=per_page
     )
-    return PaginatedHabitsOutSchema(
+    return habits_schemas.PaginatedHabitsOutSchema(
         items=[
-            LittleInfoHabitOutSchema.model_validate(
+            habits_schemas.LittleInfoHabitOutSchema.model_validate(
                 habit,
                 from_attributes=True,
             )
@@ -153,13 +142,13 @@ async def get_habit_by_id(
     session: AsyncSession,
     user_id: int,
     habit_id: int,
-) -> HabitOutSchema:
+) -> habits_schemas.HabitOutSchema:
     habit = await HabitsDAO(session=session).get_habit_with_all_data(
         DateOfCompletionSchema(user_id=user_id, id=habit_id)
     )
     if not habit:
         raise exc
-    return HabitOutSchema.model_validate(
+    return habits_schemas.HabitOutSchema.model_validate(
         habit,
         from_attributes=True,
     )
@@ -167,7 +156,7 @@ async def get_habit_by_id(
 
 async def mark_habit(
     session: AsyncSession,
-    tracker_in: TrackerInSchema,
+    tracker_in: habits_schemas.TrackerInSchema,
     user_id: int,
     habit_id: int,
 ) -> ResultSchema:
@@ -178,7 +167,7 @@ async def mark_habit(
         raise exc
     try:
         await TrackersDAO(session=session).add(
-            TrackerCreateSchema(
+            habits_schemas.TrackerCreateSchema(
                 **tracker_in.model_dump(), habit_id=habit_id
             )
         )
@@ -194,13 +183,13 @@ async def get_habits_on_schedule(
     session: AsyncSession,
     day: Weekday,
     hour: int,
-):
+) -> habits_schemas.HabitsWithUserSchema:
     habits = await HabitsDAO(session=session).get_habits_on_schedule(
         day=day, hour=hour
     )
-    return HabitsWithUserSchema(
+    return habits_schemas.HabitsWithUserSchema(
         items=[
-            HabitWithUserSchema.model_validate(
+            habits_schemas.HabitWithUserSchema.model_validate(
                 habit, from_attributes=True
             )
             for habit in habits
@@ -211,11 +200,11 @@ async def get_habits_on_schedule(
 async def get_habit_statistics(
     session: AsyncSession,
     user_id: int,
-) -> HabitStatisticsSchema:
+) -> habits_schemas.HabitStatisticsSchema:
     stats = await HabitsDAO(session=session).get_statistics(
         user_id=user_id
     )
-    return HabitStatisticsSchema(
+    return habits_schemas.HabitStatisticsSchema(
         items=[
             BaseStatisticSchema.model_validate(
                 stat, from_attributes=True

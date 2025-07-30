@@ -4,9 +4,9 @@ from typing import Annotated
 from pydantic import BaseModel, Field
 
 from core.schemas.common import (
+    BaseStatisticSchema,
     IdSchema,
     PaginatedSchema,
-    BaseStatisticSchema,
 )
 from core.schemas.users import UserTelegramIdSchema
 from core.utils.enums import Weekday

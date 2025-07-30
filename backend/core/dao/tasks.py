@@ -1,20 +1,7 @@
 import datetime
-from datetime import timedelta
 from typing import Sequence
 
-from sqlalchemy import (
-    Integer,
-    Row,
-    and_,
-    case,
-    cast,
-    func,
-    literal,
-    or_,
-    select,
-    text,
-    union_all,
-)
+import sqlalchemy
 from sqlalchemy.dialects.postgresql import INTERVAL
 from sqlalchemy.orm import joinedload, load_only
 
@@ -38,12 +25,14 @@ class TasksDao(BaseDAO[Task]):
             self.model.deadline_datetime > now,
             self.model.date_of_completion.is_(None),
         )
-        count_query = select(func.count()).where(*filters)
+        count_query = sqlalchemy.select(
+            sqlalchemy.func.count()
+        ).where(*filters)
         count_result = (
             await self._session.execute(count_query)
         ).scalar_one()
         query = (
-            select(self.model)
+            sqlalchemy.select(self.model)
             .options(
                 load_only(
                     self.model.id,
@@ -63,12 +52,13 @@ class TasksDao(BaseDAO[Task]):
     async def get_active_tasks_by_hour(
         self,
     ):
-        current_utc_hour = func.date_trunc(
-            "hour", func.timezone("UTC", func.now())
+        current_utc_hour = sqlalchemy.func.date_trunc(
+            "hour",
+            sqlalchemy.func.timezone("UTC", sqlalchemy.func.now()),
         )
 
         query = (
-            select(self.model)
+            sqlalchemy.select(self.model)
             .options(
                 load_only(
                     self.model.name,
@@ -82,16 +72,21 @@ class TasksDao(BaseDAO[Task]):
             .where(
                 self.model.date_of_completion.is_(None),
                 User.is_active.is_(True),
-                or_(
-                    func.date_trunc("hour", Task.deadline_datetime)
+                sqlalchemy.or_(
+                    sqlalchemy.func.date_trunc(
+                        "hour", Task.deadline_datetime
+                    )
                     == current_utc_hour,
-                    func.date_trunc("hour", Task.deadline_datetime)
+                    sqlalchemy.func.date_trunc(
+                        "hour", Task.deadline_datetime
+                    )
                     == (
                         current_utc_hour
                         + (
                             Task.hour_before_reminder
-                            * cast(
-                                text("INTERVAL '1 hour'"), INTERVAL
+                            * sqlalchemy.cast(
+                                sqlalchemy.text("INTERVAL '1 hour'"),
+                                INTERVAL,
                             )
                         )
                     ),
@@ -104,10 +99,10 @@ class TasksDao(BaseDAO[Task]):
 
     async def get_statistics(
         self, user_id: int
-    ) -> Sequence[Row[tuple[int, int, int, int, str]]]:
+    ) -> Sequence[sqlalchemy.Row[tuple[int, int, int, int, str]]]:
         now = datetime.datetime.now(datetime.UTC)
-        completed_query = func.count(
-            case(
+        completed_query = sqlalchemy.func.count(
+            sqlalchemy.case(
                 (
                     self.model.date_of_completion.is_not(None),
                     1,
@@ -115,10 +110,10 @@ class TasksDao(BaseDAO[Task]):
                 else_=None,
             )
         ).label("completed")
-        not_completed_query = func.count(
-            case(
+        not_completed_query = sqlalchemy.func.count(
+            sqlalchemy.case(
                 (
-                    and_(
+                    sqlalchemy.and_(
                         self.model.date_of_completion.is_(None),
                         self.model.deadline_datetime < now,
                     ),
@@ -127,23 +122,24 @@ class TasksDao(BaseDAO[Task]):
                 else_=None,
             ),
         ).label("not_completed")
-        total_query = func.count().label("total")
-        performance = case(
+        total_query = sqlalchemy.func.count().label("total")
+        performance = sqlalchemy.case(
             (total_query == 0, 0),
-            else_=func.cast(
-                completed_query / total_query * 100, Integer
+            else_=sqlalchemy.func.cast(
+                completed_query / total_query * 100,
+                sqlalchemy.Integer,
             ),
         ).label("performance")
 
         queries = []
         for td, period in self.periods:
             query = (
-                select(
+                sqlalchemy.select(
                     completed_query,
                     not_completed_query,
                     total_query,
                     performance,
-                    literal(period).label("period"),
+                    sqlalchemy.literal(period).label("period"),
                 )
                 .select_from(self.model)
                 .where(self.model.user_id == user_id)
@@ -153,7 +149,7 @@ class TasksDao(BaseDAO[Task]):
                     self.model.deadline_datetime >= now - td
                 )
             queries.append(query)
-        u = union_all(*queries)
+        u = sqlalchemy.union_all(*queries)
 
         result = await self._session.execute(u)
         return result.all()

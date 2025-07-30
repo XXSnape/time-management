@@ -3,26 +3,18 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.dao.users import UsersDao
+from core.schemas import users as users_schemas
 from core.schemas.result import ResultSchema
-from core.schemas.users import (
-    CredentialsSchema,
-    TokenSchema,
-    UserCreateSchema,
-    UserInSchema,
-    UserSchema,
-    UserActivitySchema,
-    UserTelegramIdSchema,
-)
 
 from .auth import get_access_token, hash_password, validate_password
 
 
 async def create_user(
     session: AsyncSession,
-    user_in: UserCreateSchema,
-) -> TokenSchema:
+    user_in: users_schemas.UserCreateSchema,
+) -> users_schemas.TokenSchema:
 
-    credentials = CredentialsSchema(
+    credentials = users_schemas.CredentialsSchema(
         username=user_in.username,
         password=hash_password(user_in.password),
         telegram_id=user_in.telegram_id,
@@ -35,21 +27,21 @@ async def create_user(
             status_code=status.HTTP_409_CONFLICT,
             detail="Пользователь уже существует",
         )
-    return TokenSchema(
+    return users_schemas.TokenSchema(
         access_token=get_access_token(user_id=user.id)
     )
 
 
 async def create_new_access_token(
     session: AsyncSession,
-    user_in: UserInSchema,
-) -> TokenSchema:
+    user_in: users_schemas.UserInSchema,
+) -> users_schemas.TokenSchema:
     unauthed_exc = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Неверный логин или пароль",
     )
     user = await UsersDao(session=session).find_one_or_none(
-        UserSchema(username=user_in.username)
+        users_schemas.UserSchema(username=user_in.username)
     )
     if not user:
         raise unauthed_exc
@@ -58,7 +50,7 @@ async def create_new_access_token(
         hashed_password=user.password,
     ):
         raise unauthed_exc
-    return TokenSchema(
+    return users_schemas.TokenSchema(
         access_token=get_access_token(user_id=user.id),
     )
 
@@ -71,7 +63,7 @@ async def verify_existence_user(
     Проверяет, существует ли пользователь в базе
     """
     user = await UsersDao(session=session).find_one_or_none(
-        UserSchema(username=username)
+        users_schemas.UserSchema(username=username)
     )
     return ResultSchema(result=bool(user))
 
@@ -79,10 +71,12 @@ async def verify_existence_user(
 async def make_user_inactive_or_active(
     telegram_id: int,
     session: AsyncSession,
-    user_activity: UserActivitySchema,
+    user_activity: users_schemas.UserActivitySchema,
 ) -> ResultSchema:
     result = await UsersDao(session=session).update(
-        filters=UserTelegramIdSchema(telegram_id=telegram_id),
+        filters=users_schemas.UserTelegramIdSchema(
+            telegram_id=telegram_id
+        ),
         values=user_activity,
     )
     if result == 0:

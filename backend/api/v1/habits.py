@@ -9,15 +9,7 @@ from core.dependencies.db import (
     SessionWithCommit,
     SessionWithoutCommit,
 )
-from core.schemas.habits import (
-    HabitInSchema,
-    HabitOutSchema,
-    HabitUpdateSchema,
-    TrackerInSchema,
-    PaginatedHabitsOutSchema,
-    HabitsWithUserSchema,
-    HabitStatisticsSchema,
-)
+from core.schemas import habits as habits_schemas
 from core.schemas.result import ResultSchema
 from core.utils.enums import Weekday
 from services import habits
@@ -31,11 +23,11 @@ router = APIRouter(tags=["Привычки"])
 
 @router.post(
     "",
-    response_model=HabitOutSchema,
+    response_model=habits_schemas.HabitOutSchema,
     status_code=status.HTTP_201_CREATED,
 )
 async def create_habit(
-    habit_in: HabitInSchema,
+    habit_in: habits_schemas.HabitInSchema,
     user_id: UserId,
     session: SessionWithCommit,
 ):
@@ -44,7 +36,9 @@ async def create_habit(
     )
 
 
-@router.get("/schedules", response_model=HabitsWithUserSchema)
+@router.get(
+    "/schedules", response_model=habits_schemas.HabitsWithUserSchema
+)
 async def get_habits_on_schedule(
     day: Weekday,
     hour: Annotated[int, Query(ge=0, le=23)],
@@ -55,7 +49,10 @@ async def get_habits_on_schedule(
     )
 
 
-@router.get("/statistics", response_model=HabitStatisticsSchema)
+@router.get(
+    "/statistics",
+    response_model=habits_schemas.HabitStatisticsSchema,
+)
 async def get_statistics(
     session: SessionWithoutCommit, user_id: UserId
 ):
@@ -65,7 +62,9 @@ async def get_statistics(
     )
 
 
-@router.get("", response_model=PaginatedHabitsOutSchema)
+@router.get(
+    "", response_model=habits_schemas.PaginatedHabitsOutSchema
+)
 async def get_active_user_habits(
     user_id: UserId,
     session: SessionWithoutCommit,
@@ -96,10 +95,10 @@ async def get_active_user_habits(
 
 @router.patch(
     "/{habit_id}",
-    response_model=HabitOutSchema,
+    response_model=habits_schemas.HabitOutSchema,
 )
 async def update_habit(
-    updated_habit_in: HabitUpdateSchema,
+    updated_habit_in: habits_schemas.HabitUpdateSchema,
     habit_id: int,
     user_id: UserId,
     session: SessionWithCommit,
@@ -138,7 +137,7 @@ async def delete_habit(
 async def mark_habit(
     habit_id: int,
     user_id: UserId,
-    tracker_in: TrackerInSchema,
+    tracker_in: habits_schemas.TrackerInSchema,
     session: SessionWithCommit,
 ):
     return await habits.mark_habit(
@@ -149,7 +148,10 @@ async def mark_habit(
     )
 
 
-@router.get("/{habit_id}", response_model=HabitOutSchema)
+@router.get(
+    "/{habit_id}",
+    response_model=habits_schemas.HabitOutSchema,
+)
 async def get_habit_by_id(
     habit_id: int,
     user_id: UserId,

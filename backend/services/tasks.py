@@ -4,20 +4,8 @@ from fastapi import HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.dao.tasks import TasksDao
+from core.schemas import tasks as tasks_schemas
 from core.schemas.common import DateOfCompletionSchema, IdSchema
-from core.schemas.result import ResultSchema
-from core.schemas.tasks import (
-    LittleInfoTaskOutSchema,
-    PaginatedTasksOutSchema,
-    StatisticSchema,
-    TaskCreateSchema,
-    TaskInSchema,
-    TaskOutSchema,
-    TasksStatisticSchema,
-    TasksWithUserSchema,
-    TaskUpdateSchema,
-    TaskWithUserSchema,
-)
 
 exc = HTTPException(
     status_code=status.HTTP_404_NOT_FOUND,
@@ -28,8 +16,8 @@ exc = HTTPException(
 async def create_task(
     session: AsyncSession,
     user_id: int,
-    task_in: TaskInSchema,
-) -> TaskOutSchema:
+    task_in: tasks_schemas.TaskInSchema,
+) -> tasks_schemas.TaskOutSchema:
 
     now = datetime.datetime.now(datetime.UTC)
     if now >= task_in.deadline_datetime:
@@ -39,12 +27,14 @@ async def create_task(
         )
 
     task = await TasksDao(session=session).add(
-        TaskCreateSchema(
+        tasks_schemas.TaskCreateSchema(
             **task_in.model_dump(),
             user_id=user_id,
         )
     )
-    return TaskOutSchema.model_validate(task, from_attributes=True)
+    return tasks_schemas.TaskOutSchema.model_validate(
+        task, from_attributes=True
+    )
 
 
 async def get_active_user_tasks(
@@ -52,15 +42,15 @@ async def get_active_user_tasks(
     user_id: int,
     page: int,
     per_page: int,
-):
+) -> tasks_schemas.PaginatedTasksOutSchema:
     tasks, total_count = await TasksDao(
         session=session
     ).get_active_user_tasks(
         user_id=user_id, page=page, per_page=per_page
     )
-    return PaginatedTasksOutSchema(
+    return tasks_schemas.PaginatedTasksOutSchema(
         items=[
-            LittleInfoTaskOutSchema.model_validate(
+            tasks_schemas.LittleInfoTaskOutSchema.model_validate(
                 task, from_attributes=True
             )
             for task in tasks
@@ -73,13 +63,13 @@ async def get_active_user_tasks(
 
 async def get_all_active_tasks_by_hour(
     session: AsyncSession,
-):
+) -> tasks_schemas.TasksWithUserSchema:
     tasks = await TasksDao(
         session=session
     ).get_active_tasks_by_hour()
-    return TasksWithUserSchema(
+    return tasks_schemas.TasksWithUserSchema(
         items=[
-            TaskWithUserSchema.model_validate(
+            tasks_schemas.TaskWithUserSchema.model_validate(
                 task, from_attributes=True
             )
             for task in tasks
@@ -91,7 +81,7 @@ async def get_task_by_id(
     session: AsyncSession,
     user_id: int,
     task_id: int,
-) -> TaskOutSchema:
+) -> tasks_schemas.TaskOutSchema:
     task = await TasksDao(session=session).find_one_or_none(
         DateOfCompletionSchema(
             id=task_id,
@@ -100,15 +90,17 @@ async def get_task_by_id(
     )
     if not task:
         raise exc
-    return TaskOutSchema.model_validate(task, from_attributes=True)
+    return tasks_schemas.TaskOutSchema.model_validate(
+        task, from_attributes=True
+    )
 
 
 async def update_task(
     session: AsyncSession,
     user_id: int,
     task_id: int,
-    updated_task_in: TaskUpdateSchema,
-) -> TaskOutSchema:
+    updated_task_in: tasks_schemas.TaskUpdateSchema,
+) -> tasks_schemas.TaskOutSchema:
     dao = TasksDao(session=session)
     task = await dao.find_one_or_none(
         DateOfCompletionSchema(
@@ -122,19 +114,21 @@ async def update_task(
     await dao.update(
         filters=IdSchema(id=task_id), values=updated_task_in
     )
-    return TaskOutSchema.model_validate(task, from_attributes=True)
+    return tasks_schemas.TaskOutSchema.model_validate(
+        task, from_attributes=True
+    )
 
 
 async def get_tasks_statistics(
     session: AsyncSession,
     user_id: int,
-) -> TasksStatisticSchema:
+) -> tasks_schemas.TasksStatisticSchema:
     stats = await TasksDao(session=session).get_statistics(
         user_id=user_id
     )
-    return TasksStatisticSchema(
+    return tasks_schemas.TasksStatisticSchema(
         items=[
-            StatisticSchema.model_validate(
+            tasks_schemas.StatisticSchema.model_validate(
                 stat, from_attributes=True
             )
             for stat in stats

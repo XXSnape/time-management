@@ -9,9 +9,9 @@ from core.dependencies.db import (
 from core.schemas.result import ResultSchema
 from core.schemas.users import (
     TokenSchema,
+    UserActivitySchema,
     UserCreateSchema,
     UserInSchema,
-    UserActivitySchema,
 )
 from services import users
 

@@ -9,11 +9,7 @@ from core.dependencies.db import (
     SessionWithCommit,
     SessionWithoutCommit,
 )
-from core.schemas.tasks import (
-    TaskInSchema,
-    TaskOutSchema,
-    TaskUpdateSchema,
-)
+from core.schemas import tasks as tasks_schemas
 from services import tasks
 from services.common import delete_entity
 
@@ -25,11 +21,11 @@ router = APIRouter(tags=["Задачи"])
 
 @router.post(
     "",
-    response_model=TaskOutSchema,
+    response_model=tasks_schemas.TaskOutSchema,
     status_code=status.HTTP_201_CREATED,
 )
 async def create_task(
-    task_in: TaskInSchema,
+    task_in: tasks_schemas.TaskInSchema,
     user_id: UserId,
     session: SessionWithCommit,
 ):
@@ -40,7 +36,10 @@ async def create_task(
     )
 
 
-@router.get("")
+@router.get(
+    "",
+    response_model=tasks_schemas.PaginatedTasksOutSchema,
+)
 async def get_active_user_tasks(
     user_id: UserId,
     session: SessionWithoutCommit,
@@ -69,7 +68,10 @@ async def get_active_user_tasks(
     )
 
 
-@router.get("/schedules")
+@router.get(
+    "/schedules",
+    response_model=tasks_schemas.TasksWithUserSchema,
+)
 async def get_all_tasks_by_hour(
     session: SessionWithoutCommit,
 ):
@@ -78,7 +80,10 @@ async def get_all_tasks_by_hour(
     )
 
 
-@router.get("/statistics")
+@router.get(
+    "/statistics",
+    response_model=tasks_schemas.TasksStatisticSchema,
+)
 async def get_statistics(
     session: SessionWithoutCommit, user_id: UserId
 ):
@@ -88,7 +93,10 @@ async def get_statistics(
     )
 
 
-@router.get("/{task_id}", response_model=TaskOutSchema)
+@router.get(
+    "/{task_id}",
+    response_model=tasks_schemas.TaskOutSchema,
+)
 async def get_task_by_id(
     task_id: int,
     user_id: UserId,
@@ -101,9 +109,12 @@ async def get_task_by_id(
     )
 
 
-@router.patch("/{task_id}", response_model=TaskOutSchema)
+@router.patch(
+    "/{task_id}",
+    response_model=tasks_schemas.TaskOutSchema,
+)
 async def update_task(
-    updated_task_in: TaskUpdateSchema,
+    updated_task_in: tasks_schemas.TaskUpdateSchema,
     task_id: int,
     user_id: UserId,
     session: SessionWithCommit,
