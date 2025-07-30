@@ -35,11 +35,6 @@ class TaskCreateSchema(TaskInSchema):
     user_id: int
 
 
-class TaskSchema(IdSchema):
-    user_id: int
-    date_of_completion: None = None
-
-
 class TaskUpdateSchema(TaskInSchema):
     name: str | None = None
     description: str | None = None

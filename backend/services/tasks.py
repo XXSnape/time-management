@@ -4,7 +4,7 @@ from fastapi import HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.dao.tasks import TasksDao
-from core.schemas.common import IdSchema
+from core.schemas.common import IdSchema, DateOfCompletionSchema
 from core.schemas.result import ResultSchema
 from core.schemas.tasks import (
     LittleInfoTaskOutSchema,
@@ -13,7 +13,6 @@ from core.schemas.tasks import (
     TaskCreateSchema,
     TaskInSchema,
     TaskOutSchema,
-    TaskSchema,
     TasksStatisticSchema,
     TasksWithUserSchema,
     TaskUpdateSchema,
@@ -86,7 +85,7 @@ async def get_task_by_id(
     task_id: int,
 ) -> TaskOutSchema:
     task = await TasksDao(session=session).find_one_or_none(
-        TaskSchema(
+        DateOfCompletionSchema(
             id=task_id,
             user_id=user_id,
         )
@@ -104,7 +103,7 @@ async def update_task(
 ) -> TaskOutSchema:
     dao = TasksDao(session=session)
     task = await dao.find_one_or_none(
-        TaskSchema(
+        DateOfCompletionSchema(
             id=task_id,
             user_id=user_id,
         )
@@ -122,7 +121,7 @@ async def delete_task(
     task_id: int,
 ):
     result = await TasksDao(session=session).delete(
-        TaskSchema(
+        DateOfCompletionSchema(
             id=task_id,
             user_id=user_id,
             date_of_completion=None,

@@ -32,6 +32,14 @@ class HabitInSchema(HabitSchema):
     hours: set[HourLimits]
 
 
+class HabitUpdateSchema(BaseModel):
+    name: str | None = None
+    purpose: str | None = None
+    days: set[Weekday] | None = None
+    hours: set[HourLimits] | None = None
+    date_of_completion: datetime.date | None = None
+
+
 class HabitOutSchema(IdSchema, HabitInSchema):
     created: datetime.date
     number_of_executions: int = 0

@@ -75,9 +75,12 @@ class BaseDAO[M: Base]:
         self,
         filters: BaseModel,
         values: BaseModel,
+        exclude: set[str] | None = None,
     ) -> int:
         filter_dict = filters.model_dump(exclude_unset=True)
-        values_dict = values.model_dump(exclude_unset=True)
+        values_dict = values.model_dump(exclude_unset=True, exclude=exclude)
+        if not values_dict:
+            return 0
         logger.info(
             "Обновление записей %s по фильтру: %s с параметрами: %s",
             self.model.__name__,

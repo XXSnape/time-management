@@ -4,7 +4,7 @@ from fastapi import APIRouter, status
 
 from core.dependencies.auth import UserId
 from core.dependencies.db import SessionWithCommit
-from core.schemas.habits import HabitOutSchema, HabitInSchema
+from core.schemas.habits import HabitOutSchema, HabitInSchema, HabitUpdateSchema
 from services import habits
 
 
@@ -27,4 +27,21 @@ async def create_habit(
     return await habits.create_habit(
         habit_in=habit_in, user_id=user_id, session=session
     )
-    # pass
+
+
+@router.patch(
+    "/{habit_id}",
+    response_model=HabitOutSchema,
+)
+async def update_habit(
+    updated_habit_in: HabitUpdateSchema,
+    habit_id: int,
+    user_id: UserId,
+    session: SessionWithCommit,
+):
+    return await habits.update_habit(
+        session=session,
+        habit_id=habit_id,
+        user_id=user_id,
+        updated_habit_in=updated_habit_in,
+    )

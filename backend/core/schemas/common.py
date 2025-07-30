@@ -17,3 +17,8 @@ class PaginatedSchema[S: BaseModel](BaseModel):
     @property
     def pages(self) -> int:
         return (self.total_count + self.per_page - 1) // self.per_page
+
+
+class DateOfCompletionSchema(IdSchema):
+    user_id: int
+    date_of_completion: None = None

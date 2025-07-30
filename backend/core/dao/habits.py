@@ -3,7 +3,7 @@ from sqlalchemy.orm import selectinload
 
 from .base import BaseDAO
 from core.models import Habit, Tracker
-from ..schemas.common import IdSchema
+from core.schemas.common import IdSchema
 
 
 class HabitsDAO(BaseDAO[Habit]):
