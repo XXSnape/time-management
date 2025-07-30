@@ -1,0 +1,21 @@
+[tool.poetry]
+package-mode = false
+
+[tool.poetry.dependencies]
+python = "^3.12"
+aiogram = "^3.21.0"
+aiogram-dialog = "^2.4.0"
+sqlalchemy = {extras = ["asyncio"], version = "^2.0.42"}
+aiosqlite = "^0.21.0"
+alembic = "^1.16.4"
+pydantic-settings = "^2.10.1"
+httpx = "^0.28.1"
+apscheduler = "^3.11.0"
+
+[tool.poetry.group.lint.dependencies]
+black = "^25.1.0"
+isort = "^6.0.1"
+flake8 = "^7.3.0"
+
+[tool.black]
+line-length = 69
