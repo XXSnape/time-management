@@ -1,12 +1,10 @@
 import datetime
-from collections.abc import Sequence
 from datetime import timedelta
-from typing import Any, Coroutine, Sequence
+from typing import Sequence
 
 from sqlalchemy import (
     Integer,
     Row,
-    String,
     and_,
     case,
     cast,
@@ -138,15 +136,7 @@ class TasksDao(BaseDAO[Task]):
         ).label("performance")
 
         queries = []
-        for td, period in (
-            (timedelta(weeks=1), "1 Week"),
-            (timedelta(weeks=4), "1 Month"),
-            (timedelta(weeks=12), "3 Months"),
-            (timedelta(weeks=26), "6 Months"),
-            (timedelta(weeks=39), "9 Months"),
-            (timedelta(weeks=52), "1 Year"),
-            (None, "Аll time"),
-        ):
+        for td, period in self.periods:
             query = (
                 select(
                     completed_query,

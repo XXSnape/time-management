@@ -1,4 +1,5 @@
 import logging
+from datetime import timedelta
 
 from pydantic import BaseModel
 from sqlalchemy import delete, select, update
@@ -6,6 +7,7 @@ from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.models import Base
+from core.utils.enums import Periods
 
 logger = logging.getLogger(__name__)
 
@@ -16,6 +18,15 @@ class BaseDAO[M: Base]:
     """
 
     model: type[M] | None = None
+    periods: tuple[tuple[timedelta, Periods], ...] = (
+        (timedelta(weeks=1), "1 Week"),
+        (timedelta(weeks=4), "1 Month"),
+        (timedelta(weeks=12), "3 Months"),
+        (timedelta(weeks=26), "6 Months"),
+        (timedelta(weeks=39), "9 Months"),
+        (timedelta(weeks=52), "1 Year"),
+        (None, "Аll time"),
+    )
 
     def __init__(self, session: AsyncSession):
         """

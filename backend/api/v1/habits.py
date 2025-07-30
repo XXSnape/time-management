@@ -16,6 +16,7 @@ from core.schemas.habits import (
     TrackerInSchema,
     PaginatedHabitsOutSchema,
     HabitsWithUserSchema,
+    HabitStatisticsSchema,
 )
 from core.schemas.result import ResultSchema
 from core.utils.enums import Weekday
@@ -40,6 +41,56 @@ async def create_habit(
 ):
     return await habits.create_habit(
         habit_in=habit_in, user_id=user_id, session=session
+    )
+
+
+@router.get("/schedules", response_model=HabitsWithUserSchema)
+async def get_habits_on_schedule(
+    day: Weekday,
+    hour: Annotated[int, Query(ge=0, le=23)],
+    session: SessionWithoutCommit,
+):
+    return await habits.get_habits_on_schedule(
+        session=session, day=day, hour=hour
+    )
+
+
+@router.get("/statistics", response_model=HabitStatisticsSchema)
+async def get_statistics(
+    session: SessionWithoutCommit, user_id: UserId
+):
+    return await habits.get_habit_statistics(
+        session=session,
+        user_id=user_id,
+    )
+
+
+@router.get("", response_model=PaginatedHabitsOutSchema)
+async def get_active_user_habits(
+    user_id: UserId,
+    session: SessionWithoutCommit,
+    page: Annotated[
+        int,
+        Query(
+            ge=1,
+            le=1_000_000,
+            description="Страница для пагинации (начиная с 1)",
+        ),
+    ] = 1,
+    per_page: Annotated[
+        int,
+        Query(
+            ge=1,
+            le=100,
+            description="Количество записей на странице (макс. 100)",
+        ),
+    ] = 10,
+):
+    return await habits.get_active_user_habits(
+        session=session,
+        user_id=user_id,
+        page=page,
+        per_page=per_page,
     )
 
 
@@ -95,46 +146,6 @@ async def mark_habit(
         habit_id=habit_id,
         user_id=user_id,
         session=session,
-    )
-
-
-@router.get("/schedules", response_model=HabitsWithUserSchema)
-async def get_habits_on_schedule(
-    day: Weekday,
-    hour: Annotated[int, Query(ge=0, le=23)],
-    session: SessionWithoutCommit,
-):
-    return await habits.get_habits_on_schedule(
-        session=session, day=day, hour=hour
-    )
-
-
-@router.get("", response_model=PaginatedHabitsOutSchema)
-async def get_active_user_habits(
-    user_id: UserId,
-    session: SessionWithoutCommit,
-    page: Annotated[
-        int,
-        Query(
-            ge=1,
-            le=1_000_000,
-            description="Страница для пагинации (начиная с 1)",
-        ),
-    ] = 1,
-    per_page: Annotated[
-        int,
-        Query(
-            ge=1,
-            le=100,
-            description="Количество записей на странице (макс. 100)",
-        ),
-    ] = 10,
-):
-    return await habits.get_active_user_habits(
-        session=session,
-        user_id=user_id,
-        page=page,
-        per_page=per_page,
     )
 
 

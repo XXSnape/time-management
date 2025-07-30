@@ -3,7 +3,11 @@ from typing import Annotated
 
 from pydantic import BaseModel, Field
 
-from core.schemas.common import IdSchema, PaginatedSchema
+from core.schemas.common import (
+    IdSchema,
+    PaginatedSchema,
+    BaseStatisticSchema,
+)
 from core.schemas.users import UserTelegramIdSchema
 
 
@@ -59,12 +63,10 @@ class TasksWithUserSchema(BaseModel):
     items: list[TaskWithUserSchema]
 
 
-class StatisticSchema(BaseModel):
+class StatisticSchema(BaseStatisticSchema):
     completed: int
     not_completed: int
-    total: int
     performance: int
-    period: str
 
 
 class TasksStatisticSchema(BaseModel):

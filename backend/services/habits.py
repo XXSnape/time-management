@@ -6,7 +6,11 @@ from core.dao.habits import HabitsDAO
 from core.dao.schedules import SchedulesDAO
 from core.dao.timers import TimersDAO
 from core.dao.trackers import TrackersDAO
-from core.schemas.common import DateOfCompletionSchema, IdSchema
+from core.schemas.common import (
+    DateOfCompletionSchema,
+    IdSchema,
+    BaseStatisticSchema,
+)
 from core.schemas.habits import (
     HabitCreateSchema,
     HabitIdSchema,
@@ -21,6 +25,7 @@ from core.schemas.habits import (
     TrackerCreateSchema,
     HabitsWithUserSchema,
     HabitWithUserSchema,
+    HabitStatisticsSchema,
 )
 from core.schemas.result import ResultSchema
 from core.utils.enums import Weekday
@@ -199,5 +204,22 @@ async def get_habits_on_schedule(
                 habit, from_attributes=True
             )
             for habit in habits
+        ]
+    )
+
+
+async def get_habit_statistics(
+    session: AsyncSession,
+    user_id: int,
+) -> HabitStatisticsSchema:
+    stats = await HabitsDAO(session=session).get_statistics(
+        user_id=user_id
+    )
+    return HabitStatisticsSchema(
+        items=[
+            BaseStatisticSchema.model_validate(
+                stat, from_attributes=True
+            )
+            for stat in stats
         ]
     )

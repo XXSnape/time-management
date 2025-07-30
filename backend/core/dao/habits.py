@@ -1,13 +1,14 @@
 from collections.abc import Sequence
+import datetime
 
 from pydantic import BaseModel
-from sqlalchemy import func, select
+from sqlalchemy import func, select, literal, union_all
 from sqlalchemy.orm import load_only, selectinload, joinedload
 
 from core.models import Habit, Tracker, Schedule, Timer, User
 
 from .base import BaseDAO
-from ..utils.enums import Weekday
+from core.utils.enums import Weekday
 
 
 class HabitsDAO(BaseDAO[Habit]):
@@ -81,7 +82,30 @@ class HabitsDAO(BaseDAO[Habit]):
                 User.is_active.is_(True),
             )
         )
-
-        print("q", query)
         result = await self._session.execute(query)
         return result.scalars().all()
+
+    async def get_statistics(self, user_id: int):
+        now = datetime.datetime.now(datetime.UTC)
+        queries = []
+        for td, period in self.periods:
+            query = (
+                select(
+                    func.count().label("total"),
+                    literal(period).label("period"),
+                )
+                .select_from(self.model)
+                .where(
+                    self.model.user_id == user_id,
+                    self.model.date_of_completion.is_not(None),
+                )
+            )
+            if td:
+                query = query.where(
+                    self.model.date_of_completion >= now - td
+                )
+            queries.append(query)
+        u = union_all(*queries)
+
+        result = await self._session.execute(u)
+        return result.all()
