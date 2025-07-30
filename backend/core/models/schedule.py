@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING
 
-from sqlalchemy import ForeignKey
+from sqlalchemy import ForeignKey, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from .base import Base
@@ -11,6 +11,12 @@ if TYPE_CHECKING:
 
 
 class Schedule(Base):
+    __table_args__ = (
+        UniqueConstraint(
+            "day",
+            "habit_id",
+        ),
+    )
     day: Mapped[Weekday]
     habit_id: Mapped[int] = mapped_column(
         ForeignKey("habits.id", ondelete="CASCADE"),
