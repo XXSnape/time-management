@@ -91,7 +91,7 @@ async def get_task_by_id(
     )
 
 
-@router.put("/{task_id}", response_model=TaskOutSchema)
+@router.patch("/{task_id}", response_model=TaskOutSchema)
 async def update_task(
     updated_task_in: TaskUpdateSchema,
     task_id: int,
