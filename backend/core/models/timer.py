@@ -1,7 +1,12 @@
+from typing import TYPE_CHECKING
+
 from sqlalchemy import CheckConstraint, ForeignKey
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from .base import Base
+
+if TYPE_CHECKING:
+    from .habit import Habit
 
 
 class Timer(Base):
@@ -15,3 +20,4 @@ class Timer(Base):
     habit_id: Mapped[int] = mapped_column(
         ForeignKey("habits.id", ondelete="CASCADE"),
     )
+    habit: Mapped["Habit"] = relationship(back_populates="timers")
