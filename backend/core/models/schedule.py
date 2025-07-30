@@ -1,19 +1,8 @@
-from enum import StrEnum, auto
-
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column
 
 from .base import Base
-
-
-class Weekday(StrEnum):
-    MONDAY = auto()
-    TUESDAY = auto()
-    WEDNESDAY = auto()
-    THURSDAY = auto()
-    FRIDAY = auto()
-    SATURDAY = auto()
-    SUNDAY = auto()
+from core.utils.enums import Weekday
 
 
 class Schedule(Base):
