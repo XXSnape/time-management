@@ -2,11 +2,8 @@ from sqlalchemy import select
 from sqlalchemy.orm import selectinload
 
 from .base import BaseDAO
-from core.models import Habit
+from core.models import Habit, Tracker
 from ..schemas.common import IdSchema
-
-
-# from core.schemas.common import IdSchema
 
 
 class HabitsDAO(BaseDAO[Habit]):
@@ -18,6 +15,7 @@ class HabitsDAO(BaseDAO[Habit]):
             .options(
                 selectinload(self.model.timers),
                 selectinload(self.model.schedules),
+                selectinload(self.model.trackers).load_only(Tracker.is_completed),
             )
             .filter_by(**id_schema.model_dump())
         )

@@ -35,6 +35,9 @@ class HabitInSchema(HabitSchema):
 class HabitOutSchema(IdSchema, HabitInSchema):
     created: datetime.date
     number_of_executions: int = 0
+    completed: int
+    total: int
+    performance: int
 
 
 class HabitBaseInfo(IdSchema, HabitSchema):
