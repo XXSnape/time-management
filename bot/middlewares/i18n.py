@@ -21,5 +21,4 @@ class LocaleFromDatabaseMiddleware(I18nMiddleware):
             ).get_user_locale_by_telegram_id(
                 telegram_id=event_from_user.id
             )
-        else:
-            return Languages.ru
+        return Languages.ru
