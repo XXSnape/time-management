@@ -1,7 +1,7 @@
 from functools import partial
 
 from aiogram.types import CallbackQuery, Message
-from aiogram_dialog import DialogManager, StartMode
+from aiogram_dialog import DialogManager
 from aiogram.utils.i18n import gettext as _
 from aiogram_dialog.widgets.input import ManagedTextInput
 from aiogram_dialog.widgets.kbd import Button
@@ -51,21 +51,26 @@ async def correct_login(
     text: str,
     check_login: bool = True,
 ) -> None:
-    client: AsyncClient = dialog_manager.middleware_data["client"]
-    json = await make_request(
-        client=client, endpoint=f"users/{text}", method=Methods.get
-    )
-    if check_login and json["result"]:
-        await message.delete()
-        await message.answer(
-            _("Пользователь «{username}» уже существует!").format(
-                username=text
+    if check_login:
+        client: AsyncClient = dialog_manager.middleware_data[
+            "client"
+        ]
+        json = await make_request(
+            client=client,
+            endpoint=f"users/{text}",
+            method=Methods.get,
+        )
+        if json["result"]:
+            await message.delete()
+            await message.answer(
+                _(
+                    "Пользователь «{username}» уже существует!"
+                ).format(username=text)
             )
-        )
-        await dialog_manager.switch_to(
-            AuthState.login_or_registration
-        )
-        return
+            await dialog_manager.switch_to(
+                AuthState.login_or_registration
+            )
+            return
 
     dialog_manager.dialog_data.update(username=text)
     new_state = (
