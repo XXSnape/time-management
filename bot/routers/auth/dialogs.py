@@ -49,9 +49,7 @@ auth_dialog = Dialog(
         Format(text="{text}"),
         TextInput(
             id="password_input",
-            type_factory=handlers.is_short_login,
-            on_success=handlers.correct_login,
-            on_error=handlers.incorrect_login,
+            on_success=handlers.create_user,
         ),
         getter=getters.enter_password,
         state=AuthState.password,

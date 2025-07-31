@@ -3,11 +3,12 @@ from aiogram_dialog import DialogManager
 from aiogram.utils.i18n import gettext as _
 from aiogram_dialog.widgets.input import ManagedTextInput
 from aiogram_dialog.widgets.kbd import Button
-from httpx import AsyncClient, codes
+from httpx import AsyncClient
 
-from core.config import settings
 from core.enums import Methods
+from core.schemas.users import UserSchema
 from core.utils.request import make_request
+from database.dao.users import UsersDAO
 from .states import AuthState
 
 
@@ -60,3 +61,36 @@ async def correct_login(
 
     dialog_manager.dialog_data.update(username=text)
     await dialog_manager.switch_to(AuthState.password)
+
+
+async def create_user(
+    message: Message,
+    widget: ManagedTextInput,
+    dialog_manager: DialogManager,
+    text: str,
+):
+    client: AsyncClient = dialog_manager.middleware_data["client"]
+    json = await make_request(
+        client=client,
+        endpoint="users/sign-up",
+        method=Methods.post,
+        json={
+            "username": dialog_manager.dialog_data["username"],
+            "password": text,
+            "telegram_id": message.from_user.id,
+        },
+    )
+    session = dialog_manager.middleware_data["session_with_commit"]
+    await UsersDAO(session=session).add(
+        UserSchema(
+            telegram_id=message.from_user.id,
+            access_token=json["access_token"],
+        )
+    )
+    await message.answer(
+        _(
+            "Регистрация пользователя «{username}» успешно завершена!\n\n"
+            "Пожалуйста, удалите пароль из переписки и запомните его!"
+        ).format(username=dialog_manager.dialog_data["username"])
+    )
+    await dialog_manager.done()

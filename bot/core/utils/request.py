@@ -18,6 +18,7 @@ async def make_request(
     client: AsyncClient,
     endpoint: str,
     method: Methods,
+    json: dict | None = None,
     access_token: str | None = None,
     params: dict | None = None,
 ) -> dict | None:
@@ -31,6 +32,7 @@ async def make_request(
                 url=settings.api.get_url(endpoint),
                 params=params,
                 cookies=cookies,
+                json=json,
             )
         )
         if response.status_code in (
