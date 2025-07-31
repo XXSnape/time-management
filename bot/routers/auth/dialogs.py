@@ -1,7 +1,7 @@
 from aiogram.types import CallbackQuery
 from aiogram_dialog import Dialog, Window, DialogManager
 from aiogram_dialog.widgets.input import TextInput
-from aiogram_dialog.widgets.kbd import Button
+from aiogram_dialog.widgets.kbd import Button, SwitchTo
 from aiogram_dialog.widgets.text import Format
 
 from routers.auth.states import AuthState
@@ -21,23 +21,25 @@ async def click_process(
 auth_dialog = Dialog(
     Window(
         Format(text="{request_text}"),
-        Button(
-            text=Format("{enter_text}"),
-            id="enter",
-            on_click=click_process,
-        ),
-        Button(
+        SwitchTo(
             text=Format("{register_text}"),
             id="register",
-            on_click=handlers.enter_login_to_register,
+            state=AuthState.register_username,
+            when="is_not_logged_in",
         ),
-        getter=getters.login_or_register,
+        SwitchTo(
+            text=Format("{update_session_text}"),
+            id="update_session",
+            state=AuthState.login_username,
+            when="is_logged_in",
+        ),
+        getter=getters.auth,
         state=AuthState.login_or_registration,
     ),
     Window(
         Format(text="{text}"),
         TextInput(
-            id="username_input",
+            id="register_username_input",
             type_factory=handlers.is_short_login,
             on_success=handlers.correct_login,
             on_error=handlers.incorrect_login,
@@ -48,10 +50,28 @@ auth_dialog = Dialog(
     Window(
         Format(text="{text}"),
         TextInput(
-            id="password_input",
+            id="login_username_input",
+            on_success=handlers.unverified_login,
+        ),
+        getter=getters.enter_username,
+        state=AuthState.login_username,
+    ),
+    Window(
+        Format(text="{text}"),
+        TextInput(
+            id="register_password_input",
             on_success=handlers.create_user,
         ),
         getter=getters.enter_password,
-        state=AuthState.password,
+        state=AuthState.register_password,
+    ),
+    Window(
+        Format(text="{text}"),
+        TextInput(
+            id="login_password_input",
+            on_success=handlers.login_user,
+        ),
+        getter=getters.enter_password,
+        state=AuthState.login_password,
     ),
 )

@@ -1,7 +1,7 @@
 import logging
 
 from pydantic import BaseModel
-from sqlalchemy import select
+from sqlalchemy import select, update
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -73,4 +73,43 @@ class BaseDAO[M: Base]:
                 filter_dict,
                 e,
             )
+            raise
+
+    async def update(
+        self,
+        filters: BaseModel,
+        values: BaseModel,
+        exclude: set[str] | None = None,
+    ) -> int:
+        filter_dict = filters.model_dump(exclude_unset=True)
+        values_dict = values.model_dump(
+            exclude_unset=True, exclude=exclude
+        )
+        if not values_dict:
+            return 0
+        logger.info(
+            "Обновление записей %s по фильтру: %s с параметрами: %s",
+            self.model.__name__,
+            filter_dict,
+            values_dict,
+        )
+        try:
+            query = (
+                update(self.model)
+                .where(
+                    *[
+                        getattr(self.model, k) == v
+                        for k, v in filter_dict.items()
+                    ]
+                )
+                .values(**values_dict)
+                .execution_options(synchronize_session="fetch")
+            )
+            result = await self._session.execute(query)
+            await self._session.flush()
+            logger.info("Обновлено %s записей.", result.rowcount)
+            return result.rowcount
+        except SQLAlchemyError as e:
+            await self._session.rollback()
+            logger.error("Ошибка при обновлении записей: %s", e)
             raise

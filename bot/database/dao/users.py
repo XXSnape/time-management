@@ -1,6 +1,7 @@
 import logging
 
-from sqlalchemy import select
+from pydantic import BaseModel
+from sqlalchemy import select, delete
 from sqlalchemy.exc import SQLAlchemyError
 
 from database.dao.base import BaseDAO
