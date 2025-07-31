@@ -112,3 +112,8 @@ class Settings(BaseSettings):
 
 
 settings = Settings()
+
+# bot = Bot(
+#     token=settings.bot.token,
+#     default=DefaultBotProperties(parse_mode=ParseMode.HTML),
+# )

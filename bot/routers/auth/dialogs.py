@@ -47,12 +47,12 @@ auth_dialog = Dialog(
     ),
     Window(
         Format(text="{text}"),
-        # TextInput(
-        #     id="password_input",
-        #     type_factory=handlers.is_short_login,
-        #     on_success=handlers.correct_login,
-        #     on_error=handlers.incorrect_login,
-        # ),
+        TextInput(
+            id="password_input",
+            type_factory=handlers.is_short_login,
+            on_success=handlers.correct_login,
+            on_error=handlers.incorrect_login,
+        ),
         getter=getters.enter_password,
         state=AuthState.password,
     ),

@@ -6,6 +6,8 @@ from aiogram_dialog.widgets.kbd import Button
 from httpx import AsyncClient, codes
 
 from core.config import settings
+from core.enums import Methods
+from core.utils.request import make_request
 from .states import AuthState
 
 
@@ -41,20 +43,15 @@ async def correct_login(
     text: str,
 ) -> None:
     client: AsyncClient = dialog_manager.middleware_data["client"]
-    response = await client.get(
-        settings.api.get_url(f"users/{text}")
+    json = await make_request(
+        client=client, endpoint=f"users/{text}", method=Methods.get
     )
-    if response.status_code != codes.OK:
-        await message.answer(_("Извините, сервер не отвечает"))
-        await dialog_manager.done()
-        return
-    json = response.json()
     if json["result"]:
         await message.delete()
         await message.answer(
             _(
-                "Такой пользователь уже существует, регистрация не нужна"
-            )
+                "Пользователь «{username}» уже существует, регистрация не нужна"
+            ).format(username=text)
         )
         await dialog_manager.switch_to(
             AuthState.login_or_registration

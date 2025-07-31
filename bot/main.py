@@ -4,6 +4,7 @@ import logging
 from aiogram import Bot, Dispatcher
 from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
+from aiogram.filters import ExceptionTypeFilter
 from aiogram.types import BotCommand, BotCommandScopeAllPrivateChats
 from aiogram.utils.i18n import (
     I18n,
@@ -12,6 +13,7 @@ from aiogram_dialog import setup_dialogs
 from httpx import AsyncClient
 
 from core.commands import Commands
+from core.exc import ServerIsUnavailable
 from database.utils.sessions import engine
 from middlewares.http import HttpClientMiddleware
 from routers import router
@@ -22,9 +24,10 @@ from middlewares.db import (
     DatabaseMiddlewareWithCommit,
 )
 from middlewares.i18n import LocaleFromDatabaseMiddleware
-from aiogram.fsm.storage.redis import RedisStorage
 from redis.asyncio import Redis
 from aiogram.fsm.storage.redis import DefaultKeyBuilder, RedisStorage
+
+from routers.common_handlers import on_server_is_unavailable
 
 logger = logging.getLogger(__name__)
 
@@ -75,6 +78,12 @@ async def main():
     dp.update.middleware(LocaleFromDatabaseMiddleware(i18n=i18n))
     client = AsyncClient()
     dp.update.middleware(HttpClientMiddleware(client=client))
+    dp.errors.middleware(DatabaseMiddlewareWithoutCommit())
+    dp.errors.middleware(LocaleFromDatabaseMiddleware(i18n=i18n))
+    dp.errors.register(
+        on_server_is_unavailable,
+        ExceptionTypeFilter(ServerIsUnavailable),
+    )
     try:
         logger.info("Запускаем бота...")
         await dp.start_polling(bot)
