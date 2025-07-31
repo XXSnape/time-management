@@ -33,9 +33,9 @@ async def main():
     dp.update.middleware.register(DatabaseMiddlewareWithoutCommit())
     dp.update.middleware.register(DatabaseMiddlewareWithCommit())
     i18n = I18n(
-        path="locales",
-        default_locale="ru",
-        domain="time_management_bot",
+        path=settings.locale.path,
+        default_locale=settings.locale.default_locale,
+        domain=settings.locale.domain,
     )
     dp.update.middleware(LocaleFromDatabaseMiddleware(i18n=i18n))
     await dp.start_polling(bot)
