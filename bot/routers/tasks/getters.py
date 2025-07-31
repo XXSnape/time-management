@@ -7,3 +7,10 @@ async def task_name(**kwargs):
         "back": _("Вернуться к выбору"),
         "cancel": _("Отменить"),
     }
+
+async def task_date(**kwargs):
+    return {
+        "calendar": _("Выберите дату дедлайна"),
+        "back": _("Изменить название"),
+        "cancel": _("Отменить"),
+    }

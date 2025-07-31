@@ -3,12 +3,13 @@ from aiogram_dialog.widgets.input import TextInput
 from aiogram_dialog.widgets.kbd import (
     Back,
     Next,
-    SwitchTo,
     Button,
     Cancel,
+    Calendar,
 )
-from aiogram_dialog.widgets.text import Format, Const
+from aiogram_dialog.widgets.text import Format
 from . import getters
+from . import handlers
 from .states import CreateTaskStates
 from routers.common.handlers import back_to_selection
 
@@ -29,13 +30,11 @@ create_task_dialog = Dialog(
         state=CreateTaskStates.name,
     ),
     Window(
-        Const("hello"),
-        # Back(text=Format(text="{back}")),
-        # TextInput(
-        #     id="task_name_input",
-        #     on_success=Next(),
-        # ),
-        # getter=getters.task_name,
+        Format(text="{calendar}"),
+        Calendar(id="calendar", on_click=handlers.on_date_selected),
+        Back(text=Format(text="{back}")),
+        Cancel(text=Format("{cancel}")),
+        getter=getters.task_date,
         state=CreateTaskStates.date,
     ),
 )
