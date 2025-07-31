@@ -1,7 +1,7 @@
 from aiogram.types import CallbackQuery
 from aiogram_dialog import Dialog, Window, DialogManager
 from aiogram_dialog.widgets.input import TextInput
-from aiogram_dialog.widgets.kbd import Button, SwitchTo
+from aiogram_dialog.widgets.kbd import Button, SwitchTo, Back, Cancel
 from aiogram_dialog.widgets.text import Format
 
 from routers.auth.states import AuthState
@@ -58,6 +58,11 @@ auth_dialog = Dialog(
     ),
     Window(
         Format(text="{text}"),
+        SwitchTo(
+            text=Format("{back}"),
+            id="back_to_register_username",
+            state=AuthState.register_username,
+        ),
         TextInput(
             id="register_password_input",
             on_success=handlers.create_user,
@@ -67,6 +72,11 @@ auth_dialog = Dialog(
     ),
     Window(
         Format(text="{text}"),
+        SwitchTo(
+            text=Format("{back}"),
+            id="back_to_login_username",
+            state=AuthState.login_username,
+        ),
         TextInput(
             id="login_password_input",
             on_success=handlers.login_user,

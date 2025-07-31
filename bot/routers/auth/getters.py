@@ -34,4 +34,7 @@ async def enter_username(**kwargs):
 
 
 async def enter_password(**kwargs):
-    return {"text": _("Пожалуйста введите пароль")}
+    return {
+        "text": _("Пожалуйста введите пароль"),
+        "back": _("Исправить логин"),
+    }
