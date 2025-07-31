@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-07-31 13:58+0300\n"
+"POT-Creation-Date: 2025-07-31 14:45+0300\n"
 "PO-Revision-Date: 2025-07-31 14:01+0300\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -28,3 +28,22 @@ msgstr ""
 "Hello, {name}!\n"
 "\n"
 "This is a bot to help you track your tasks and habits!"
+
+#: routers/auth/getters.py:7
+#, python-brace-format
+msgid ""
+"🔒{username}, пожалуйста, выбери вариант авторизации в зависимости от "
+"того, есть ли у тебя уже аккаунт\n"
+msgstr ""
+"🔒{username}, please select an authorization option depending on "
+"whether you already have an account\n"
+
+
+#: routers/auth/getters.py:10
+msgid "🚪Вход"
+msgstr "🚪Entrance"
+
+#: routers/auth/getters.py:11
+msgid "🎯Регистрация"
+msgstr "🎯Check"
+
