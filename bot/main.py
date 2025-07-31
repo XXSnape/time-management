@@ -9,8 +9,11 @@ from aiogram.utils.i18n import (
     I18n,
 )
 from aiogram_dialog import setup_dialogs
+from httpx import AsyncClient
 
 from core.commands import Commands
+from database.utils.sessions import engine
+from middlewares.http import HttpClientMiddleware
 from routers import router
 
 from core.config import settings
@@ -19,6 +22,11 @@ from middlewares.db import (
     DatabaseMiddlewareWithCommit,
 )
 from middlewares.i18n import LocaleFromDatabaseMiddleware
+from aiogram.fsm.storage.redis import RedisStorage
+from redis.asyncio import Redis
+from aiogram.fsm.storage.redis import DefaultKeyBuilder, RedisStorage
+
+logger = logging.getLogger(__name__)
 
 
 async def main():
@@ -38,8 +46,23 @@ async def main():
         commands, BotCommandScopeAllPrivateChats()
     )
     await bot.delete_webhook(drop_pending_updates=True)
-
-    dp = Dispatcher()
+    redis = Redis(host=settings.redis.host, port=settings.redis.port)
+    storage = RedisStorage(
+        redis,
+        # in case of redis you need to configure key builder
+        key_builder=DefaultKeyBuilder(with_destiny=True),
+    )
+    # dialog_storage = RedisStorage(
+    #     redis=redis,
+    #     key_builder=DefaultKeyBuilder(with_destiny=True),
+    # )
+    #
+    # storage = RedisStorage(
+    #     redis=redis,
+    # )
+    dp = Dispatcher(
+        storage=storage,
+    )
     setup_dialogs(dp)
     dp.include_router(router)
     dp.update.middleware.register(DatabaseMiddlewareWithoutCommit())
@@ -50,7 +73,18 @@ async def main():
         domain=settings.locale.domain,
     )
     dp.update.middleware(LocaleFromDatabaseMiddleware(i18n=i18n))
-    await dp.start_polling(bot)
+    client = AsyncClient()
+    dp.update.middleware(HttpClientMiddleware(client=client))
+    try:
+        logger.info("Запускаем бота...")
+        await dp.start_polling(bot)
+    except (KeyboardInterrupt, asyncio.CancelledError):
+        logger.info("Завершение работы пользователем")
+    finally:
+        logger.info("Останавливаем бота...")
+        await client.aclose()
+        await engine.dispose()
+        logger.info("Ресурсы освобождены!")
 
 
 if __name__ == "__main__":

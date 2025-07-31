@@ -204,3 +204,4 @@ __marimo__/
 
 /backend/db/
 /backend/certs/
+/bot/redis_data/

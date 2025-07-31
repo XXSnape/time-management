@@ -7,11 +7,25 @@ from pathlib import Path
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-from database.utils.enums import Languages
+from core.enums import Languages
 
 LOG_DEFAULT_FORMAT = "[%(asctime)s.%(msecs)03d] %(module)10s:%(lineno)-3d %(levelname)-7s - %(message)s"
 
 load_dotenv()
+
+
+class ApiConfig(BaseModel):
+    url_schema: str = "http"
+    base_url: str = "localhost"
+    port: str = "8000"
+    path: str = "api/v1"
+
+    def get_url(self, endpoint: str) -> str:
+        port = f":{self.port}" if self.port else ""
+        return (
+            f"{self.url_schema}://{self.base_url}"
+            f"{port}/{self.path}/{endpoint}"
+        )
 
 
 class LoggingConfig(BaseModel):
@@ -40,6 +54,15 @@ class LoggingConfig(BaseModel):
 class BotConfig(BaseSettings):
     token: str
     model_config = SettingsConfigDict(env_prefix="bot_")
+
+
+class RedisConfig(BaseSettings):
+    host: str
+    port: int
+
+    model_config = SettingsConfigDict(
+        case_sensitive=False, env_prefix="redis_"
+    )
 
 
 class DatabaseConfig(BaseModel):
@@ -81,6 +104,8 @@ class Settings(BaseSettings):
     bot: BotConfig = BotConfig()
     db: DatabaseConfig = DatabaseConfig()
     locale: LocaleConfig = LocaleConfig()
+    api: ApiConfig = ApiConfig()
+    redis: RedisConfig = RedisConfig()
     model_config = SettingsConfigDict(
         case_sensitive=False,
     )

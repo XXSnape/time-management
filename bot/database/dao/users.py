@@ -5,7 +5,7 @@ from sqlalchemy.exc import SQLAlchemyError
 
 from database.dao.base import BaseDAO
 from database.models import User
-from database.utils.enums import Languages
+from core.enums import Languages
 
 logger = logging.getLogger(__name__)
 

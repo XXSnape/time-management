@@ -4,7 +4,7 @@ from aiogram.types import TelegramObject, User
 from aiogram.utils.i18n import I18nMiddleware
 
 from database.dao.users import UsersDAO
-from database.utils.enums import Languages
+from core.enums import Languages
 
 
 class LocaleFromDatabaseMiddleware(I18nMiddleware):

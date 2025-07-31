@@ -2,7 +2,7 @@ from sqlalchemy import BigInteger
 from sqlalchemy.orm import Mapped, mapped_column
 
 from .base import Base
-from database.utils.enums import Languages
+from core.enums import Languages
 
 
 class User(Base):

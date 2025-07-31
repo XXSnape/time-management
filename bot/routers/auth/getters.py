@@ -11,3 +11,11 @@ async def login_or_register(event_from_user: User, **kwargs):
         "enter_text": _("🚪Вход"),
         "register_text": _("🎯Регистрация"),
     }
+
+
+async def enter_username(**kwargs):
+    return {"text": _("Пожалуйста введите логин")}
+
+
+async def enter_password(**kwargs):
+    return {"text": _("Пожалуйста введите пароль")}
