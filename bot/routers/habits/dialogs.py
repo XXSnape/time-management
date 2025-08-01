@@ -1,13 +1,17 @@
+import operator
+
 from aiogram_dialog import Dialog, Window
 from aiogram_dialog.widgets.input import TextInput
 from aiogram_dialog.widgets.kbd import (
     Back,
     Button,
+    Column,
+    Multiselect,
 )
 from aiogram_dialog.widgets.text import Format
 
 from core.config import settings
-from . import getters
+from . import getters, handlers
 from .states import CreateHabitStates
 from routers.common.handlers import (
     back_to_selection,
@@ -48,5 +52,26 @@ create_habit_dialog = Dialog(
         ),
         getter=getters.habit_purpose,
         state=CreateHabitStates.purpose,
+    ),
+    Window(
+        Format(text="{days_text}"),
+        Column(
+            Multiselect(
+                checked_text=Format("[✔️] {item[0]}"),
+                unchecked_text=Format("[  ] {item[0]}"),
+                id="multi_days",
+                item_id_getter=operator.itemgetter(1),
+                items="days",
+                min_selected=1,
+            ),
+        ),
+        Back(
+            text=Format(text="{save_text}"),
+            when="can_be_saved",
+            on_click=handlers.save_days,
+        ),
+        Back(text=Format(text="{back}")),
+        state=CreateHabitStates.days,
+        getter=getters.get_days_of_week,
     ),
 )
