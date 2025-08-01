@@ -25,7 +25,6 @@ create_task_dialog = Dialog(
             id="back_to_selection",
             on_click=back_to_selection,
         ),
-        Cancel(text=Format("{cancel}")),
         TextInput(
             id="task_name_input",
             on_success=Next(),
@@ -37,7 +36,6 @@ create_task_dialog = Dialog(
         Format(text="{calendar}"),
         Calendar(id="calendar", on_click=handlers.on_date_selected),
         Back(text=Format(text="{back}")),
-        Cancel(text=Format("{cancel}")),
         getter=getters.task_date,
         state=CreateTaskStates.date,
     ),
@@ -54,25 +52,24 @@ create_task_dialog = Dialog(
             width=2,
         ),
         Back(text=Format(text="{back}")),
-        Cancel(text=Format("{cancel}")),
         getter=getters.task_hour,
         state=CreateTaskStates.hour,
     ),
-    Window(
-        Format(text="{notification_hour_text}"),
-        Group(
-            Select(
-                Format("{item[0]}"),
-                id="hour",
-                item_id_getter=itemgetter(1),
-                items="hours",
-                on_click=handlers.save_notification_hour,
-            ),
-            width=2,
-        ),
-        Back(text=Format(text="{back}")),
-        Cancel(text=Format("{cancel}")),
-        getter=getters.task_notification_hour,
-        state=CreateTaskStates.notification_hour,
-    ),
+    # Window(
+    #     Format(text="{notification_hour_text}"),
+    #     Group(
+    #         Select(
+    #             Format("{item[0]}"),
+    #             id="hour",
+    #             item_id_getter=itemgetter(1),
+    #             items="hours",
+    #             on_click=handlers.save_notification_hour,
+    #         ),
+    #         width=2,
+    #     ),
+    #     Back(text=Format(text="{back}")),
+    #     Cancel(text=Format("{cancel}")),
+    #     getter=getters.task_notification_hour,
+    #     state=CreateTaskStates.notification_hour,
+    # ),
 )

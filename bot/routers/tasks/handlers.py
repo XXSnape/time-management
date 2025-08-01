@@ -26,6 +26,16 @@ async def save_name(
     await dialog_manager.next()
 
 
+async def save_description(
+    message: Message,
+    widget: ManagedTextInput,
+    dialog_manager: DialogManager,
+    text: str,
+):
+    dialog_manager.dialog_data.update(description=text)
+    await dialog_manager.next()
+
+
 async def start_create_task(
     callback: CallbackQuery,
     widget: Button,

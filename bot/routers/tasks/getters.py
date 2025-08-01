@@ -12,7 +12,6 @@ async def task_name(**kwargs):
     return {
         "task_name": _("Введите название привычки"),
         "back": _("Вернуться к выбору"),
-        "cancel": _("Отменить"),
     }
 
 
@@ -20,7 +19,6 @@ async def task_date(**kwargs):
     return {
         "calendar": _("Выберите дату дедлайна"),
         "back": _("Изменить название"),
-        "cancel": _("Отменить"),
     }
 
 
@@ -39,7 +37,6 @@ async def task_hour(dialog_manager: DialogManager, **kwargs):
         "hours": generate_hours(start_hour=hour),
         "hour_text": _("Выберете час дедлайна"),
         "back": _("Изменить дату дедлайна"),
-        "cancel": _("Отменить"),
     }
 
 
@@ -50,5 +47,4 @@ async def task_notification_hour(**kwargs):
             "Выберете, за сколько часов до дедлайна нужно напомнить о задаче"
         ),
         "back": _("Изменить час дедлайна"),
-        "cancel": _("Отменить"),
     }
