@@ -20,12 +20,20 @@ async def create_task(
 ) -> tasks_schemas.TaskOutSchema:
 
     now = datetime.datetime.now(datetime.UTC)
-    if now >= task_in.deadline_datetime:
+    if task_in.deadline_datetime.tzinfo is None:
+        deadline_utc = task_in.deadline_datetime.replace(
+            tzinfo=datetime.UTC
+        )
+    else:
+        deadline_utc = task_in.deadline_datetime.astimezone(
+            datetime.UTC
+        )
+    if now >= deadline_utc:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
             detail="Входящие дата и время меньше, чем текущее",
         )
-
+    task_in.deadline_datetime = deadline_utc
     task = await TasksDao(session=session).add(
         tasks_schemas.TaskCreateSchema(
             **task_in.model_dump(),
