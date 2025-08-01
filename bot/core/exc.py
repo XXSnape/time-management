@@ -6,6 +6,6 @@ class UnauthorizedExc(Exception):
 
 
 class ServerIsUnavailableExc(Exception):
-    def __init__(self, response: Response | None):
+    def __init__(self, response: Response | None = None):
         super().__init__(response)
         self.response = response

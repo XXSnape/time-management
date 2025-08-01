@@ -61,6 +61,11 @@ async def task_notification_hour(**kwargs):
 
 
 async def get_user_tasks(dialog_manager: DialogManager, **kwargs):
+    tasks_text = _("Нажмите на задачу, чтобы посмотреть подробности")
+    tasks_from_cache = dialog_manager.dialog_data.get("tasks")
+    if tasks_from_cache is not None:
+        return {"tasks_text": tasks_text, "tasks": tasks_from_cache}
+
     client: AsyncClient = dialog_manager.middleware_data["client"]
     session = dialog_manager.middleware_data[
         "session_without_commit"
@@ -88,12 +93,10 @@ async def get_user_tasks(dialog_manager: DialogManager, **kwargs):
         texts.append([current_text, task["id"]])
     dialog_manager.dialog_data.update(
         all_pages=result["pages"],
-        current_page=1,
+        last_loaded_page=1,
         tasks=texts,
     )
     return {
-        "tasks_text": _(
-            "Нажмите на задачу, чтобы посмотреть подробности"
-        ),
+        "tasks_text": tasks_text,
         "tasks": texts,
     }
