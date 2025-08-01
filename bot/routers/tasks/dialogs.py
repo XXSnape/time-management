@@ -108,12 +108,15 @@ view_tasks_dialog = Dialog(
                 id="tasks",
                 item_id_getter=operator.itemgetter(1),
                 items="tasks",
-                # on_click=on_fruit_selected,
-                # g
             ),
             id="all_tasks",
             width=1,
             height=5,
+        ),
+        Button(
+            Format("{load_more}"),
+            id="load_tasks",
+            when="can_be_loaded",
         ),
         state=ViewTaskStates.view_all,
         getter=getters.get_user_tasks,

@@ -2,6 +2,7 @@ import datetime
 
 from aiogram.utils.i18n import gettext as _
 from aiogram_dialog import DialogManager
+from aiogram_dialog.widgets.common import ManagedScroll
 from httpx import AsyncClient
 
 from core.enums import Methods
@@ -61,10 +62,26 @@ async def task_notification_hour(**kwargs):
 
 
 async def get_user_tasks(dialog_manager: DialogManager, **kwargs):
+    load_more = _("Загрузить еще")
     tasks_text = _("Нажмите на задачу, чтобы посмотреть подробности")
     tasks_from_cache = dialog_manager.dialog_data.get("tasks")
     if tasks_from_cache is not None:
-        return {"tasks_text": tasks_text, "tasks": tasks_from_cache}
+        scrolling_group = dialog_manager.find("all_tasks")
+        pages_count = await scrolling_group.get_page_count(
+            dialog_manager.dialog_data
+        )
+        current_page = await scrolling_group.get_page()
+        can_be_loaded = (
+            current_page == pages_count - 1
+            and dialog_manager.dialog_data["all_pages"]
+            != dialog_manager.dialog_data["last_loaded_page"]
+        )
+        return {
+            "tasks_text": tasks_text,
+            "tasks": tasks_from_cache,
+            "can_be_loaded": can_be_loaded,
+            "load_more": load_more,
+        }
 
     client: AsyncClient = dialog_manager.middleware_data["client"]
     session = dialog_manager.middleware_data[
@@ -99,4 +116,6 @@ async def get_user_tasks(dialog_manager: DialogManager, **kwargs):
     return {
         "tasks_text": tasks_text,
         "tasks": texts,
+        "can_be_loaded": False,
+        "load_more": load_more,
     }
