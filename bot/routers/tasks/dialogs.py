@@ -99,38 +99,23 @@ create_task_dialog = Dialog(
 )
 
 
-async def get_data(**kwargs):
-    fruits = [
-        ("Apple", "1"),
-        ("Pear", "2"),
-        ("Orange", "3"),
-        ("Banana", "4"),
-    ]
-    return {
-        "fruits": fruits,
-        "count": len(fruits),
-    }
-
-
 view_tasks_dialog = Dialog(
     Window(
-        Const("hello"),
+        Format(text="{tasks_text}"),
         ScrollingGroup(
             Select(
-                Format(
-                    "{item[0]} ({pos}/{data[count]})"
-                ),  # E.g `✓ Apple (1/4)`
-                id="s_fruits",
+                Format("{item[0]}"),
+                id="tasks",
                 item_id_getter=operator.itemgetter(1),
-                # each item is a tuple with id on a first position
-                items="fruits",  # we will use items from window data at a key `fruits`
+                items="tasks",
                 # on_click=on_fruit_selected,
+                # g
             ),
-            id="numbers",
-            width=6,
-            height=6,
+            id="all_tasks",
+            width=1,
+            height=5,
         ),
         state=ViewTaskStates.view_all,
-        getter=get_data,
+        getter=getters.get_user_tasks,
     )
 )

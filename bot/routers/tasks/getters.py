@@ -2,8 +2,13 @@ import datetime
 
 from aiogram.utils.i18n import gettext as _
 from aiogram_dialog import DialogManager
+from httpx import AsyncClient
 
+from core.enums import Methods
+from core.schemas.users import UserTelegramIdSchema
 from core.utils.generator import generate_hours
+from core.utils.request import make_request
+from database.dao.users import UsersDAO
 
 
 async def task_name(**kwargs):
@@ -52,4 +57,43 @@ async def task_notification_hour(**kwargs):
             "Выберете, за сколько часов до дедлайна нужно напомнить о задаче"
         ),
         "back": _("Изменить час дедлайна"),
+    }
+
+
+async def get_user_tasks(dialog_manager: DialogManager, **kwargs):
+    client: AsyncClient = dialog_manager.middleware_data["client"]
+    session = dialog_manager.middleware_data[
+        "session_without_commit"
+    ]
+    user = await UsersDAO(session=session).find_one_or_none(
+        UserTelegramIdSchema(
+            telegram_id=dialog_manager.event.from_user.id
+        )
+    )
+    result = await make_request(
+        client=client,
+        endpoint="tasks",
+        method=Methods.get,
+        access_token=user.access_token,
+    )
+    tasks = result["items"]
+    texts = []
+    for task in tasks:
+        dt = datetime.datetime.strptime(
+            task["deadline_datetime"], "%Y-%m-%dT%H:%M:%SZ"
+        )
+        current_text = _("{name} [{deadline}]").format(
+            name=task["name"], deadline=dt.strftime("%d.%m.%Y %H:%M")
+        )
+        texts.append([current_text, task["id"]])
+    dialog_manager.dialog_data.update(
+        all_pages=result["pages"],
+        current_page=1,
+        tasks=texts,
+    )
+    return {
+        "tasks_text": _(
+            "Нажмите на задачу, чтобы посмотреть подробности"
+        ),
+        "tasks": texts,
     }
