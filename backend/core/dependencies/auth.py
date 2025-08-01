@@ -1,33 +1,34 @@
 from typing import Annotated, TypeAlias
 
-from fastapi import Depends, HTTPException, status
-from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
+from fastapi import Depends, HTTPException, status, Cookie
 from jwt import InvalidTokenError
 
 from services import auth
 
-http_bearer = HTTPBearer()
+from core.config import settings
+
+
+type token_payload = dict[str, str | int]
 
 
 def get_token_payload(
-    credentials: Annotated[
-        HTTPAuthorizationCredentials,
-        Depends(http_bearer),
+    token: Annotated[
+        str, Cookie(alias=settings.auth_jwt.cookie_key_token)
     ],
-) -> dict[str, str | int]:
+) -> token_payload:
     """
     Декодирует токен и возвращает полезную нагрузку из него
-    :param credentials: Annotated[HTTPAuthorizationCredentials, Depends(http_bearer)]
+    :param token: токен
     :return: полезная нагрузка в токене.
     """
     try:
         payload = auth.decode_jwt(
-            token=credentials.credentials,
+            token=token,
         )
-    except InvalidTokenError as e:
+    except InvalidTokenError:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Некорректный токен",
+            detail="invalid token error",
         )
     return payload
 
