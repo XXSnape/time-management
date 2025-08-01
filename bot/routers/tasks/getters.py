@@ -75,6 +75,16 @@ async def task_notification_hour(**kwargs):
     }
 
 
+async def edit_task_notification_hour(**kwargs):
+    return {
+        "hours": generate_hours(start_hour=1, end_hour=25),
+        "notification_hour_text": _(
+            "Измените, за сколько часов до дедлайна нужно напомнить о задаче"
+        ),
+        "back": _("Отменить редактирование часов до напоминания"),
+    }
+
+
 def get_texts_by_tasks(tasks: list[dict]):
     texts = []
     for task in tasks:

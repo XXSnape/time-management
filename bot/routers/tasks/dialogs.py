@@ -175,10 +175,15 @@ view_tasks_dialog = Dialog(
             text=Format(text="{deadline_time_text}"),
             id="change_deadline_time_text",
         ),
-        Button(
+        SwitchTo(
             text=Format(text="{notification_hour_text}"),
             id="change_notification_hour_text",
+            state=ViewTaskStates.edit_hour,
         ),
+        # Button(
+        #     text=Format(text="{notification_hour_text}"),
+        #     id="change_notification_hour_text",
+        # ),
         Button(
             text=Format(text="{mark_text}"),
             id="change_mark_text",
@@ -203,7 +208,7 @@ view_tasks_dialog = Dialog(
             type_factory=is_short_text(
                 max_length=settings.bot.max_name_length,
             ),
-            on_success=handlers.change_item(item="name"),
+            on_success=handlers.change_item_by_text(item="name"),
             on_error=on_incorrect_text,
         ),
         getter=getters.edit_task_name,
@@ -221,10 +226,32 @@ view_tasks_dialog = Dialog(
             type_factory=is_short_text(
                 max_length=settings.bot.max_description_length,
             ),
-            on_success=handlers.change_item(item="description"),
+            on_success=handlers.change_item_by_text(
+                item="description"
+            ),
             on_error=on_incorrect_text,
         ),
         getter=getters.edit_task_description,
         state=ViewTaskStates.edit_description,
+    ),
+    Window(
+        Format(text="{notification_hour_text}"),
+        Group(
+            Select(
+                Format("{item[0]}"),
+                id="hour",
+                item_id_getter=itemgetter(1),
+                items="hours",
+                on_click=handlers.change_notification_hour,
+            ),
+            width=2,
+        ),
+        SwitchTo(
+            text=Format("{back}"),
+            id="cancel_edit_notification_hour",
+            state=ViewTaskStates.edit_task,
+        ),
+        getter=getters.edit_task_notification_hour,
+        state=ViewTaskStates.edit_hour,
     ),
 )

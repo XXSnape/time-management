@@ -276,43 +276,60 @@ async def delete_task(
     await dialog_manager.switch_to(ViewTaskStates.view_all)
 
 
-def change_item(item: str):
+async def change_item_and_go_next(
+    dialog_manager: DialogManager, item: str, value: str | int
+):
+    client: AsyncClient = dialog_manager.middleware_data["client"]
+    session = dialog_manager.middleware_data[
+        "session_without_commit"
+    ]
+    user = await UsersDAO(session=session).find_one_or_none(
+        UserTelegramIdSchema(
+            telegram_id=dialog_manager.event.from_user.id
+        )
+    )
+    task_id = dialog_manager.dialog_data["current_task"]
+    task = await make_request(
+        client=client,
+        endpoint=f"tasks/{task_id}",
+        method=Methods.patch,
+        json={item: value},
+        access_token=user.access_token,
+    )
+    texts = get_texts_by_tasks(tasks=[task])
+    index_to_replace = get_index_from_cache(
+        texts=dialog_manager.dialog_data["tasks"], id=task_id
+    )
+    dialog_manager.dialog_data["tasks"][index_to_replace] = texts[0]
+    generate_task_info(
+        dialog_manager=dialog_manager, task=task, item_id=task_id
+    )
+    await dialog_manager.switch_to(ViewTaskStates.view_details)
+
+
+async def change_notification_hour(
+    callback: CallbackQuery,
+    widget: Select,
+    dialog_manager: DialogManager,
+    item_id: str,
+):
+    await change_item_and_go_next(
+        dialog_manager=dialog_manager,
+        item="hour_before_reminder",
+        value=int(item_id),
+    )
+
+
+def change_item_by_text(item: str):
     async def _wrapper(
         message: Message,
         widget: ManagedTextInput,
         dialog_manager: DialogManager,
         text: str,
     ):
-        client: AsyncClient = dialog_manager.middleware_data[
-            "client"
-        ]
-        session = dialog_manager.middleware_data[
-            "session_without_commit"
-        ]
-        user = await UsersDAO(session=session).find_one_or_none(
-            UserTelegramIdSchema(
-                telegram_id=dialog_manager.event.from_user.id
-            )
+        await change_item_and_go_next(
+            dialog_manager=dialog_manager, item=item, value=text
         )
-        task_id = dialog_manager.dialog_data["current_task"]
-        task = await make_request(
-            client=client,
-            endpoint=f"tasks/{task_id}",
-            method=Methods.patch,
-            json={item: text},
-            access_token=user.access_token,
-        )
-        texts = get_texts_by_tasks(tasks=[task])
-        index_to_replace = get_index_from_cache(
-            texts=dialog_manager.dialog_data["tasks"], id=task_id
-        )
-        dialog_manager.dialog_data["tasks"][index_to_replace] = (
-            texts[0]
-        )
-        generate_task_info(
-            dialog_manager=dialog_manager, task=task, item_id=task_id
-        )
-        await dialog_manager.switch_to(ViewTaskStates.view_details)
 
     return _wrapper
 
