@@ -10,7 +10,6 @@ from aiogram_dialog.widgets.kbd import (
     Group,
     Select,
     ScrollingGroup,
-    Next,
     SwitchTo,
 )
 from aiogram_dialog.widgets.text import Format, Const
@@ -163,14 +162,10 @@ view_tasks_dialog = Dialog(
             id="change_name",
             state=ViewTaskStates.edit_name,
         ),
-        # Button(
-        #     text=Format(text="{name}"),
-        #     id="change_name",
-        #     on_click=handlers.change_name,
-        # ),
-        Button(
+        SwitchTo(
             text=Format(text="{description_text}"),
             id="change_description_text",
+            state=ViewTaskStates.edit_description,
         ),
         Button(
             text=Format(text="{deadline_date_text}"),
@@ -203,20 +198,33 @@ view_tasks_dialog = Dialog(
             id="cancel_edit_name",
             state=ViewTaskStates.edit_task,
         ),
-        # Button(
-        #     text=Format("{back}"),
-        #     id="back_to_selection",
-        #     on_click=back_to_selection,
-        # ),
         TextInput(
             id="change_task_name",
             type_factory=is_short_text(
                 max_length=settings.bot.max_name_length,
             ),
-            on_success=handlers.change_name,
+            on_success=handlers.change_item(item="name"),
             on_error=on_incorrect_text,
         ),
         getter=getters.edit_task_name,
         state=ViewTaskStates.edit_name,
+    ),
+    Window(
+        Format(text="{task_description}"),
+        SwitchTo(
+            text=Format("{back}"),
+            id="cancel_edit_description",
+            state=ViewTaskStates.edit_task,
+        ),
+        TextInput(
+            id="change_task_description",
+            type_factory=is_short_text(
+                max_length=settings.bot.max_description_length,
+            ),
+            on_success=handlers.change_item(item="description"),
+            on_error=on_incorrect_text,
+        ),
+        getter=getters.edit_task_description,
+        state=ViewTaskStates.edit_description,
     ),
 )

@@ -33,6 +33,13 @@ async def task_description(**kwargs):
     }
 
 
+async def edit_task_description(**kwargs):
+    return {
+        "task_description": _("Введите новое описание для задачи"),
+        "back": _("Отменить ввод описания"),
+    }
+
+
 async def task_date(**kwargs):
     return {
         "calendar": _("Выберите дату дедлайна"),
