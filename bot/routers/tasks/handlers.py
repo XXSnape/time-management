@@ -231,7 +231,7 @@ async def delete_task(
         )
     )
     task_id = dialog_manager.dialog_data["current_task"]
-    await make_request(
+    tasks_count = await make_request(
         client=client,
         endpoint=f"tasks/{task_id}",
         method=Methods.delete,
@@ -247,13 +247,14 @@ async def delete_task(
     await callback.answer(
         _("Задача успешно удалена!"), show_alert=True
     )
-    tasks = await make_request(
-        client=client,
-        endpoint="tasks",
-        method=Methods.get,
-        access_token=user.access_token,
-    )
-    if tasks["pages"] < dialog_manager.dialog_data["next_page"]:
-        dialog_manager.dialog_data["next_page"] = tasks["pages"]
-    dialog_manager.dialog_data["total_count"] = tasks["total_count"]
+    if (
+        tasks_count["pages"]
+        < dialog_manager.dialog_data["next_page"]
+    ):
+        dialog_manager.dialog_data["next_page"] = tasks_count[
+            "pages"
+        ]
+    dialog_manager.dialog_data["total_count"] = tasks_count[
+        "total_count"
+    ]
     await dialog_manager.switch_to(ViewTaskStates.view_all)

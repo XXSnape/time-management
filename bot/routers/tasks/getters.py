@@ -130,13 +130,13 @@ async def get_task_details(
     task_text = dialog_manager.dialog_data[f"task_{task_id}_text"]
     return {
         "task_text": task_text,
+        "edit_text": _("Редактировать"),
         "delete_text": _("Удалить"),
         "back": _("Вернуться к задачам"),
     }
 
 
 async def delete_task(
-    dialog_manager: DialogManager,
     **kwargs,
 ):
     return {
@@ -144,5 +144,25 @@ async def delete_task(
             "Вы точно хотите удалить эту задачу? Отменить это действие будет нельзя."
         ),
         "confirm_delete_task_text": _("Удалить задачу"),
+        "back": _("Вернуться к деталям"),
+    }
+
+
+async def edit_task(
+    dialog_manager: DialogManager,
+    **kwargs,
+):
+    task_id = dialog_manager.dialog_data["current_task"]
+    task_text = dialog_manager.dialog_data[f"task_{task_id}_text"]
+    return {
+        "task_text": task_text,
+        "name": _("Название"),
+        "description_text": _("Описание"),
+        "deadline_date_text": _("Дата дедлайна"),
+        "deadline_time_text": _("Время дедлайна"),
+        "notification_hour_text": _(
+            "Количество часов до напоминания"
+        ),
+        "mark_text": _("Отметить выполненной"),
         "back": _("Вернуться к деталям"),
     }

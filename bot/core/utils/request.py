@@ -45,8 +45,6 @@ async def make_request(
         except HTTPStatusError as e:
             logger.exception("Ошибка при запросе к серверу")
             raise ServerIsUnavailableExc(response=e.response)
-        if response.status_code == codes.NO_CONTENT:
-            return None
         return response.json()
     except RequestError:
         logger.exception("Ошибка при запросе к серверу")

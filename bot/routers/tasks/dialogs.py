@@ -129,6 +129,11 @@ view_tasks_dialog = Dialog(
         Format(text="{task_text}"),
         Back(text=Format(text="{back}")),
         SwitchTo(
+            text=Format(text="{edit_text}"),
+            id="edit_task",
+            state=ViewTaskStates.edit_task,
+        ),
+        SwitchTo(
             text=Format(text="{delete_text}"),
             id="delete_task",
             state=ViewTaskStates.delete_task,
@@ -150,5 +155,39 @@ view_tasks_dialog = Dialog(
         ),
         state=ViewTaskStates.delete_task,
         getter=getters.delete_task,
+    ),
+    Window(
+        Format(text="{task_text}"),
+        Button(
+            text=Format(text="{name}"),
+            id="change_name",
+        ),
+        Button(
+            text=Format(text="{description_text}"),
+            id="change_description_text",
+        ),
+        Button(
+            text=Format(text="{deadline_date_text}"),
+            id="change_deadline_date_text",
+        ),
+        Button(
+            text=Format(text="{deadline_time_text}"),
+            id="change_deadline_time_text",
+        ),
+        Button(
+            text=Format(text="{notification_hour_text}"),
+            id="change_notification_hour_text",
+        ),
+        Button(
+            text=Format(text="{mark_text}"),
+            id="change_mark_text",
+        ),
+        SwitchTo(
+            text=Format(text="{back}"),
+            id="cancel_task_edition",
+            state=ViewTaskStates.view_details,
+        ),
+        state=ViewTaskStates.edit_task,
+        getter=getters.edit_task,
     ),
 )
