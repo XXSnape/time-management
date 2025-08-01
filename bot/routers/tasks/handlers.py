@@ -10,7 +10,7 @@ from httpx import AsyncClient, HTTPStatusError, codes
 
 from backend.core.schemas.users import UserTelegramIdSchema
 from core.enums import Methods
-from core.exc import ServerIsUnavailable
+from core.exc import ServerIsUnavailableExc
 from core.utils.dt import get_moscow_tz_and_dt
 from core.utils.request import make_request
 from database.dao.users import UsersDAO
@@ -125,7 +125,7 @@ async def save_task(
                 "hour_before_reminder": int(item_id),
             },
         )
-    except ServerIsUnavailable as e:
+    except ServerIsUnavailableExc as e:
         if (
             not e.response
         ) or e.response.status_code != codes.CONFLICT:

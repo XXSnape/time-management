@@ -8,7 +8,7 @@ from httpx import (
 
 from core.config import settings
 from core.enums import Methods
-from core.exc import UnauthorizedExc, ServerIsUnavailable
+from core.exc import UnauthorizedExc, ServerIsUnavailableExc
 import logging
 
 logger = logging.getLogger(__name__)
@@ -44,10 +44,10 @@ async def make_request(
             response.raise_for_status()
         except HTTPStatusError as e:
             logger.exception("Ошибка при запросе к серверу")
-            raise ServerIsUnavailable(response=e.response)
+            raise ServerIsUnavailableExc(response=e.response)
         if response.status_code == codes.NO_CONTENT:
             return None
         return response.json()
     except RequestError:
         logger.exception("Ошибка при запросе к серверу")
-        raise ServerIsUnavailable
+        raise ServerIsUnavailableExc

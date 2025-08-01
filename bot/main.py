@@ -13,7 +13,7 @@ from aiogram_dialog import setup_dialogs
 from httpx import AsyncClient
 
 from core.commands import Commands
-from core.exc import ServerIsUnavailable
+from core.exc import ServerIsUnavailableExc, UnauthorizedExc
 from database.utils.sessions import engine
 from middlewares.http import HttpClientMiddleware
 from routers import router
@@ -27,7 +27,10 @@ from middlewares.i18n import LocaleFromDatabaseMiddleware
 from redis.asyncio import Redis
 from aiogram.fsm.storage.redis import DefaultKeyBuilder, RedisStorage
 
-from routers.common_handlers import on_server_is_unavailable
+from routers.common_handlers import (
+    on_server_is_unavailable,
+    on_unauthorized,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -52,17 +55,8 @@ async def main():
     redis = Redis(host=settings.redis.host, port=settings.redis.port)
     storage = RedisStorage(
         redis,
-        # in case of redis you need to configure key builder
         key_builder=DefaultKeyBuilder(with_destiny=True),
     )
-    # dialog_storage = RedisStorage(
-    #     redis=redis,
-    #     key_builder=DefaultKeyBuilder(with_destiny=True),
-    # )
-    #
-    # storage = RedisStorage(
-    #     redis=redis,
-    # )
     dp = Dispatcher(
         storage=storage,
     )
@@ -82,7 +76,11 @@ async def main():
     dp.errors.middleware(LocaleFromDatabaseMiddleware(i18n=i18n))
     dp.errors.register(
         on_server_is_unavailable,
-        ExceptionTypeFilter(ServerIsUnavailable),
+        ExceptionTypeFilter(ServerIsUnavailableExc),
+    )
+    dp.errors.register(
+        on_unauthorized,
+        ExceptionTypeFilter(UnauthorizedExc),
     )
     try:
         logger.info("Запускаем бота...")
