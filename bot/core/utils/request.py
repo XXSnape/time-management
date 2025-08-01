@@ -42,9 +42,9 @@ async def make_request(
             raise UnauthorizedExc
         try:
             response.raise_for_status()
-        except HTTPStatusError:
+        except HTTPStatusError as e:
             logger.exception("Ошибка при запросе к серверу")
-            raise ServerIsUnavailable
+            raise ServerIsUnavailable(response=e.response)
         if response.status_code == codes.NO_CONTENT:
             return None
         return response.json()

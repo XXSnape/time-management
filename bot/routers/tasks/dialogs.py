@@ -33,7 +33,7 @@ create_task_dialog = Dialog(
             type_factory=is_short_text(
                 max_length=40,
             ),
-            on_success=Next(),
+            on_success=handlers.save_name,
             on_error=on_incorrect_text,
         ),
         getter=getters.task_name,
@@ -76,21 +76,20 @@ create_task_dialog = Dialog(
         getter=getters.task_hour,
         state=CreateTaskStates.hour,
     ),
-    # Window(
-    #     Format(text="{notification_hour_text}"),
-    #     Group(
-    #         Select(
-    #             Format("{item[0]}"),
-    #             id="hour",
-    #             item_id_getter=itemgetter(1),
-    #             items="hours",
-    #             on_click=handlers.save_notification_hour,
-    #         ),
-    #         width=2,
-    #     ),
-    #     Back(text=Format(text="{back}")),
-    #     Cancel(text=Format("{cancel}")),
-    #     getter=getters.task_notification_hour,
-    #     state=CreateTaskStates.notification_hour,
-    # ),
+    Window(
+        Format(text="{notification_hour_text}"),
+        Group(
+            Select(
+                Format("{item[0]}"),
+                id="hour",
+                item_id_getter=itemgetter(1),
+                items="hours",
+                on_click=handlers.save_task,
+            ),
+            width=2,
+        ),
+        Back(text=Format(text="{back}")),
+        getter=getters.task_notification_hour,
+        state=CreateTaskStates.notification_hour,
+    ),
 )

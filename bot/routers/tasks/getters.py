@@ -4,8 +4,10 @@ from aiogram.utils.i18n import gettext as _
 from aiogram_dialog import DialogManager
 
 
-def generate_hours(start_hour: int):
-    return [(str(h).zfill(2), h) for h in range(start_hour, 24)]
+def generate_hours(start_hour: int, end_hour: int):
+    return [
+        (str(h).zfill(2), h) for h in range(start_hour, end_hour)
+    ]
 
 
 async def task_name(**kwargs):
@@ -41,7 +43,7 @@ async def task_hour(dialog_manager: DialogManager, **kwargs):
     ):
         hour = (moscow_dt.hour + 1) % 24
     return {
-        "hours": generate_hours(start_hour=hour),
+        "hours": generate_hours(start_hour=hour, end_hour=24),
         "hour_text": _("Выберете час дедлайна"),
         "back": _("Изменить дату дедлайна"),
     }
@@ -49,7 +51,7 @@ async def task_hour(dialog_manager: DialogManager, **kwargs):
 
 async def task_notification_hour(**kwargs):
     return {
-        "hours": generate_hours(start_hour=0),
+        "hours": generate_hours(start_hour=1, end_hour=25),
         "notification_hour_text": _(
             "Выберете, за сколько часов до дедлайна нужно напомнить о задаче"
         ),

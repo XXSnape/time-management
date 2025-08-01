@@ -1,14 +1,16 @@
 import datetime
-from datetime import date
+from datetime import date, timedelta
+from zoneinfo import ZoneInfo
 
 from aiogram.types import CallbackQuery, Message
 from aiogram_dialog import DialogManager, StartMode
 from aiogram_dialog.widgets.input import ManagedTextInput
 from aiogram_dialog.widgets.kbd import Button, Select
-from httpx import AsyncClient
+from httpx import AsyncClient, HTTPStatusError, codes
 
 from backend.core.schemas.users import UserTelegramIdSchema
 from core.enums import Methods
+from core.exc import ServerIsUnavailable
 from core.utils.dt import get_moscow_tz_and_dt
 from core.utils.request import make_request
 from database.dao.users import UsersDAO
@@ -86,16 +88,58 @@ async def save_task(
     item_id: str,
 ):
     client: AsyncClient = dialog_manager.middleware_data["client"]
-    session = dialog_manager.middleware_data["session"]
+    session = dialog_manager.middleware_data[
+        "session_without_commit"
+    ]
     user = await UsersDAO(session=session).find_one_or_none(
         UserTelegramIdSchema(telegram_id=callback.from_user.id)
     )
 
-    # await make_request(client=client,
-    #                    endpoint='tasks',
-    #                    method=Methods.post,
-    #                    access_token=user.access_token,
-    #                    json={})
-    # await c
-    pass
-    # dialog_manager.dialog_data.update(notifucation_hour=int(item_id))
+    moscow_date = datetime.datetime.strptime(
+        dialog_manager.dialog_data["date"],
+        "%Y-%m-%d",
+    ).date()
+
+    moscow_dt = datetime.datetime(
+        year=moscow_date.year,
+        month=moscow_date.month,
+        day=moscow_date.day,
+        hour=dialog_manager.dialog_data["hour"],
+    )
+    moscow_tz = ZoneInfo("Europe/Moscow")
+    moscow_dt_aware = moscow_dt.replace(tzinfo=moscow_tz)
+
+    utc_dt = moscow_dt_aware.astimezone(datetime.timezone.utc)
+    try:
+        await make_request(
+            client=client,
+            endpoint="tasks",
+            method=Methods.post,
+            access_token=user.access_token,
+            json={
+                "name": dialog_manager.dialog_data["name"],
+                "deadline_datetime": str(utc_dt),
+                "description": dialog_manager.dialog_data[
+                    "description"
+                ],
+                "hour_before_reminder": int(item_id),
+            },
+        )
+    except ServerIsUnavailable as e:
+        if (
+            not e.response
+        ) or e.response.status_code != codes.CONFLICT:
+            raise
+        json = e.response.json()
+        await callback.answer(
+            _("Не удалось создать задачу: {detail}").format(
+                detail=json["detail"]
+            ),
+            show_alert=True,
+        )
+        return
+
+    await callback.answer(
+        _("Задача успешно создана!"), show_alert=True
+    )
+    await dialog_manager.done()
