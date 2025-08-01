@@ -10,6 +10,8 @@ from aiogram_dialog.widgets.kbd import (
     Group,
     Select,
     ScrollingGroup,
+    Next,
+    SwitchTo,
 )
 from aiogram_dialog.widgets.text import Format, Const
 
@@ -126,7 +128,27 @@ view_tasks_dialog = Dialog(
     Window(
         Format(text="{task_text}"),
         Back(text=Format(text="{back}")),
+        SwitchTo(
+            text=Format(text="{delete_text}"),
+            id="delete_task",
+            state=ViewTaskStates.delete_task,
+        ),
         state=ViewTaskStates.view_details,
         getter=getters.get_task_details,
+    ),
+    Window(
+        Format(text="{confirm_text}"),
+        Button(
+            text=Format(text="{confirm_delete_task_text}"),
+            id="confirm_delete_task",
+            on_click=handlers.delete_task,
+        ),
+        SwitchTo(
+            text=Format(text="{back}"),
+            id="cancel_task_deletion",
+            state=ViewTaskStates.view_details,
+        ),
+        state=ViewTaskStates.delete_task,
+        getter=getters.delete_task,
     ),
 )

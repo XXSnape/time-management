@@ -82,11 +82,10 @@ async def get_user_tasks(dialog_manager: DialogManager, **kwargs):
             dialog_manager.dialog_data
         )
         current_page = await scrolling_group.get_page()
-        can_be_loaded = (
-            current_page == pages_count - 1
-            and dialog_manager.dialog_data["all_pages"]
-            != dialog_manager.dialog_data["last_loaded_page"]
-        )
+
+        can_be_loaded = current_page == pages_count - 1 and len(
+            tasks_from_cache
+        ) < dialog_manager.dialog_data.get("total_count")
         return {
             "tasks_text": tasks_text,
             "tasks": tasks_from_cache,
@@ -111,8 +110,8 @@ async def get_user_tasks(dialog_manager: DialogManager, **kwargs):
     )
     texts = get_texts_by_tasks(result["items"])
     dialog_manager.dialog_data.update(
-        all_pages=result["pages"],
-        last_loaded_page=1,
+        total_count=result["total_count"],
+        next_page=2,
         tasks=texts,
     )
     return {
@@ -131,5 +130,19 @@ async def get_task_details(
     task_text = dialog_manager.dialog_data[f"task_{task_id}_text"]
     return {
         "task_text": task_text,
+        "delete_text": _("Удалить"),
         "back": _("Вернуться к задачам"),
+    }
+
+
+async def delete_task(
+    dialog_manager: DialogManager,
+    **kwargs,
+):
+    return {
+        "confirm_text": _(
+            "Вы точно хотите удалить эту задачу? Отменить это действие будет нельзя."
+        ),
+        "confirm_delete_task_text": _("Удалить задачу"),
+        "back": _("Вернуться к деталям"),
     }

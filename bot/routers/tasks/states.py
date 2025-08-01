@@ -12,3 +12,4 @@ class CreateTaskStates(StatesGroup):
 class ViewTaskStates(StatesGroup):
     view_all = State()
     view_details = State()
+    delete_task = State()

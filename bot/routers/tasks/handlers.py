@@ -152,18 +152,19 @@ async def upload_more_tasks(
             telegram_id=dialog_manager.event.from_user.id
         )
     )
-    next_page = dialog_manager.dialog_data["last_loaded_page"] + 1
     result = await make_request(
         client=client,
         endpoint="tasks",
         method=Methods.get,
         access_token=user.access_token,
-        params={"page": next_page},
+        params={"page": dialog_manager.dialog_data["next_page"]},
     )
-    new_texts = get_texts_by_tasks(result["items"])
+    count = result["total_count"] - len(
+        dialog_manager.dialog_data["tasks"]
+    )
+    new_texts = get_texts_by_tasks(result["items"][-count:])
     dialog_manager.dialog_data.update(
-        all_pages=result["pages"],
-        last_loaded_page=next_page,
+        last_loaded_page=dialog_manager.dialog_data["next_page"] + 1,
         tasks=dialog_manager.dialog_data["tasks"] + new_texts,
     )
 
@@ -210,6 +211,49 @@ async def on_click_task(
         completed=completed,
     )
     dialog_manager.dialog_data.update(
-        {f"task_{item_id}_text": text, "current_task": item_id}
+        {f"task_{item_id}_text": text, "current_task": int(item_id)}
     )
     await dialog_manager.next()
+
+
+async def delete_task(
+    callback: CallbackQuery,
+    widget: Button,
+    dialog_manager: DialogManager,
+):
+    client: AsyncClient = dialog_manager.middleware_data["client"]
+    session = dialog_manager.middleware_data[
+        "session_without_commit"
+    ]
+    user = await UsersDAO(session=session).find_one_or_none(
+        UserTelegramIdSchema(
+            telegram_id=dialog_manager.event.from_user.id
+        )
+    )
+    task_id = dialog_manager.dialog_data["current_task"]
+    await make_request(
+        client=client,
+        endpoint=f"tasks/{task_id}",
+        method=Methods.delete,
+        access_token=user.access_token,
+    )
+    texts = dialog_manager.dialog_data["tasks"]
+    to_delete_index = None
+    for index, (__, id_) in enumerate(texts):
+        if id_ == task_id:
+            to_delete_index = index
+            break
+    texts.pop(to_delete_index)
+    await callback.answer(
+        _("Задача успешно удалена!"), show_alert=True
+    )
+    tasks = await make_request(
+        client=client,
+        endpoint="tasks",
+        method=Methods.get,
+        access_token=user.access_token,
+    )
+    if tasks["pages"] < dialog_manager.dialog_data["next_page"]:
+        dialog_manager.dialog_data["next_page"] = tasks["pages"]
+    dialog_manager.dialog_data["total_count"] = tasks["total_count"]
+    await dialog_manager.switch_to(ViewTaskStates.view_all)
