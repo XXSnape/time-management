@@ -114,9 +114,10 @@ view_tasks_dialog = Dialog(
             height=5,
         ),
         Button(
-            Format("{load_more}"),
+            Format(text="{load_more}"),
             id="load_tasks",
             when="can_be_loaded",
+            on_click=handlers.upload_more_tasks,
         ),
         state=ViewTaskStates.view_all,
         getter=getters.get_user_tasks,

@@ -2,7 +2,6 @@ import datetime
 
 from aiogram.utils.i18n import gettext as _
 from aiogram_dialog import DialogManager
-from aiogram_dialog.widgets.common import ManagedScroll
 from httpx import AsyncClient
 
 from core.enums import Methods
@@ -61,6 +60,19 @@ async def task_notification_hour(**kwargs):
     }
 
 
+def get_texts_by_tasks(tasks: list[dict]):
+    texts = []
+    for task in tasks:
+        dt = datetime.datetime.strptime(
+            task["deadline_datetime"], "%Y-%m-%dT%H:%M:%SZ"
+        )
+        current_text = _("{name} [{deadline}]").format(
+            name=task["name"], deadline=dt.strftime("%d.%m.%Y %H:%M")
+        )
+        texts.append([current_text, task["id"]])
+    return texts
+
+
 async def get_user_tasks(dialog_manager: DialogManager, **kwargs):
     load_more = _("Загрузить еще")
     tasks_text = _("Нажмите на задачу, чтобы посмотреть подробности")
@@ -98,16 +110,7 @@ async def get_user_tasks(dialog_manager: DialogManager, **kwargs):
         method=Methods.get,
         access_token=user.access_token,
     )
-    tasks = result["items"]
-    texts = []
-    for task in tasks:
-        dt = datetime.datetime.strptime(
-            task["deadline_datetime"], "%Y-%m-%dT%H:%M:%SZ"
-        )
-        current_text = _("{name} [{deadline}]").format(
-            name=task["name"], deadline=dt.strftime("%d.%m.%Y %H:%M")
-        )
-        texts.append([current_text, task["id"]])
+    texts = get_texts_by_tasks(result["items"])
     dialog_manager.dialog_data.update(
         all_pages=result["pages"],
         last_loaded_page=1,

@@ -10,9 +10,11 @@ from httpx import AsyncClient, codes
 from backend.core.schemas.users import UserTelegramIdSchema
 from core.enums import Methods
 from core.exc import ServerIsUnavailableExc
+from core.schemas.users import UserTelegramIdSchema
 from core.utils.dt import get_moscow_tz_and_dt
 from core.utils.request import make_request
 from database.dao.users import UsersDAO
+from routers.tasks.getters import get_texts_by_tasks
 from routers.tasks.states import CreateTaskStates, ViewTaskStates
 from aiogram.utils.i18n import gettext as _
 
@@ -133,3 +135,33 @@ async def save_task(
         _("Задача успешно создана!"), show_alert=True
     )
     await dialog_manager.done()
+
+
+async def upload_more_tasks(
+    callback: CallbackQuery,
+    widget: Button,
+    dialog_manager: DialogManager,
+):
+    client: AsyncClient = dialog_manager.middleware_data["client"]
+    session = dialog_manager.middleware_data[
+        "session_without_commit"
+    ]
+    user = await UsersDAO(session=session).find_one_or_none(
+        UserTelegramIdSchema(
+            telegram_id=dialog_manager.event.from_user.id
+        )
+    )
+    next_page = dialog_manager.dialog_data["last_loaded_page"] + 1
+    result = await make_request(
+        client=client,
+        endpoint="tasks",
+        method=Methods.get,
+        access_token=user.access_token,
+        params={"page": next_page},
+    )
+    new_texts = get_texts_by_tasks(result["items"])
+    dialog_manager.dialog_data.update(
+        all_pages=result["pages"],
+        last_loaded_page=next_page,
+        tasks=dialog_manager.dialog_data["tasks"] + new_texts,
+    )
