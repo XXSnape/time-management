@@ -4,7 +4,6 @@ from aiogram_dialog import Dialog, Window
 from aiogram_dialog.widgets.input import TextInput
 from aiogram_dialog.widgets.kbd import (
     Back,
-    Next,
     Button,
     Calendar,
     Group,

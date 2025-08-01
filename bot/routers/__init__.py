@@ -4,7 +4,7 @@ from .start import router as start_router
 from .auth import router as auth_router
 from .common import router as common_router
 from .tasks import router as tasks_router
-
+from .habits import router as habits_router
 
 router = Router(name=__name__)
 router.include_routers(
@@ -13,4 +13,5 @@ router.include_routers(
     auth_router,
     common_router,
     tasks_router,
+    habits_router,
 )
