@@ -14,3 +14,4 @@ class ViewTaskStates(StatesGroup):
     view_details = State()
     delete_task = State()
     edit_task = State()
+    edit_name = State()

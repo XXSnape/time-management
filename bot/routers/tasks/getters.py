@@ -19,6 +19,13 @@ async def task_name(**kwargs):
     }
 
 
+async def edit_task_name(**kwargs):
+    return {
+        "task_name": _("Введите новое название для задачи"),
+        "back": _("Отменить ввод названия"),
+    }
+
+
 async def task_description(**kwargs):
     return {
         "task_description": _("Введите описание задачи"),

@@ -158,10 +158,16 @@ view_tasks_dialog = Dialog(
     ),
     Window(
         Format(text="{task_text}"),
-        Button(
+        SwitchTo(
             text=Format(text="{name}"),
             id="change_name",
+            state=ViewTaskStates.edit_name,
         ),
+        # Button(
+        #     text=Format(text="{name}"),
+        #     id="change_name",
+        #     on_click=handlers.change_name,
+        # ),
         Button(
             text=Format(text="{description_text}"),
             id="change_description_text",
@@ -189,5 +195,28 @@ view_tasks_dialog = Dialog(
         ),
         state=ViewTaskStates.edit_task,
         getter=getters.edit_task,
+    ),
+    Window(
+        Format(text="{task_name}"),
+        SwitchTo(
+            text=Format("{back}"),
+            id="cancel_edit_name",
+            state=ViewTaskStates.edit_task,
+        ),
+        # Button(
+        #     text=Format("{back}"),
+        #     id="back_to_selection",
+        #     on_click=back_to_selection,
+        # ),
+        TextInput(
+            id="change_task_name",
+            type_factory=is_short_text(
+                max_length=settings.bot.max_name_length,
+            ),
+            on_success=handlers.change_name,
+            on_error=on_incorrect_text,
+        ),
+        getter=getters.edit_task_name,
+        state=ViewTaskStates.edit_name,
     ),
 )
