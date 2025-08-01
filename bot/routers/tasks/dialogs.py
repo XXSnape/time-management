@@ -31,13 +31,27 @@ create_task_dialog = Dialog(
         TextInput(
             id="task_name_input",
             type_factory=is_short_text(
-                max_length=100,
+                max_length=40,
             ),
             on_success=Next(),
             on_error=on_incorrect_text,
         ),
         getter=getters.task_name,
         state=CreateTaskStates.name,
+    ),
+    Window(
+        Format(text="{task_description}"),
+        Back(text=Format(text="{back}")),
+        TextInput(
+            id="task_description_input",
+            type_factory=is_short_text(
+                max_length=250,
+            ),
+            on_success=handlers.save_description,
+            on_error=on_incorrect_text,
+        ),
+        getter=getters.task_description,
+        state=CreateTaskStates.description,
     ),
     Window(
         Format(text="{calendar}"),

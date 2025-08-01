@@ -10,15 +10,22 @@ def generate_hours(start_hour: int):
 
 async def task_name(**kwargs):
     return {
-        "task_name": _("Введите название привычки"),
+        "task_name": _("Введите название задачи"),
         "back": _("Вернуться к выбору"),
+    }
+
+
+async def task_description(**kwargs):
+    return {
+        "task_description": _("Введите описание задачи"),
+        "back": _("Вернуться к названию"),
     }
 
 
 async def task_date(**kwargs):
     return {
         "calendar": _("Выберите дату дедлайна"),
-        "back": _("Изменить название"),
+        "back": _("Изменить описание"),
     }
 
 
