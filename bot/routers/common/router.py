@@ -4,7 +4,10 @@ from aiogram.types import Message
 from aiogram_dialog import DialogManager, StartMode
 
 from core.commands import Commands
-from routers.common.states import TaskHabitStates
+from routers.common.states import (
+    CreateTaskHabitStates,
+    ViewTasksHabitsStates,
+)
 
 router = Router(name=__name__)
 
@@ -15,6 +18,17 @@ async def create_task_or_habit(
     dialog_manager: DialogManager,
 ):
     await dialog_manager.start(
-        state=TaskHabitStates.create_task_or_habit,
+        state=CreateTaskHabitStates.create_task_or_habit,
+        mode=StartMode.RESET_STACK,
+    )
+
+
+@router.message(Command(Commands.view.name))
+async def view_tasks_or_habits(
+    message: Message,
+    dialog_manager: DialogManager,
+):
+    await dialog_manager.start(
+        state=ViewTasksHabitsStates.view_tasks_or_habits,
         mode=StartMode.RESET_STACK,
     )

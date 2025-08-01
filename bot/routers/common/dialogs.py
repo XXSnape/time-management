@@ -2,10 +2,16 @@ from aiogram_dialog import Dialog, Window
 from aiogram_dialog.widgets.kbd import Button
 from aiogram_dialog.widgets.text import Format
 
-from routers.common.states import TaskHabitStates
+from routers.common.states import (
+    CreateTaskHabitStates,
+    ViewTasksHabitsStates,
+)
 from . import getters
 from routers.habits.handlers import start_create_habit
-from routers.tasks.handlers import start_create_task
+from routers.tasks.handlers import (
+    start_create_task,
+    start_view_tasks,
+)
 
 create_task_or_habit_dialog = Dialog(
     Window(
@@ -21,6 +27,25 @@ create_task_or_habit_dialog = Dialog(
             on_click=start_create_habit,
         ),
         getter=getters.create_task_or_habit,
-        state=TaskHabitStates.create_task_or_habit,
+        state=CreateTaskHabitStates.create_task_or_habit,
+    )
+)
+
+
+view_tasks_or_habits_dialog = Dialog(
+    Window(
+        Format(text="{tasks_or_habits_text}"),
+        Button(
+            text=Format(text="{tasks_text}"),
+            id="view_tasks",
+            on_click=start_view_tasks,
+        ),
+        Button(
+            text=Format(text="{habits_text}"),
+            id="view_habits",
+            on_click=start_create_habit,
+        ),
+        getter=getters.view_tasks_or_habits,
+        state=ViewTasksHabitsStates.view_tasks_or_habits,
     )
 )

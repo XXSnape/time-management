@@ -4,7 +4,7 @@ from aiogram_dialog import DialogManager, StartMode
 from aiogram_dialog.widgets.input import ManagedTextInput
 from aiogram_dialog.widgets.kbd import Button
 
-from routers.common.states import TaskHabitStates
+from routers.common.states import CreateTaskHabitStates
 
 
 async def back_to_selection(
@@ -13,7 +13,7 @@ async def back_to_selection(
     dialog_manager: DialogManager,
 ):
     await dialog_manager.start(
-        TaskHabitStates.create_task_or_habit,
+        CreateTaskHabitStates.create_task_or_habit,
         mode=StartMode.RESET_STACK,
     )
 

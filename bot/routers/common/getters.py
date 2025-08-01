@@ -9,3 +9,13 @@ async def create_task_or_habit(**kwargs):
         "task_text": _("Задача"),
         "habit_text": _("Привычка"),
     }
+
+
+async def view_tasks_or_habits(**kwargs):
+    return {
+        "tasks_or_habits_text": _(
+            "Вы хотите узнать информацию о действующих задачах или привычках?"
+        ),
+        "tasks_text": _("Задачи"),
+        "habits_text": _("Привычки"),
+    }

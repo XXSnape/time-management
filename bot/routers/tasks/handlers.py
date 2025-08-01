@@ -1,12 +1,11 @@
 import datetime
-from datetime import date, timedelta
+from datetime import date
 from zoneinfo import ZoneInfo
 
-from aiogram.types import CallbackQuery, Message
+from aiogram.types import CallbackQuery
 from aiogram_dialog import DialogManager, StartMode
-from aiogram_dialog.widgets.input import ManagedTextInput
 from aiogram_dialog.widgets.kbd import Button, Select
-from httpx import AsyncClient, HTTPStatusError, codes
+from httpx import AsyncClient, codes
 
 from backend.core.schemas.users import UserTelegramIdSchema
 from core.enums import Methods
@@ -14,7 +13,7 @@ from core.exc import ServerIsUnavailableExc
 from core.utils.dt import get_moscow_tz_and_dt
 from core.utils.request import make_request
 from database.dao.users import UsersDAO
-from routers.tasks.states import CreateTaskStates
+from routers.tasks.states import CreateTaskStates, ViewTaskStates
 from aiogram.utils.i18n import gettext as _
 
 
@@ -25,6 +24,17 @@ async def start_create_task(
 ):
     await dialog_manager.start(
         CreateTaskStates.name,
+        mode=StartMode.RESET_STACK,
+    )
+
+
+async def start_view_tasks(
+    callback: CallbackQuery,
+    widget: Button,
+    dialog_manager: DialogManager,
+):
+    await dialog_manager.start(
+        ViewTaskStates.view_all,
         mode=StartMode.RESET_STACK,
     )
 

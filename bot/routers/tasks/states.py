@@ -7,3 +7,7 @@ class CreateTaskStates(StatesGroup):
     date = State()
     hour = State()
     notification_hour = State()
+
+
+class ViewTaskStates(StatesGroup):
+    view_all = State()

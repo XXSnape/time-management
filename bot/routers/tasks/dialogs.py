@@ -1,3 +1,4 @@
+import operator
 from operator import itemgetter
 
 from aiogram_dialog import Dialog, Window
@@ -8,13 +9,14 @@ from aiogram_dialog.widgets.kbd import (
     Calendar,
     Group,
     Select,
+    ScrollingGroup,
 )
-from aiogram_dialog.widgets.text import Format
+from aiogram_dialog.widgets.text import Format, Const
 
 from core.config import settings
 from . import getters
 from . import handlers
-from .states import CreateTaskStates
+from .states import CreateTaskStates, ViewTaskStates
 from routers.common.handlers import (
     back_to_selection,
     is_short_text,
@@ -94,4 +96,41 @@ create_task_dialog = Dialog(
         getter=getters.task_notification_hour,
         state=CreateTaskStates.notification_hour,
     ),
+)
+
+
+async def get_data(**kwargs):
+    fruits = [
+        ("Apple", "1"),
+        ("Pear", "2"),
+        ("Orange", "3"),
+        ("Banana", "4"),
+    ]
+    return {
+        "fruits": fruits,
+        "count": len(fruits),
+    }
+
+
+view_tasks_dialog = Dialog(
+    Window(
+        Const("hello"),
+        ScrollingGroup(
+            Select(
+                Format(
+                    "{item[0]} ({pos}/{data[count]})"
+                ),  # E.g `✓ Apple (1/4)`
+                id="s_fruits",
+                item_id_getter=operator.itemgetter(1),
+                # each item is a tuple with id on a first position
+                items="fruits",  # we will use items from window data at a key `fruits`
+                # on_click=on_fruit_selected,
+            ),
+            id="numbers",
+            width=6,
+            height=6,
+        ),
+        state=ViewTaskStates.view_all,
+        getter=get_data,
+    )
 )
