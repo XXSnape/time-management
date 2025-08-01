@@ -53,6 +53,9 @@ class LoggingConfig(BaseModel):
 
 class BotConfig(BaseSettings):
     token: str
+    max_login_length: int = 40
+    max_name_length: int = 50
+    max_description_length: int = 250
     model_config = SettingsConfigDict(env_prefix="bot_")
 
 

@@ -18,26 +18,6 @@ from routers.tasks.states import CreateTaskStates
 from aiogram.utils.i18n import gettext as _
 
 
-async def save_name(
-    message: Message,
-    widget: ManagedTextInput,
-    dialog_manager: DialogManager,
-    text: str,
-):
-    dialog_manager.dialog_data.update(name=text)
-    await dialog_manager.next()
-
-
-async def save_description(
-    message: Message,
-    widget: ManagedTextInput,
-    dialog_manager: DialogManager,
-    text: str,
-):
-    dialog_manager.dialog_data.update(description=text)
-    await dialog_manager.next()
-
-
 async def start_create_task(
     callback: CallbackQuery,
     widget: Button,

@@ -4,6 +4,7 @@ from aiogram_dialog.widgets.input import TextInput
 from aiogram_dialog.widgets.kbd import Button, SwitchTo, Back, Cancel
 from aiogram_dialog.widgets.text import Format
 
+from core.config import settings
 from routers.auth.states import AuthState
 from . import getters
 from . import handlers
@@ -42,7 +43,7 @@ auth_dialog = Dialog(
         TextInput(
             id="register_username_input",
             type_factory=is_short_text(
-                max_length=40,
+                max_length=settings.bot.max_login_length,
             ),
             on_success=handlers.correct_login,
             on_error=on_incorrect_text,

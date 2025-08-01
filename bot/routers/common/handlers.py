@@ -38,3 +38,16 @@ async def on_incorrect_text(
             "Текст должен быть не длиннее {max_length} символов"
         ).format(max_length=str(error))
     )
+
+
+def save_text_by_key(key: str):
+    async def _wrapper(
+        message: Message,
+        widget: ManagedTextInput,
+        dialog_manager: DialogManager,
+        text: str,
+    ):
+        dialog_manager.dialog_data.update({key: text})
+        await dialog_manager.next()
+
+    return _wrapper

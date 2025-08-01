@@ -11,6 +11,8 @@ from aiogram_dialog.widgets.kbd import (
     Select,
 )
 from aiogram_dialog.widgets.text import Format
+
+from core.config import settings
 from . import getters
 from . import handlers
 from .states import CreateTaskStates
@@ -18,6 +20,7 @@ from routers.common.handlers import (
     back_to_selection,
     is_short_text,
     on_incorrect_text,
+    save_text_by_key,
 )
 
 create_task_dialog = Dialog(
@@ -31,9 +34,9 @@ create_task_dialog = Dialog(
         TextInput(
             id="task_name_input",
             type_factory=is_short_text(
-                max_length=40,
+                max_length=settings.bot.max_name_length,
             ),
-            on_success=handlers.save_name,
+            on_success=save_text_by_key(key="name"),
             on_error=on_incorrect_text,
         ),
         getter=getters.task_name,
@@ -45,9 +48,9 @@ create_task_dialog = Dialog(
         TextInput(
             id="task_description_input",
             type_factory=is_short_text(
-                max_length=250,
+                max_length=settings.bot.max_description_length,
             ),
-            on_success=handlers.save_description,
+            on_success=save_text_by_key(key="description"),
             on_error=on_incorrect_text,
         ),
         getter=getters.task_description,
