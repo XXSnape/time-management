@@ -27,23 +27,6 @@ async def enter_login_to_register(
     await dialog_manager.switch_to(AuthState.username)
 
 
-def is_short_login(text: str):
-    if len(text) <= 40:
-        return text
-    raise ValueError
-
-
-async def incorrect_login(
-    message: Message,
-    widget: ManagedTextInput,
-    dialog_manager: DialogManager,
-    error: ValueError,
-):
-    await message.answer(
-        _("Логин должен быть не длиннее 40 символов")
-    )
-
-
 async def correct_login(
     message: Message,
     widget: ManagedTextInput,

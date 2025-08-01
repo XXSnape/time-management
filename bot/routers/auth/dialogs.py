@@ -7,6 +7,7 @@ from aiogram_dialog.widgets.text import Format
 from routers.auth.states import AuthState
 from . import getters
 from . import handlers
+from routers.common.handlers import is_short_text, on_incorrect_text
 
 
 async def click_process(
@@ -40,9 +41,11 @@ auth_dialog = Dialog(
         Format(text="{text}"),
         TextInput(
             id="register_username_input",
-            type_factory=handlers.is_short_login,
+            type_factory=is_short_text(
+                max_length=40,
+            ),
             on_success=handlers.correct_login,
-            on_error=handlers.incorrect_login,
+            on_error=on_incorrect_text,
         ),
         getter=getters.enter_username,
         state=AuthState.register_username,

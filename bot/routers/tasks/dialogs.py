@@ -6,7 +6,6 @@ from aiogram_dialog.widgets.kbd import (
     Back,
     Next,
     Button,
-    Cancel,
     Calendar,
     Group,
     Select,
@@ -15,7 +14,11 @@ from aiogram_dialog.widgets.text import Format
 from . import getters
 from . import handlers
 from .states import CreateTaskStates
-from routers.common.handlers import back_to_selection
+from routers.common.handlers import (
+    back_to_selection,
+    is_short_text,
+    on_incorrect_text,
+)
 
 create_task_dialog = Dialog(
     Window(
@@ -27,7 +30,11 @@ create_task_dialog = Dialog(
         ),
         TextInput(
             id="task_name_input",
+            type_factory=is_short_text(
+                max_length=100,
+            ),
             on_success=Next(),
+            on_error=on_incorrect_text,
         ),
         getter=getters.task_name,
         state=CreateTaskStates.name,
