@@ -7,6 +7,7 @@ from aiogram_dialog.widgets.kbd import (
     Button,
     Column,
     Multiselect,
+    Group,
 )
 from aiogram_dialog.widgets.text import Format
 
@@ -57,7 +58,7 @@ create_habit_dialog = Dialog(
         Format(text="{days_text}"),
         Column(
             Multiselect(
-                checked_text=Format("[✔️] {item[0]}"),
+                checked_text=Format("[✅] {item[0]}"),
                 unchecked_text=Format("[  ] {item[0]}"),
                 id="multi_days",
                 item_id_getter=operator.itemgetter(1),
@@ -65,13 +66,37 @@ create_habit_dialog = Dialog(
                 min_selected=1,
             ),
         ),
-        Back(
+        Button(
             text=Format(text="{save_text}"),
             when="can_be_saved",
-            on_click=handlers.save_days,
+            on_click=handlers.save_checkbox,
+            id="save_days",
         ),
         Back(text=Format(text="{back}")),
         state=CreateHabitStates.days,
         getter=getters.get_days_of_week,
+    ),
+    Window(
+        Format(text="{hours_text}"),
+        Group(
+            Multiselect(
+                checked_text=Format("[✅] {item[0]}"),
+                unchecked_text=Format("[  ] {item[0]}"),
+                id="multi_hours",
+                item_id_getter=operator.itemgetter(1),
+                items="hours",
+                min_selected=1,
+            ),
+            width=2,
+        ),
+        Button(
+            text=Format(text="{save_text}"),
+            when="can_be_saved",
+            on_click=handlers.save_habit,
+            id="save_hours",
+        ),
+        Back(text=Format(text="{back}")),
+        state=CreateHabitStates.hours,
+        getter=getters.get_hours,
     ),
 )
