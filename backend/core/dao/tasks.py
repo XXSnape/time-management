@@ -13,12 +13,7 @@ from .base import BaseDAO
 class TasksDao(BaseDAO[Task]):
     model = Task
 
-    async def get_active_user_tasks(
-        self,
-        user_id: int,
-        page: int,
-        per_page: int,
-    ) -> tuple[Sequence[Task], int]:
+    async def get_total_items(self, user_id: int):
         now = datetime.datetime.now(datetime.UTC)
         filters = (
             self.model.user_id == user_id,
@@ -31,6 +26,15 @@ class TasksDao(BaseDAO[Task]):
         count_result = (
             await self._session.execute(count_query)
         ).scalar_one()
+        return filters, count_result
+
+    async def get_active_user_tasks(
+        self,
+        user_id: int,
+        page: int,
+        per_page: int,
+    ) -> tuple[Sequence[Task], int]:
+        filters, count_result = await self.get_total_items(user_id)
         query = (
             sqlalchemy.select(self.model)
             .options(

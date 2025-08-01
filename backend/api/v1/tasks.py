@@ -9,6 +9,8 @@ from core.dependencies.db import (
     SessionWithCommit,
     SessionWithoutCommit,
 )
+
+from core.schemas.common import PaginationSchema
 from core.schemas import tasks as tasks_schemas
 from services import tasks
 from services.common import delete_entity
@@ -127,19 +129,25 @@ async def update_task(
     )
 
 
-@router.delete(
-    "/{task_id}",
-    status_code=status.HTTP_204_NO_CONTENT,
-)
+@router.delete("/{task_id}", response_model=PaginationSchema)
 async def delete_task(
     task_id: int,
     user_id: UserId,
     session: SessionWithCommit,
+    per_page: Annotated[
+        int,
+        Query(
+            ge=1,
+            le=100,
+            description="Количество записей на странице (макс. 100)",
+        ),
+    ] = 10,
 ):
-    await delete_entity(
+    return await delete_entity(
         session=session,
         user_id=user_id,
         entity_id=task_id,
         dao=TasksDao,
         exc=tasks.exc,
+        per_page=per_page,
     )

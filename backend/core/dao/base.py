@@ -2,7 +2,7 @@ import logging
 from datetime import timedelta
 
 from pydantic import BaseModel
-from sqlalchemy import delete, select, update
+from sqlalchemy import delete, select, update, func
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
 

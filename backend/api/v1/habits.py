@@ -9,6 +9,8 @@ from core.dependencies.db import (
     SessionWithCommit,
     SessionWithoutCommit,
 )
+
+from core.schemas.common import PaginationSchema
 from core.schemas import habits as habits_schemas
 from core.schemas.result import ResultSchema
 from core.utils.enums import Weekday
@@ -113,19 +115,28 @@ async def update_habit(
 
 @router.delete(
     "/{habit_id}",
-    status_code=status.HTTP_204_NO_CONTENT,
+    response_model=PaginationSchema,
 )
 async def delete_habit(
     habit_id: int,
     user_id: UserId,
     session: SessionWithCommit,
+    per_page: Annotated[
+        int,
+        Query(
+            ge=1,
+            le=100,
+            description="Количество записей на странице (макс. 100)",
+        ),
+    ] = 10,
 ):
-    await delete_entity(
+    return await delete_entity(
         session=session,
         user_id=user_id,
         entity_id=habit_id,
         dao=HabitsDAO,
         exc=habits.exc,
+        per_page=per_page,
     )
 
 

@@ -14,6 +14,17 @@ from .base import BaseDAO
 class HabitsDAO(BaseDAO[Habit]):
     model = Habit
 
+    async def get_total_items(self, user_id: int):
+        filters = (
+            self.model.user_id == user_id,
+            self.model.date_of_completion.is_(None),
+        )
+        count_query = select(func.count()).where(*filters)
+        count_result = (
+            await self._session.execute(count_query)
+        ).scalar_one()
+        return filters, count_result
+
     async def get_habit_with_all_data(
         self, filter: BaseModel
     ) -> Habit | None:
@@ -37,14 +48,9 @@ class HabitsDAO(BaseDAO[Habit]):
         page: int,
         per_page: int,
     ):
-        filters = (
-            self.model.user_id == user_id,
-            self.model.date_of_completion.is_(None),
+        filters, count_result = await self.get_total_items(
+            user_id=user_id
         )
-        count_query = select(func.count()).where(*filters)
-        count_result = (
-            await self._session.execute(count_query)
-        ).scalar_one()
         query = (
             select(self.model)
             .options(

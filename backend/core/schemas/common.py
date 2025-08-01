@@ -9,10 +9,8 @@ class IdSchema(BaseModel):
     id: int
 
 
-class PaginatedSchema[S: BaseModel](BaseModel):
-    items: list[S]
+class PaginationSchema(BaseModel):
     total_count: int
-    page: int
     per_page: Annotated[int, Field(exclude=True)]
 
     @computed_field
@@ -23,10 +21,18 @@ class PaginatedSchema[S: BaseModel](BaseModel):
         ) // self.per_page
 
 
+class PaginatedSchema[S: BaseModel](PaginationSchema):
+    items: list[S]
+    page: int
+
+
 class DateOfCompletionSchema(IdSchema):
     user_id: int
     date_of_completion: None = None
 
+class DateOfCompletionSchemaWithoutId(BaseModel):
+    user_id: int
+    date_of_completion: None = None
 
 class BaseStatisticSchema(BaseModel):
     total: int

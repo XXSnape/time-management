@@ -21,7 +21,7 @@ class Base(DeclarativeBase):
     )
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    number_output_fields = 2
+    number_output_fields = 4
 
     @declared_attr.directive
     def __tablename__(cls) -> str:
