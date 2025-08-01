@@ -4,6 +4,7 @@ from aiogram.utils.i18n import gettext as _
 from aiogram_dialog import DialogManager
 from httpx import AsyncClient
 
+from backend.core.utils.dt import get_pretty_dt
 from core.enums import Methods
 from core.schemas.users import UserTelegramIdSchema
 from core.utils.generator import generate_hours
@@ -63,11 +64,9 @@ async def task_notification_hour(**kwargs):
 def get_texts_by_tasks(tasks: list[dict]):
     texts = []
     for task in tasks:
-        dt = datetime.datetime.strptime(
-            task["deadline_datetime"], "%Y-%m-%dT%H:%M:%SZ"
-        )
         current_text = _("{name} [{deadline}]").format(
-            name=task["name"], deadline=dt.strftime("%d.%m.%Y %H:%M")
+            name=task["name"],
+            deadline=get_pretty_dt(task["deadline_datetime"]),
         )
         texts.append([current_text, task["id"]])
     return texts
@@ -121,4 +120,16 @@ async def get_user_tasks(dialog_manager: DialogManager, **kwargs):
         "tasks": texts,
         "can_be_loaded": False,
         "load_more": load_more,
+    }
+
+
+async def get_task_details(
+    dialog_manager: DialogManager,
+    **kwargs,
+):
+    task_id = dialog_manager.dialog_data["current_task"]
+    task_text = dialog_manager.dialog_data[f"task_{task_id}_text"]
+    return {
+        "task_text": task_text,
+        "back": _("Вернуться к задачам"),
     }

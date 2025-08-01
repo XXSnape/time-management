@@ -108,6 +108,7 @@ view_tasks_dialog = Dialog(
                 id="tasks",
                 item_id_getter=operator.itemgetter(1),
                 items="tasks",
+                on_click=handlers.on_click_task,
             ),
             id="all_tasks",
             width=1,
@@ -121,5 +122,11 @@ view_tasks_dialog = Dialog(
         ),
         state=ViewTaskStates.view_all,
         getter=getters.get_user_tasks,
-    )
+    ),
+    Window(
+        Format(text="{task_text}"),
+        Back(text=Format(text="{back}")),
+        state=ViewTaskStates.view_details,
+        getter=getters.get_task_details,
+    ),
 )

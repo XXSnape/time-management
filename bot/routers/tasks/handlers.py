@@ -8,6 +8,7 @@ from aiogram_dialog.widgets.kbd import Button, Select
 from httpx import AsyncClient, codes
 
 from backend.core.schemas.users import UserTelegramIdSchema
+from backend.core.utils.dt import get_pretty_dt
 from core.enums import Methods
 from core.exc import ServerIsUnavailableExc
 from core.schemas.users import UserTelegramIdSchema
@@ -165,3 +166,50 @@ async def upload_more_tasks(
         last_loaded_page=next_page,
         tasks=dialog_manager.dialog_data["tasks"] + new_texts,
     )
+
+
+async def on_click_task(
+    callback: CallbackQuery,
+    widget: Button,
+    dialog_manager: DialogManager,
+    item_id: str,
+):
+    task_text = dialog_manager.dialog_data.get(
+        f"task_{item_id}_text"
+    )
+    if task_text:
+        await dialog_manager.next()
+        return
+    client: AsyncClient = dialog_manager.middleware_data["client"]
+    session = dialog_manager.middleware_data[
+        "session_without_commit"
+    ]
+    user = await UsersDAO(session=session).find_one_or_none(
+        UserTelegramIdSchema(
+            telegram_id=dialog_manager.event.from_user.id
+        )
+    )
+    task = await make_request(
+        client=client,
+        endpoint=f"tasks/{item_id}",
+        method=Methods.get,
+        access_token=user.access_token,
+    )
+    completed = "✅" if task["date_of_completion"] else "❌"
+    text = _(
+        "Название: {name}\n\n"
+        "Описание: {description}\n\n"
+        "Количество часов до напоминания о дедлайне: {hours}\n\n"
+        "Дата дедлайна: {deadline}\n\n"
+        "Успешно завершена - {completed}"
+    ).format(
+        name=task["name"],
+        description=task["description"],
+        hours=task["hour_before_reminder"],
+        deadline=get_pretty_dt(task["deadline_datetime"]),
+        completed=completed,
+    )
+    dialog_manager.dialog_data.update(
+        {f"task_{item_id}_text": text, "current_task": item_id}
+    )
+    await dialog_manager.next()
