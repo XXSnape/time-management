@@ -108,5 +108,12 @@ async def get_item_details(
     }
 
 
+async def edit_name(**kwargs):
+    return {
+        "item_name": _("Введите новое название"),
+        "back": _("Отменить ввод названия"),
+    }
+
+
 get_tasks = partial(get_user_resources, resources=Resources.tasks)
 get_habits = partial(get_user_resources, resources=Resources.habits)

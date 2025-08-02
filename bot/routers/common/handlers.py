@@ -15,6 +15,7 @@ from core.utils.server import check_items_count
 from database.dao.users import UsersDAO
 from routers.common.states import CreateTaskHabitStates
 
+
 # from routers.habits.states import HabitsManagementStates
 # from routers.tasks.states import TasksManagementStates
 
@@ -259,3 +260,79 @@ def get_index_from_cache(texts: list, id: int):
             to_delete_index = index
             break
     return to_delete_index
+
+
+async def change_item_and_go_next(
+    dialog_manager: DialogManager,
+    resource: Resources,
+    item: str,
+    value: str | int,
+):
+    from routers.tasks.getters import get_texts_by_tasks
+    from routers.habits.getters import get_texts_by_habits
+    from routers.habits.states import HabitsManagementStates
+    from routers.tasks.states import TasksManagementStates
+    from routers.tasks.handlers import generate_task_info
+    from routers.habits.handlers import generate_habit_info
+
+    client: AsyncClient = dialog_manager.middleware_data["client"]
+    session = dialog_manager.middleware_data[
+        "session_without_commit"
+    ]
+    user = await UsersDAO(session=session).find_one_or_none(
+        UserTelegramIdSchema(
+            telegram_id=dialog_manager.event.from_user.id
+        )
+    )
+    item_id = dialog_manager.dialog_data["current_item"]
+    item = await make_request(
+        client=client,
+        endpoint=f"{resource}/{item_id}",
+        method=Methods.patch,
+        json={item: value},
+        access_token=user.access_token,
+    )
+    if resource == Resources.tasks:
+        func = get_texts_by_tasks
+        new_state = TasksManagementStates.view_details
+        generator = generate_task_info
+    else:
+        func = get_texts_by_habits
+        new_state = HabitsManagementStates.view_details
+        generator = generate_habit_info
+
+    texts = func([item])
+
+    index_to_replace = get_index_from_cache(
+        texts=dialog_manager.dialog_data["items"], id=item_id
+    )
+    dialog_manager.dialog_data["items"][index_to_replace] = texts[0]
+    generator(
+        dialog_manager=dialog_manager, item=item, item_id=item_id
+    )
+    await dialog_manager.switch_to(new_state)
+
+
+def change_item_by_text(item: str, resource: Resources):
+    async def _wrapper(
+        message: Message,
+        widget: ManagedTextInput,
+        dialog_manager: DialogManager,
+        text: str,
+    ):
+        await change_item_and_go_next(
+            dialog_manager=dialog_manager,
+            item=item,
+            value=text,
+            resource=resource,
+        )
+
+    return _wrapper
+
+
+change_task_by_text = partial(
+    change_item_by_text, resource=Resources.tasks
+)
+change_habit_by_text = partial(
+    change_task_by_text, resource=Resources.habits
+)

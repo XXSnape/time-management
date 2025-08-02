@@ -14,6 +14,7 @@ from aiogram_dialog.widgets.kbd import (
 )
 from aiogram_dialog.widgets.text import Format
 
+import routers.common.getters
 from core.config import settings
 from . import getters
 from . import handlers
@@ -27,8 +28,13 @@ from routers.common.handlers import (
     on_click_task,
     delete_task,
     mark_task,
+    change_task_by_text,
 )
-from routers.common.getters import get_tasks, get_item_details
+from routers.common.getters import (
+    get_tasks,
+    get_item_details,
+    edit_name,
+)
 
 create_task_dialog = Dialog(
     Window(
@@ -201,10 +207,10 @@ tasks_management_dialog = Dialog(
         getter=getters.edit_task,
     ),
     Window(
-        Format(text="{task_name}"),
+        Format(text="{item_name}"),
         SwitchTo(
             text=Format("{back}"),
-            id="cancel_edit_name",
+            id="cancel_edit_task_name",
             state=TasksManagementStates.edit_task,
         ),
         TextInput(
@@ -212,10 +218,10 @@ tasks_management_dialog = Dialog(
             type_factory=is_short_text(
                 max_length=settings.bot.max_name_length,
             ),
-            on_success=handlers.change_item_by_text(item="name"),
+            on_success=change_task_by_text(item="name"),
             on_error=on_incorrect_text,
         ),
-        getter=getters.edit_task_name,
+        getter=edit_name,
         state=TasksManagementStates.edit_name,
     ),
     Window(
@@ -230,9 +236,7 @@ tasks_management_dialog = Dialog(
             type_factory=is_short_text(
                 max_length=settings.bot.max_description_length,
             ),
-            on_success=handlers.change_item_by_text(
-                item="description"
-            ),
+            on_success=change_task_by_text(item="description"),
             on_error=on_incorrect_text,
         ),
         getter=getters.edit_task_description,

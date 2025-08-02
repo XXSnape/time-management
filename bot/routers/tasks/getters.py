@@ -2,27 +2,15 @@ import datetime
 
 from aiogram.utils.i18n import gettext as _
 from aiogram_dialog import DialogManager
-from httpx import AsyncClient
 
 from core.utils.dt import get_pretty_dt, get_moscow_dt
-from core.enums import Methods
-from core.schemas.users import UserTelegramIdSchema
 from core.utils.generator import generate_hours
-from core.utils.request import make_request
-from database.dao.users import UsersDAO
 
 
 async def task_name(**kwargs):
     return {
         "task_name": _("Введите название задачи"),
         "back": _("Вернуться к выбору"),
-    }
-
-
-async def edit_task_name(**kwargs):
-    return {
-        "task_name": _("Введите новое название для задачи"),
-        "back": _("Отменить ввод названия"),
     }
 
 

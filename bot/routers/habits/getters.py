@@ -65,6 +65,24 @@ async def delete_habit(**kwargs):
     }
 
 
+async def edit_habit(
+    dialog_manager: DialogManager,
+    **kwargs,
+):
+    habit_id = dialog_manager.dialog_data["current_item"]
+    habit_data = dialog_manager.dialog_data[f"item_{habit_id}_data"]
+    habit_text = habit_data["text"]
+    return {
+        "habit_text": habit_text,
+        "name_text": _("Название"),
+        "purpose_text": _("Цель"),
+        "days_text": _("Дни напоминаний"),
+        "hours_text": _("Часы напоминаний"),
+        "mark_text": _("Отметить завершённой"),
+        "back": _("Вернуться к деталям"),
+    }
+
+
 def get_texts_by_habits(habits: list[dict]):
     texts = []
     for habit in habits:

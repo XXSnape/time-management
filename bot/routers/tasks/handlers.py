@@ -1,13 +1,12 @@
 import datetime
 from datetime import date
 
-from aiogram.types import CallbackQuery, Message
+from aiogram.types import CallbackQuery
 from aiogram_dialog import DialogManager, StartMode
-from aiogram_dialog.widgets.input import ManagedTextInput
 from aiogram_dialog.widgets.kbd import Button, Select
 from httpx import AsyncClient, codes
 
-from core.enums import Methods
+from core.enums import Methods, Resources
 from core.exc import ServerIsUnavailableExc
 from core.schemas.users import UserTelegramIdSchema
 from core.utils.dt import (
@@ -18,11 +17,8 @@ from core.utils.dt import (
     convert_moscow_dt_to_utc,
 )
 from core.utils.request import make_request
-from core.utils.server import check_items_count
 from database.dao.users import UsersDAO
 
-# from routers.common.handlers import get_index_from_cache
-from routers.tasks.getters import get_texts_by_tasks
 from routers.tasks.states import (
     CreateTaskStates,
     TasksManagementStates,
@@ -181,57 +177,27 @@ def generate_task_info(
     )
 
 
-async def change_item_and_go_next(
-    dialog_manager: DialogManager, item: str, value: str | int
-):
-    from routers.common.handlers import get_index_from_cache
-
-    client: AsyncClient = dialog_manager.middleware_data["client"]
-    session = dialog_manager.middleware_data[
-        "session_without_commit"
-    ]
-    user = await UsersDAO(session=session).find_one_or_none(
-        UserTelegramIdSchema(
-            telegram_id=dialog_manager.event.from_user.id
-        )
-    )
-    task_id = dialog_manager.dialog_data["current_task"]
-    task = await make_request(
-        client=client,
-        endpoint=f"tasks/{task_id}",
-        method=Methods.patch,
-        json={item: value},
-        access_token=user.access_token,
-    )
-    texts = get_texts_by_tasks(tasks=[task])
-    index_to_replace = get_index_from_cache(
-        texts=dialog_manager.dialog_data["tasks"], id=task_id
-    )
-    dialog_manager.dialog_data["tasks"][index_to_replace] = texts[0]
-    generate_task_info(
-        dialog_manager=dialog_manager, item=task, item_id=task_id
-    )
-    await dialog_manager.switch_to(
-        TasksManagementStates.view_details
-    )
-
-
 async def change_notification_hour(
     callback: CallbackQuery,
     widget: Select,
     dialog_manager: DialogManager,
     item_id: str,
 ):
+    from routers.common.handlers import change_item_and_go_next
+
     await change_item_and_go_next(
         dialog_manager=dialog_manager,
         item="hour_before_reminder",
         value=int(item_id),
+        resource=Resources.tasks,
     )
 
 
 async def change_deadline(
     manager: DialogManager, callback: CallbackQuery, **kwargs: int
 ):
+    from routers.common.handlers import change_item_and_go_next
+
     task_id = manager.dialog_data["current_task"]
     deadline_utc = manager.dialog_data[f"task_{task_id}_data"][
         "deadline_utc"
@@ -245,6 +211,7 @@ async def change_deadline(
             dialog_manager=manager,
             item="deadline_datetime",
             value=str(new_utc_dt),
+            resource=Resources.tasks,
         )
     except ServerIsUnavailableExc as e:
         await catching_deadline_error(
@@ -281,17 +248,3 @@ async def change_deadline_time(
     await change_deadline(
         manager=dialog_manager, callback=callback, hour=int(item_id)
     )
-
-
-def change_item_by_text(item: str):
-    async def _wrapper(
-        message: Message,
-        widget: ManagedTextInput,
-        dialog_manager: DialogManager,
-        text: str,
-    ):
-        await change_item_and_go_next(
-            dialog_manager=dialog_manager, item=item, value=text
-        )
-
-    return _wrapper

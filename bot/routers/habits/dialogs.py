@@ -25,9 +25,15 @@ from routers.common.handlers import (
     on_click_habit,
     upload_habits,
     delete_habit,
+    mark_habit,
+    change_habit_by_text,
 )
 
-from routers.common.getters import get_habits, get_item_details
+from routers.common.getters import (
+    get_habits,
+    get_item_details,
+    edit_name,
+)
 
 create_habit_dialog = Dialog(
     Window(
@@ -137,11 +143,11 @@ habits_management_dialog = Dialog(
     Window(
         Format(text="{item_text}"),
         Back(text=Format(text="{back}")),
-        # SwitchTo(
-        #     text=Format(text="{edit_text}"),
-        #     id="edit_task",
-        #     state=TasksManagementStates.edit_task,
-        # ),
+        SwitchTo(
+            text=Format(text="{edit_text}"),
+            id="edit_habit",
+            state=HabitsManagementStates.edit_habit,
+        ),
         SwitchTo(
             text=Format(text="{delete_text}"),
             id="delete_habit",
@@ -164,5 +170,58 @@ habits_management_dialog = Dialog(
         ),
         state=HabitsManagementStates.delete_habit,
         getter=getters.delete_habit,
+    ),
+    Window(
+        Format(text="{habit_text}"),
+        SwitchTo(
+            text=Format(text="{name_text}"),
+            id="change_habit_name",
+            state=HabitsManagementStates.edit_name,
+        ),
+        SwitchTo(
+            text=Format(text="{purpose_text}"),
+            id="change_habit_purpose",
+            state=HabitsManagementStates.edit_purpose,
+        ),
+        SwitchTo(
+            text=Format(text="{days_text}"),
+            id="change_habit_days",
+            state=HabitsManagementStates.edit_days,
+        ),
+        SwitchTo(
+            text=Format(text="{hours_text}"),
+            id="change_habit_hours",
+            state=HabitsManagementStates.edit_hours,
+        ),
+        Button(
+            text=Format(text="{mark_text}"),
+            id="mark_habit_completed",
+            on_click=mark_habit,
+        ),
+        SwitchTo(
+            text=Format(text="{back}"),
+            id="cancel_habit_edition",
+            state=HabitsManagementStates.view_details,
+        ),
+        state=HabitsManagementStates.edit_habit,
+        getter=getters.edit_habit,
+    ),
+    Window(
+        Format(text="{item_name}"),
+        SwitchTo(
+            text=Format("{back}"),
+            id="cancel_edit_habit_name",
+            state=HabitsManagementStates.edit_habit,
+        ),
+        TextInput(
+            id="change_habit_name",
+            type_factory=is_short_text(
+                max_length=settings.bot.max_name_length,
+            ),
+            on_success=change_habit_by_text(item="name"),
+            on_error=on_incorrect_text,
+        ),
+        getter=edit_name,
+        state=HabitsManagementStates.edit_name,
     ),
 )
