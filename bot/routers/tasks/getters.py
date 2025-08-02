@@ -4,7 +4,7 @@ from aiogram.utils.i18n import gettext as _
 from aiogram_dialog import DialogManager
 from httpx import AsyncClient
 
-from core.utils.dt import get_pretty_dt
+from core.utils.dt import get_pretty_dt, get_moscow_dt
 from core.enums import Methods
 from core.schemas.users import UserTelegramIdSchema
 from core.utils.generator import generate_hours
@@ -48,8 +48,7 @@ async def task_date(**kwargs):
 
 
 async def task_hour(dialog_manager: DialogManager, **kwargs):
-    moscow_tz = datetime.timezone(datetime.timedelta(hours=3))
-    moscow_dt = datetime.datetime.now(moscow_tz)
+    moscow_dt = get_moscow_dt()
     hour = 0
     if (
         datetime.datetime.strptime(
@@ -198,4 +197,12 @@ async def edit_task(
         ),
         "mark_text": _("Отметить выполненной"),
         "back": _("Вернуться к деталям"),
+    }
+
+
+async def change_deadline_time(**kwargs):
+    return {
+        "hours": generate_hours(start_hour=0, end_hour=24),
+        "hour_text": _("Выберете новый час дедлайна"),
+        "back": _("Отменить выбор часа дедлайна"),
     }

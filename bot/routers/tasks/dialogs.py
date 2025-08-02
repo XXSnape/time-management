@@ -172,9 +172,10 @@ view_tasks_dialog = Dialog(
             id="change_deadline_date",
             state=ViewTaskStates.edit_deadline_date,
         ),
-        Button(
+        SwitchTo(
             text=Format(text="{deadline_time_text}"),
             id="change_deadline_time",
+            state=ViewTaskStates.edit_deadline_time,
         ),
         SwitchTo(
             text=Format(text="{notification_hour_text}"),
@@ -256,8 +257,32 @@ view_tasks_dialog = Dialog(
         Calendar(
             id="calendar", on_click=handlers.change_deadline_date
         ),
-        Back(text=Format(text="{back}")),
+        SwitchTo(
+            text=Format("{back}"),
+            id="cancel_edit_deadline_date",
+            state=ViewTaskStates.edit_task,
+        ),
         getter=getters.change_deadline_date,
         state=ViewTaskStates.edit_deadline_date,
+    ),
+    Window(
+        Format(text="{hour_text}"),
+        Group(
+            Select(
+                Format("{item[0]}"),
+                id="hour",
+                item_id_getter=itemgetter(1),
+                items="hours",
+                on_click=handlers.change_deadline_time,
+            ),
+            width=2,
+        ),
+        SwitchTo(
+            text=Format("{back}"),
+            id="cancel_edit_deadline_time",
+            state=ViewTaskStates.edit_task,
+        ),
+        getter=getters.change_deadline_time,
+        state=ViewTaskStates.edit_deadline_time,
     ),
 )

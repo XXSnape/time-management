@@ -334,28 +334,16 @@ async def change_notification_hour(
     )
 
 
-async def change_deadline_date(
-    callback: CallbackQuery,
-    widget,
-    manager: DialogManager,
-    selected_date: date,
+async def change_deadline(
+    manager: DialogManager, callback: CallbackQuery, **kwargs: int
 ):
-    res = await selected_date_validator(
-        callback=callback, selected_date=selected_date
-    )
-    if not res:
-        return
     task_id = manager.dialog_data["current_task"]
     deadline_utc = manager.dialog_data[f"task_{task_id}_data"][
         "deadline_utc"
     ]
     utc_dt = parse_utc_string_to_dt(deadline_utc)
     moscow_dt = convert_utc_to_moscow(utc_dt)
-    moscow_dt = moscow_dt.replace(
-        year=selected_date.year,
-        month=selected_date.month,
-        day=selected_date.day,
-    )
+    moscow_dt = moscow_dt.replace(**kwargs)
     new_utc_dt = convert_moscow_dt_to_utc(moscow_dt=moscow_dt)
     try:
         await change_item_and_go_next(
@@ -367,6 +355,37 @@ async def change_deadline_date(
         await catching_deadline_error(
             callback=callback, e=e, create=False
         )
+
+
+async def change_deadline_date(
+    callback: CallbackQuery,
+    widget,
+    manager: DialogManager,
+    selected_date: date,
+):
+    res = await selected_date_validator(
+        callback=callback, selected_date=selected_date
+    )
+    if not res:
+        return
+    await change_deadline(
+        manager=manager,
+        callback=callback,
+        year=selected_date.year,
+        month=selected_date.month,
+        day=selected_date.day,
+    )
+
+
+async def change_deadline_time(
+    callback: CallbackQuery,
+    widget: Select,
+    dialog_manager: DialogManager,
+    item_id: str,
+):
+    await change_deadline(
+        manager=dialog_manager, callback=callback, hour=int(item_id)
+    )
 
 
 def change_item_by_text(item: str):

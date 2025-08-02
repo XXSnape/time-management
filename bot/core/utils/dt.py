@@ -5,12 +5,10 @@ from aiogram.types import CallbackQuery
 from aiogram.utils.i18n import gettext as _
 
 
-def get_moscow_tz_and_dt() -> (
-    tuple[datetime.timezone, datetime.datetime]
-):
+def get_moscow_dt() -> datetime.datetime:
     moscow_tz = datetime.timezone(datetime.timedelta(hours=3))
     moscow_dt = datetime.datetime.now(moscow_tz)
-    return moscow_tz, moscow_dt
+    return moscow_dt
 
 
 def convert_utc_to_moscow(
@@ -46,7 +44,7 @@ async def selected_date_validator(
     callback: CallbackQuery,
     selected_date: datetime.date,
 ) -> bool:
-    __, dt = get_moscow_tz_and_dt()
+    dt = get_moscow_dt()
     if (
         selected_date < dt.date()
         or selected_date == dt.date()
