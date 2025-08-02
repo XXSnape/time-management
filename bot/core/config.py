@@ -1,7 +1,14 @@
 import logging
 from typing import Literal
 
+from aiogram import Bot
+from aiogram.client.default import DefaultBotProperties
+from aiogram.enums import ParseMode
+from apscheduler.jobstores.redis import RedisJobStore
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from dotenv import load_dotenv
+from faststream import FastStream
+from faststream.rabbit import RabbitBroker
 from pydantic import BaseModel
 from pathlib import Path
 
@@ -98,6 +105,24 @@ class LocaleConfig(BaseModel):
     domain: str = "time_management_bot"
 
 
+class RabbitConfig(BaseSettings):
+    default_user: str
+    default_pass: str
+    host: str
+    port: int
+
+    model_config = SettingsConfigDict(
+        case_sensitive=False, env_prefix="rabbitmq_"
+    )
+
+    @property
+    def url(self):
+        return (
+            f"amqp://{self.default_user}:"
+            f"{self.default_pass}@{self.host}:{self.port}/"
+        )
+
+
 class Settings(BaseSettings):
     """
     Основные настройки приложения.
@@ -109,6 +134,7 @@ class Settings(BaseSettings):
     locale: LocaleConfig = LocaleConfig()
     api: ApiConfig = ApiConfig()
     redis: RedisConfig = RedisConfig()
+    rabbit: RabbitConfig = RabbitConfig()
     model_config = SettingsConfigDict(
         case_sensitive=False,
     )
@@ -116,7 +142,20 @@ class Settings(BaseSettings):
 
 settings = Settings()
 
-# bot = Bot(
-#     token=settings.bot.token,
-#     default=DefaultBotProperties(parse_mode=ParseMode.HTML),
-# )
+bot = Bot(
+    token=settings.bot.token,
+    default=DefaultBotProperties(parse_mode=ParseMode.HTML),
+)
+
+scheduler = AsyncIOScheduler(
+    jobstores={
+        "default": RedisJobStore(
+            host=settings.redis.host,
+            port=settings.redis.port,
+        )
+    }
+)
+
+
+broker = RabbitBroker(settings.rabbit.url)
+app = FastStream(broker)

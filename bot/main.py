@@ -1,9 +1,7 @@
 import asyncio
 import logging
 
-from aiogram import Bot, Dispatcher
-from aiogram.client.default import DefaultBotProperties
-from aiogram.enums import ParseMode
+from aiogram import Dispatcher
 from aiogram.filters import ExceptionTypeFilter
 from aiogram.types import BotCommand, BotCommandScopeAllPrivateChats
 from aiogram.utils.i18n import (
@@ -18,11 +16,12 @@ from core.exc import (
     UnauthorizedExc,
     DataIsOutdated,
 )
+from core.scheduler.settings import register_tasks
 from database.utils.sessions import engine
 from middlewares.http import HttpClientMiddleware
 from routers import router
 
-from core.config import settings
+from core.config import settings, bot, broker, scheduler
 from middlewares.db import (
     DatabaseMiddlewareWithoutCommit,
     DatabaseMiddlewareWithCommit,
@@ -49,10 +48,6 @@ async def main():
         BotCommand(command=command.name, description=command)
         for command in Commands
     ]
-    bot = Bot(
-        token=settings.bot.token,
-        default=DefaultBotProperties(parse_mode=ParseMode.HTML),
-    )
     await bot.set_my_commands(
         commands, BotCommandScopeAllPrivateChats()
     )
@@ -94,6 +89,9 @@ async def main():
     )
     try:
         logger.info("Запускаем бота...")
+        register_tasks()
+        await broker.connect()
+        scheduler.start()
         await dp.start_polling(bot)
     except (KeyboardInterrupt, asyncio.CancelledError):
         logger.info("Завершение работы пользователем")

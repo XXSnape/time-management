@@ -10,3 +10,17 @@ services:
       interval: 5s
       timeout: 3s
       retries: 3
+
+  rabbitmq:
+    image: rabbitmq:alpine
+    ports:
+      - 5672:5672
+    volumes:
+      - ./rabbitmq_data:/data
+    env_file:
+      - .env
+    healthcheck:
+      test: [ "CMD", "rabbitmqctl", "status" ]
+      interval: 5s
+      timeout: 3s
+      retries: 3
