@@ -74,6 +74,7 @@ async def main():
     dp.update.middleware(HttpClientMiddleware(client=client))
     dp.errors.middleware(DatabaseMiddlewareWithoutCommit())
     dp.errors.middleware(LocaleFromDatabaseMiddleware(i18n=i18n))
+    setup_dialogs(dp)
     dp.errors.register(
         on_server_is_unavailable,
         ExceptionTypeFilter(ServerIsUnavailableExc),

@@ -1,8 +1,25 @@
-from aiogram.types import ErrorEvent
+from aiogram.types import (
+    ErrorEvent,
+    Message,
+    CallbackQuery,
+    TelegramObject,
+)
 from aiogram_dialog import DialogManager
 from aiogram.utils.i18n import gettext as _
 
 from core.commands import Commands
+
+
+async def delete_markup(
+    dialog_manager: DialogManager, event: TelegramObject
+):
+    if dialog_manager.has_context():
+        await dialog_manager.done()
+        return
+    if isinstance(event, Message):
+        await event.delete_reply_markup()
+    elif isinstance(event, CallbackQuery):
+        await event.message.delete_reply_markup()
 
 
 async def on_server_is_unavailable(
@@ -15,7 +32,7 @@ async def on_server_is_unavailable(
             "Извините, сервер временно недоступен. Попробуйте позже!"
         ),
     )
-    await dialog_manager.done()
+    await delete_markup(dialog_manager=dialog_manager, event=event)
 
 
 async def on_unauthorized(
@@ -29,4 +46,4 @@ async def on_unauthorized(
             "Пожалуйста, войдите снова через команду /{command}"
         ).format(command=Commands.auth.name),
     )
-    await dialog_manager.done()
+    await delete_markup(dialog_manager=dialog_manager, event=event)
