@@ -6,3 +6,15 @@ class CreateHabitStates(StatesGroup):
     purpose = State()
     days = State()
     hours = State()
+
+
+class HabitsManagementStates(StatesGroup):
+    view_all = State()
+    view_details = State()
+    delete_habit = State()
+    edit_habit = State()
+    edit_name = State()
+    edit_purpose = State()
+    edit_days = State()
+    edit_hours = State()
+    mark = State()
