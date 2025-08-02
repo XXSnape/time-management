@@ -37,6 +37,7 @@ class HabitRepository(BaseRepository):
         item_id: str | int,
     ) -> None:
         is_completed = "✅" if item["date_of_completion"] else "❌"
+        weekdays = list(Weekday)
         translates = {
             Weekday.monday: _("Понедельник"),
             Weekday.tuesday: _("Вторник"),
@@ -59,8 +60,16 @@ class HabitRepository(BaseRepository):
         ).format(
             name=item["name"],
             purpose=item["purpose"],
-            days=", ".join(translates[d] for d in item["days"]),
-            hours=", ".join(str(h) for h in item["hours"]),
+            days=", ".join(
+                translates[d]
+                for d in sorted(
+                    item["days"], key=lambda d: weekdays.index(d)
+                )
+            ),
+            hours=", ".join(
+                str(h)
+                for h in sorted(item["hours"], key=lambda h: int(h))
+            ),
             completed=item["completed"],
             total=item["total"],
             performance=item["performance"],

@@ -21,21 +21,25 @@ async def habit_purpose(**kwargs):
     }
 
 
+def get_days():
+    return [
+        (_("Понедельник"), Weekday.monday),
+        (_("Вторник"), Weekday.tuesday),
+        (_("Среда"), Weekday.wednesday),
+        (_("Четверг"), Weekday.thursday),
+        (_("Пятница"), Weekday.friday),
+        (_("Суббота"), Weekday.saturday),
+        (_("Воскресенье"), Weekday.sunday),
+    ]
+
+
 async def get_days_of_week(dialog_manager: DialogManager, **kwargs):
     checkbox = dialog_manager.find("multi_days").get_checked()
     return {
         "days_text": _(
             _("Выберете дни недели, когда вам присылать напоминание")
         ),
-        "days": [
-            (_("Понедельник"), Weekday.monday),
-            (_("Вторник"), Weekday.tuesday),
-            (_("Среда"), Weekday.wednesday),
-            (_("Четверг"), Weekday.thursday),
-            (_("Пятница"), Weekday.friday),
-            (_("Суббота"), Weekday.saturday),
-            (_("Воскресенье"), Weekday.sunday),
-        ],
+        "days": get_days(),
         "save_text": _("Сохранить"),
         "back": _("Изменить цель привычки"),
         "can_be_saved": bool(checkbox),
@@ -87,6 +91,31 @@ async def edit_habit_purpose(**kwargs):
     return {
         "habit_purpose": _("Введите новую цель для привычки"),
         "back": _("Отменить ввод цели"),
+    }
+
+
+async def edit_habit_days(
+    dialog_manager: DialogManager,
+    **kwargs,
+):
+    days = get_days()
+    habit_id = dialog_manager.dialog_data["current_item"]
+    habit_data = dialog_manager.dialog_data[f"item_{habit_id}_data"]
+    selected_days = habit_data["days"]
+    multiselect = dialog_manager.find("multi_days")
+    first = dialog_manager.dialog_data.get("first")
+    if first is None:
+        for __, day in days:
+            if day in selected_days:
+                await multiselect.set_checked(day, True)
+        dialog_manager.dialog_data["first"] = False
+    return {
+        "habit_days": _(
+            "Выберете дни, когда вам присылать напоминание о привычке"
+        ),
+        "days": days,
+        "back": _("Отменить выбор"),
+        "save_text": _("Сохранить"),
     }
 
 

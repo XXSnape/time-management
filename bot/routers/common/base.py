@@ -283,7 +283,7 @@ class BaseRepository(ABC):
         self,
         dialog_manager: DialogManager,
         item: str,
-        value: str | int,
+        value: str | int | list[str | int],
     ) -> None:
         client, session, access_token = (
             await self.get_client_session_token(dialog_manager)
@@ -321,6 +321,25 @@ class BaseRepository(ABC):
                 dialog_manager=dialog_manager,
                 item=attr,
                 value=text,
+            )
+
+        return _wrapper
+
+    def change_attr_by_multiselect(
+        self, attr: str, multiselect_id: str
+    ):
+        async def _wrapper(
+            callback: CallbackQuery,
+            widget: Button,
+            dialog_manager: DialogManager,
+        ):
+            checkbox = dialog_manager.find(
+                multiselect_id
+            ).get_checked()
+            await self._change_item_and_go_next(
+                dialog_manager=dialog_manager,
+                item=attr,
+                value=checkbox,
             )
 
         return _wrapper
