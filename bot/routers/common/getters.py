@@ -31,21 +31,14 @@ async def view_tasks_or_habits(**kwargs):
     }
 
 
-def get_texts_by_habits(habits: list[dict]):
-    texts = []
-    for habit in habits:
-        current_text = _("{name}").format(
-            name=habit["name"],
-        )
-        texts.append([current_text, habit["id"]])
-    return texts
-
-
 async def get_user_resources(
     dialog_manager: DialogManager,
     resources: Literal["tasks", "habits"],
     **kwargs,
 ):
+    from routers.habits.getters import get_texts_by_habits
+    from routers.tasks.getters import get_texts_by_tasks
+
     load_more = _("Загрузить еще")
     items_text = _("Нажмите, чтобы посмотреть подробности")
     items_from_cache = dialog_manager.dialog_data.get("items")
@@ -83,8 +76,7 @@ async def get_user_resources(
         access_token=user.access_token,
     )
     if resources == "tasks":
-        pass
-        # func = get_texts_by_tasks
+        func = get_texts_by_tasks
     else:
         func = get_texts_by_habits
     texts = func(result["items"])
@@ -101,4 +93,5 @@ async def get_user_resources(
     }
 
 
+get_tasks = partial(get_user_resources, resources="tasks")
 get_habits = partial(get_user_resources, resources="habits")

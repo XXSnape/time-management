@@ -53,3 +53,13 @@ async def get_hours(dialog_manager: DialogManager, **kwargs):
         "back": _("Изменить дни недели"),
         "can_be_saved": bool(checkbox),
     }
+
+
+def get_texts_by_habits(habits: list[dict]):
+    texts = []
+    for habit in habits:
+        current_text = _("{name}").format(
+            name=habit["name"],
+        )
+        texts.append([current_text, habit["id"]])
+    return texts

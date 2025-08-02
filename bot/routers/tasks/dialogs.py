@@ -24,6 +24,7 @@ from routers.common.handlers import (
     on_incorrect_text,
     save_text_by_key,
 )
+from routers.common.getters import get_tasks
 
 create_task_dialog = Dialog(
     Window(
@@ -102,13 +103,13 @@ create_task_dialog = Dialog(
 
 tasks_management_dialog = Dialog(
     Window(
-        Format(text="{tasks_text}"),
+        Format(text="{items_text}"),
         ScrollingGroup(
             Select(
                 Format("{item[0]}"),
                 id="tasks",
                 item_id_getter=operator.itemgetter(1),
-                items="tasks",
+                items="items",
                 on_click=handlers.on_click_task,
             ),
             id="all_tasks",
@@ -122,7 +123,7 @@ tasks_management_dialog = Dialog(
             on_click=handlers.upload_more_tasks,
         ),
         state=TasksManagementStates.view_all,
-        getter=getters.get_user_tasks,
+        getter=get_tasks,
     ),
     Window(
         Format(text="{task_text}"),
