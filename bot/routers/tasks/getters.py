@@ -4,7 +4,7 @@ from aiogram.utils.i18n import gettext as _
 from aiogram_dialog import DialogManager
 from httpx import AsyncClient
 
-from backend.core.utils.dt import get_pretty_dt
+from core.utils.dt import get_pretty_dt
 from core.enums import Methods
 from core.schemas.users import UserTelegramIdSchema
 from core.utils.generator import generate_hours
@@ -151,7 +151,8 @@ async def get_task_details(
     **kwargs,
 ):
     task_id = dialog_manager.dialog_data["current_task"]
-    task_text = dialog_manager.dialog_data[f"task_{task_id}_text"]
+    task_data = dialog_manager.dialog_data[f"task_{task_id}_data"]
+    task_text = task_data["text"]
     return {
         "task_text": task_text,
         "edit_text": _("Редактировать"),
@@ -177,7 +178,8 @@ async def edit_task(
     **kwargs,
 ):
     task_id = dialog_manager.dialog_data["current_task"]
-    task_text = dialog_manager.dialog_data[f"task_{task_id}_text"]
+    task_data = dialog_manager.dialog_data[f"task_{task_id}_data"]
+    task_text = task_data["text"]
     return {
         "task_text": task_text,
         "name": _("Название"),

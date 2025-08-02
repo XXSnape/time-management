@@ -9,11 +9,10 @@ from aiogram_dialog.widgets.kbd import Button, Select
 from httpx import AsyncClient, codes
 
 from backend.core.schemas.users import UserTelegramIdSchema
-from backend.core.utils.dt import get_pretty_dt
 from core.enums import Methods
 from core.exc import ServerIsUnavailableExc
 from core.schemas.users import UserTelegramIdSchema
-from core.utils.dt import get_moscow_tz_and_dt
+from core.utils.dt import get_moscow_tz_and_dt, get_pretty_dt
 from core.utils.request import make_request
 from database.dao.users import UsersDAO
 from routers.tasks.getters import get_texts_by_tasks
@@ -199,7 +198,13 @@ def generate_task_info(
         completed=completed,
     )
     dialog_manager.dialog_data.update(
-        {f"task_{item_id}_text": text, "current_task": int(item_id)}
+        {
+            f"task_{item_id}_data": {
+                "text": text,
+                "deadline": task["deadline_datetime"],
+            },
+            "current_task": int(item_id),
+        }
     )
 
 
@@ -209,10 +214,10 @@ async def on_click_task(
     dialog_manager: DialogManager,
     item_id: str,
 ):
-    task_text = dialog_manager.dialog_data.get(
-        f"task_{item_id}_text"
+    task_data = dialog_manager.dialog_data.get(
+        f"task_{item_id}_data"
     )
-    if task_text:
+    if task_data:
         await dialog_manager.next()
         return
     client: AsyncClient = dialog_manager.middleware_data["client"]
