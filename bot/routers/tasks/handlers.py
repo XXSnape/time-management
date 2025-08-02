@@ -1,6 +1,5 @@
 import datetime
 from datetime import date
-from zoneinfo import ZoneInfo
 
 from aiogram.types import CallbackQuery, Message
 from aiogram_dialog import DialogManager, StartMode
@@ -8,7 +7,6 @@ from aiogram_dialog.widgets.input import ManagedTextInput
 from aiogram_dialog.widgets.kbd import Button, Select
 from httpx import AsyncClient, codes
 
-from backend.core.schemas.users import UserTelegramIdSchema
 from core.enums import Methods
 from core.exc import ServerIsUnavailableExc
 from core.schemas.users import UserTelegramIdSchema
@@ -18,6 +16,7 @@ from core.utils.dt import (
     parse_utc_string_to_dt,
     convert_utc_to_moscow,
     convert_moscow_dt_to_utc,
+    get_moscow_dt,
 )
 from core.utils.request import make_request
 from database.dao.users import UsersDAO
@@ -400,3 +399,45 @@ def change_item_by_text(item: str):
         )
 
     return _wrapper
+
+
+async def mark_task_completed(
+    callback: CallbackQuery,
+    widget: Button,
+    dialog_manager: DialogManager,
+):
+    client: AsyncClient = dialog_manager.middleware_data["client"]
+    session = dialog_manager.middleware_data[
+        "session_without_commit"
+    ]
+    user = await UsersDAO(session=session).find_one_or_none(
+        UserTelegramIdSchema(
+            telegram_id=dialog_manager.event.from_user.id
+        )
+    )
+    task_id = dialog_manager.dialog_data["current_task"]
+
+    tasks_count = await make_request(
+        client=client,
+        endpoint=f"tasks/{task_id}/completion",
+        method=Methods.patch,
+        access_token=user.access_token,
+        json={"date_of_completion": str(get_moscow_dt().date())},
+    )
+    texts = dialog_manager.dialog_data["tasks"]
+    to_delete_index = get_index_from_cache(texts=texts, id=task_id)
+    texts.pop(to_delete_index)
+    await callback.answer(
+        _("Задача выполнена! Поздравляем!"), show_alert=True
+    )
+    if (
+        tasks_count["pages"]
+        < dialog_manager.dialog_data["next_page"]
+    ):
+        dialog_manager.dialog_data["next_page"] = tasks_count[
+            "pages"
+        ]
+    dialog_manager.dialog_data["total_count"] = tasks_count[
+        "total_count"
+    ]
+    await dialog_manager.switch_to(ViewTaskStates.view_all)

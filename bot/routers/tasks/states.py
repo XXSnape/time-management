@@ -19,3 +19,4 @@ class ViewTaskStates(StatesGroup):
     edit_deadline_date = State()
     edit_deadline_time = State()
     edit_hour = State()
+    mark = State()

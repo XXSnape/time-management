@@ -184,7 +184,9 @@ view_tasks_dialog = Dialog(
         ),
         Button(
             text=Format(text="{mark_text}"),
-            id="change_mark",
+            id="mark_task_completed",
+            on_click=handlers.mark_task_completed,
+            # state=ViewTaskStates.mark,
         ),
         SwitchTo(
             text=Format(text="{back}"),
