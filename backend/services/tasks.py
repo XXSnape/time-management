@@ -4,6 +4,8 @@ from fastapi import HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.dao.tasks import TasksDao
+
+from backend.core.utils.dt import validate_dt
 from core.schemas import tasks as tasks_schemas
 from core.schemas.common import DateOfCompletionSchema, IdSchema
 
@@ -19,21 +21,9 @@ async def create_task(
     task_in: tasks_schemas.TaskInSchema,
 ) -> tasks_schemas.TaskOutSchema:
 
-    now = datetime.datetime.now(datetime.UTC)
-    if task_in.deadline_datetime.tzinfo is None:
-        deadline_utc = task_in.deadline_datetime.replace(
-            tzinfo=datetime.UTC
-        )
-    else:
-        deadline_utc = task_in.deadline_datetime.astimezone(
-            datetime.UTC
-        )
-    if now >= deadline_utc:
-        raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT,
-            detail="Входящие дата и время меньше, чем текущее",
-        )
-    task_in.deadline_datetime = deadline_utc
+    task_in.deadline_datetime = validate_dt(
+        deadline_datetime=task_in.deadline_datetime
+    )
     task = await TasksDao(session=session).add(
         tasks_schemas.TaskCreateSchema(
             **task_in.model_dump(),
@@ -119,6 +109,10 @@ async def update_task(
 
     if not task:
         raise exc
+    if updated_task_in.deadline_datetime:
+        updated_task_in.deadline_datetime = validate_dt(
+            deadline_datetime=updated_task_in.deadline_datetime
+        )
     await dao.update(
         filters=IdSchema(id=task_id), values=updated_task_in
     )

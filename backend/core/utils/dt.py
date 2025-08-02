@@ -1,17 +1,19 @@
 import datetime
 
-
-def get_moscow_tz_and_dt() -> (
-    tuple[datetime.timezone, datetime.datetime]
-):
-    moscow_tz = datetime.timezone(datetime.timedelta(hours=3))
-    moscow_dt = datetime.datetime.now(moscow_tz)
-    return moscow_tz, moscow_dt
+from fastapi import HTTPException, status
 
 
-def get_pretty_dt(dt_str: str) -> str:
-    dt = datetime.datetime.strptime(
-        dt_str,
-        "%Y-%m-%dT%H:%M:%SZ",
-    )
-    return dt.strftime("%d.%m.%Y %H:%M")
+def validate_dt(
+    deadline_datetime: datetime.datetime,
+) -> datetime.datetime:
+    now = datetime.datetime.now(datetime.UTC)
+    if deadline_datetime.tzinfo is None:
+        deadline_utc = deadline_datetime.replace(tzinfo=datetime.UTC)
+    else:
+        deadline_utc = deadline_datetime.astimezone(datetime.UTC)
+    if now >= deadline_utc:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Входящие дата и время меньше, чем текущее",
+        )
+    return deadline_utc
