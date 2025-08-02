@@ -1,3 +1,4 @@
+import datetime
 from typing import Annotated
 
 from pydantic import BaseModel, Field, computed_field
@@ -30,9 +31,10 @@ class DateOfCompletionSchema(IdSchema):
     user_id: int
     date_of_completion: None = None
 
-class DateOfCompletionSchemaWithoutId(BaseModel):
-    user_id: int
-    date_of_completion: None = None
+
+class UpdateDateOfCompletionSchema(BaseModel):
+    date_of_completion: datetime.date
+
 
 class BaseStatisticSchema(BaseModel):
     total: int

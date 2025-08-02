@@ -10,10 +10,13 @@ from core.dependencies.db import (
     SessionWithoutCommit,
 )
 
-from core.schemas.common import PaginationSchema
+from core.schemas.common import (
+    PaginationSchema,
+    UpdateDateOfCompletionSchema,
+)
 from core.schemas import tasks as tasks_schemas
 from services import tasks
-from services.common import delete_entity
+from services.common import delete_entity, mark_completed
 
 log = logging.getLogger(__name__)
 
@@ -108,6 +111,35 @@ async def get_task_by_id(
         session=session,
         user_id=user_id,
         task_id=task_id,
+    )
+
+
+@router.patch(
+    "/{task_id}/completion",
+    response_model=PaginationSchema,
+)
+async def mark_task_completed(
+    updated_date_of_completion: UpdateDateOfCompletionSchema,
+    task_id: int,
+    user_id: UserId,
+    session: SessionWithCommit,
+    per_page: Annotated[
+        int,
+        Query(
+            ge=1,
+            le=100,
+            description="Количество записей на странице (макс. 100)",
+        ),
+    ] = 10,
+):
+    return await mark_completed(
+        session=session,
+        user_id=user_id,
+        entity_id=task_id,
+        dao=TasksDao,
+        exc=tasks.exc,
+        per_page=per_page,
+        updated_date_of_completion=updated_date_of_completion,
     )
 
 
