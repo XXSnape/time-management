@@ -266,4 +266,33 @@ habits_management_dialog = Dialog(
         state=HabitsManagementStates.edit_days,
         getter=getters.edit_habit_days,
     ),
+    Window(
+        Format(text="{habit_hours}"),
+        Group(
+            Multiselect(
+                checked_text=Format("[✅] {item[0]}"),
+                unchecked_text=Format("[  ] {item[0]}"),
+                id="multi_hours",
+                item_id_getter=operator.itemgetter(1),
+                items="hours",
+                min_selected=1,
+            ),
+            width=2,
+        ),
+        Button(
+            text=Format(text="{save_text}"),
+            on_click=repository.change_attr_by_multiselect(
+                attr="hours",
+                multiselect_id="multi_hours",
+            ),
+            id="update_habit_hours",
+        ),
+        SwitchTo(
+            text=Format("{back}"),
+            id="cancel_edit_hours",
+            state=HabitsManagementStates.edit_habit,
+        ),
+        state=HabitsManagementStates.edit_hours,
+        getter=getters.edit_habit_hours,
+    ),
 )

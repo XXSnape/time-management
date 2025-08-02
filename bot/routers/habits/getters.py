@@ -94,27 +94,61 @@ async def edit_habit_purpose(**kwargs):
     }
 
 
+async def edit_by_multiselect(
+    dialog_manager: DialogManager,
+    data: list[list[str] | tuple[str, str]],
+    key: str,
+    multiselect_id: str,
+):
+    habit_id = dialog_manager.dialog_data["current_item"]
+    habit_data = dialog_manager.dialog_data[f"item_{habit_id}_data"]
+    selected = habit_data[key]
+    multiselect = dialog_manager.find(multiselect_id)
+    key_for_first = f"first_{multiselect_id}_{key}"
+    first = dialog_manager.dialog_data.get(key_for_first)
+
+    if first is None:
+        for __, item_id in data:
+            if item_id in selected:
+                await multiselect.set_checked(item_id, True)
+        dialog_manager.dialog_data[key_for_first] = False
+
+
 async def edit_habit_days(
     dialog_manager: DialogManager,
     **kwargs,
 ):
     days = get_days()
-    habit_id = dialog_manager.dialog_data["current_item"]
-    habit_data = dialog_manager.dialog_data[f"item_{habit_id}_data"]
-    selected_days = habit_data["days"]
-    multiselect = dialog_manager.find("multi_days")
-    first = dialog_manager.dialog_data.get("first")
-    if first is None:
-        for __, day in days:
-            if day in selected_days:
-                await multiselect.set_checked(day, True)
-        dialog_manager.dialog_data["first"] = False
+    await edit_by_multiselect(
+        dialog_manager=dialog_manager,
+        data=days,
+        key="days",
+        multiselect_id="multi_days",
+    )
     return {
         "habit_days": _(
             "Выберете дни, когда вам присылать напоминание о привычке"
         ),
         "days": days,
-        "back": _("Отменить выбор"),
+        "back": _("Отменить выбор дней"),
+        "save_text": _("Сохранить"),
+    }
+
+
+async def edit_habit_hours(dialog_manager: DialogManager, **kwargs):
+    hours = generate_hours(start_hour=0, end_hour=24)
+    await edit_by_multiselect(
+        dialog_manager=dialog_manager,
+        data=hours,
+        key="hours",
+        multiselect_id="multi_hours",
+    )
+    return {
+        "habit_hours": _(
+            "Выберете часы, когда вам отправлять напоминания"
+        ),
+        "hours": hours,
+        "back": _("Отменить выбор часов"),
         "save_text": _("Сохранить"),
     }
 
