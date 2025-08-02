@@ -47,3 +47,16 @@ async def on_unauthorized(
         ).format(command=Commands.auth.name),
     )
     await delete_markup(dialog_manager=dialog_manager, event=event)
+
+
+async def on_data_is_outdated(
+    event: ErrorEvent, dialog_manager: DialogManager
+):
+    event = event.update.event
+    await event.bot.send_message(
+        chat_id=event.from_user.id,
+        text=_(
+            "Данные кажутся устаревшими! Пожалуйста, введите команду снова🙂"
+        ).format(command=Commands.auth.name),
+    )
+    await delete_markup(dialog_manager=dialog_manager, event=event)

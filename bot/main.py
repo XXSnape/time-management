@@ -13,7 +13,11 @@ from aiogram_dialog import setup_dialogs
 from httpx import AsyncClient
 
 from core.commands import Commands
-from core.exc import ServerIsUnavailableExc, UnauthorizedExc
+from core.exc import (
+    ServerIsUnavailableExc,
+    UnauthorizedExc,
+    DataIsOutdated,
+)
 from database.utils.sessions import engine
 from middlewares.http import HttpClientMiddleware
 from routers import router
@@ -30,6 +34,7 @@ from aiogram.fsm.storage.redis import DefaultKeyBuilder, RedisStorage
 from routers.common_handlers import (
     on_server_is_unavailable,
     on_unauthorized,
+    on_data_is_outdated,
 )
 
 logger = logging.getLogger(__name__)
@@ -82,6 +87,10 @@ async def main():
     dp.errors.register(
         on_unauthorized,
         ExceptionTypeFilter(UnauthorizedExc),
+    )
+    dp.errors.register(
+        on_data_is_outdated,
+        ExceptionTypeFilter(DataIsOutdated),
     )
     try:
         logger.info("Запускаем бота...")

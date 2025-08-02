@@ -9,3 +9,7 @@ class ServerIsUnavailableExc(Exception):
     def __init__(self, response: Response | None = None):
         super().__init__(response)
         self.response = response
+
+
+class DataIsOutdated(Exception):
+    pass
