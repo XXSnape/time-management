@@ -22,11 +22,6 @@ from routers.common.handlers import (
     is_short_text,
     on_incorrect_text,
     save_text_by_key,
-    # on_click_habit,
-    # upload_habits,
-    # delete_habit,
-    # mark_habit,
-    # change_habit_by_text,
 )
 
 from routers.common.getters import (
@@ -222,5 +217,25 @@ habits_management_dialog = Dialog(
         ),
         getter=edit_name,
         state=HabitsManagementStates.edit_name,
+    ),
+    Window(
+        Format(text="{habit_purpose}"),
+        SwitchTo(
+            text=Format("{back}"),
+            id="cancel_edit_purpose",
+            state=HabitsManagementStates.edit_habit,
+        ),
+        TextInput(
+            id="change_habit_purpose",
+            type_factory=is_short_text(
+                max_length=settings.bot.max_description_length,
+            ),
+            on_success=repository.change_attr_by_text(
+                attr="purpose"
+            ),
+            on_error=on_incorrect_text,
+        ),
+        getter=getters.edit_habit_purpose,
+        state=HabitsManagementStates.edit_purpose,
     ),
 )

@@ -83,6 +83,13 @@ async def edit_habit(
     }
 
 
+async def edit_habit_purpose(**kwargs):
+    return {
+        "habit_purpose": _("Введите новую цель для привычки"),
+        "back": _("Отменить ввод цели"),
+    }
+
+
 def get_texts_by_habits(habits: list[dict]):
     texts = []
     for habit in habits:
