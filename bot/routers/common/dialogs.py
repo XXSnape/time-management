@@ -7,7 +7,10 @@ from routers.common.states import (
     ViewTasksHabitsStates,
 )
 from . import getters
-from routers.habits.handlers import start_create_habit
+from routers.habits.handlers import (
+    start_create_habit,
+    start_view_habits,
+)
 from routers.tasks.handlers import (
     start_create_task,
     start_view_tasks,
@@ -43,7 +46,7 @@ view_tasks_or_habits_dialog = Dialog(
         Button(
             text=Format(text="{habits_text}"),
             id="view_habits",
-            on_click=start_create_habit,
+            on_click=start_view_habits,
         ),
         getter=getters.view_tasks_or_habits,
         state=ViewTasksHabitsStates.view_tasks_or_habits,

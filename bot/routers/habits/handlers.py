@@ -9,7 +9,7 @@ from core.enums import Methods
 from core.schemas.users import UserTelegramIdSchema
 from core.utils.request import make_request
 from database.dao.users import UsersDAO
-from .states import CreateHabitStates
+from .states import CreateHabitStates, HabitsManagementStates
 
 
 async def start_create_habit(
@@ -19,6 +19,17 @@ async def start_create_habit(
 ):
     await dialog_manager.start(
         CreateHabitStates.name,
+        mode=StartMode.RESET_STACK,
+    )
+
+
+async def start_view_habits(
+    callback: CallbackQuery,
+    widget: Button,
+    dialog_manager: DialogManager,
+):
+    await dialog_manager.start(
+        HabitsManagementStates.view_all,
         mode=StartMode.RESET_STACK,
     )
 

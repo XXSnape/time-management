@@ -8,18 +8,22 @@ from aiogram_dialog.widgets.kbd import (
     Column,
     Multiselect,
     Group,
+    ScrollingGroup,
+    Select,
 )
 from aiogram_dialog.widgets.text import Format
 
 from core.config import settings
 from . import getters, handlers
-from .states import CreateHabitStates
+from .states import CreateHabitStates, HabitsManagementStates
 from routers.common.handlers import (
     back_to_selection,
     is_short_text,
     on_incorrect_text,
     save_text_by_key,
 )
+
+from routers.common.getters import get_habits
 
 create_habit_dialog = Dialog(
     Window(
@@ -98,5 +102,32 @@ create_habit_dialog = Dialog(
         Back(text=Format(text="{back}")),
         state=CreateHabitStates.hours,
         getter=getters.get_hours,
+    ),
+)
+
+
+habits_management_dialog = Dialog(
+    Window(
+        Format(text="{items_text}"),
+        ScrollingGroup(
+            Select(
+                Format("{item[0]}"),
+                id="habit",
+                item_id_getter=operator.itemgetter(1),
+                items="items",
+                # on_click=...,
+            ),
+            id="all_habits",
+            width=1,
+            height=5,
+        ),
+        # Button(
+        #     Format(text="{load_more}"),
+        #     id="load_habits",
+        #     when="can_be_loaded",
+        #     on_click=handlers.upload_more_tasks,
+        # ),
+        state=HabitsManagementStates.view_all,
+        getter=get_habits,
     ),
 )
