@@ -164,20 +164,25 @@ view_tasks_dialog = Dialog(
         ),
         SwitchTo(
             text=Format(text="{description_text}"),
-            id="change_description_text",
+            id="change_description",
             state=ViewTaskStates.edit_description,
         ),
-        Button(
-            text=Format(text="{deadline_date_text}"),
-            id="change_deadline_date_text",
+        SwitchTo(
+            text=Format(text="{description_text}"),
+            id="change_deadline_date",
+            state=ViewTaskStates.edit_description,
         ),
+        # Button(
+        #     text=Format(text="{deadline_date_text}"),
+        #     id="change_deadline_date_text",
+        # ),
         Button(
             text=Format(text="{deadline_time_text}"),
-            id="change_deadline_time_text",
+            id="change_deadline_time",
         ),
         SwitchTo(
             text=Format(text="{notification_hour_text}"),
-            id="change_notification_hour_text",
+            id="change_notification_hour",
             state=ViewTaskStates.edit_hour,
         ),
         # Button(
@@ -186,7 +191,7 @@ view_tasks_dialog = Dialog(
         # ),
         Button(
             text=Format(text="{mark_text}"),
-            id="change_mark_text",
+            id="change_mark",
         ),
         SwitchTo(
             text=Format(text="{back}"),

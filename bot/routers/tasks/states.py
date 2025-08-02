@@ -16,4 +16,5 @@ class ViewTaskStates(StatesGroup):
     edit_task = State()
     edit_name = State()
     edit_description = State()
+    edit_deadline_date = State()
     edit_hour = State()

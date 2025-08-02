@@ -201,7 +201,7 @@ def generate_task_info(
         {
             f"task_{item_id}_data": {
                 "text": text,
-                "deadline": task["deadline_datetime"],
+                "deadline_utc": task["deadline_datetime"],
             },
             "current_task": int(item_id),
         }
