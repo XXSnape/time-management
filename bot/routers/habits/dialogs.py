@@ -22,18 +22,17 @@ from routers.common.handlers import (
     is_short_text,
     on_incorrect_text,
     save_text_by_key,
-    on_click_habit,
-    upload_habits,
-    delete_habit,
-    mark_habit,
-    change_habit_by_text,
+    # on_click_habit,
+    # upload_habits,
+    # delete_habit,
+    # mark_habit,
+    # change_habit_by_text,
 )
 
 from routers.common.getters import (
-    get_habits,
-    get_item_details,
     edit_name,
 )
+from .repository import repository
 
 create_habit_dialog = Dialog(
     Window(
@@ -125,7 +124,7 @@ habits_management_dialog = Dialog(
                 id="habit",
                 item_id_getter=operator.itemgetter(1),
                 items="items",
-                on_click=on_click_habit,
+                on_click=repository.on_click_item,
             ),
             id="all_habits",
             width=1,
@@ -135,10 +134,10 @@ habits_management_dialog = Dialog(
             Format(text="{load_more}"),
             id="load_habits",
             when="can_be_loaded",
-            on_click=upload_habits,
+            on_click=repository.upload_more_items,
         ),
         state=HabitsManagementStates.view_all,
-        getter=get_habits,
+        getter=repository.get_user_resources,
     ),
     Window(
         Format(text="{item_text}"),
@@ -154,14 +153,14 @@ habits_management_dialog = Dialog(
             state=HabitsManagementStates.delete_habit,
         ),
         state=HabitsManagementStates.view_details,
-        getter=get_item_details,
+        getter=repository.get_item_details,
     ),
     Window(
         Format(text="{confirm_text}"),
         Button(
             text=Format(text="{confirm_delete_habit_text}"),
             id="confirm_delete_habit",
-            on_click=delete_habit,
+            on_click=repository.delete_item,
         ),
         SwitchTo(
             text=Format(text="{back}"),
@@ -196,7 +195,7 @@ habits_management_dialog = Dialog(
         Button(
             text=Format(text="{mark_text}"),
             id="mark_habit_completed",
-            on_click=mark_habit,
+            on_click=repository.mark_item,
         ),
         SwitchTo(
             text=Format(text="{back}"),
@@ -218,7 +217,7 @@ habits_management_dialog = Dialog(
             type_factory=is_short_text(
                 max_length=settings.bot.max_name_length,
             ),
-            on_success=change_habit_by_text(item="name"),
+            on_success=repository.change_attr_by_text(attr="name"),
             on_error=on_incorrect_text,
         ),
         getter=edit_name,

@@ -14,7 +14,6 @@ from aiogram_dialog.widgets.kbd import (
 )
 from aiogram_dialog.widgets.text import Format
 
-import routers.common.getters
 from core.config import settings
 from . import getters
 from . import handlers
@@ -24,17 +23,12 @@ from routers.common.handlers import (
     is_short_text,
     on_incorrect_text,
     save_text_by_key,
-    upload_tasks,
-    on_click_task,
-    delete_task,
-    mark_task,
-    change_task_by_text,
+    # upload_tasks,
 )
 from routers.common.getters import (
-    get_tasks,
-    get_item_details,
     edit_name,
 )
+from .repository import repository
 
 create_task_dialog = Dialog(
     Window(
@@ -120,7 +114,7 @@ tasks_management_dialog = Dialog(
                 id="tasks",
                 item_id_getter=operator.itemgetter(1),
                 items="items",
-                on_click=on_click_task,
+                on_click=repository.on_click_item,
             ),
             id="all_tasks",
             width=1,
@@ -130,10 +124,10 @@ tasks_management_dialog = Dialog(
             Format(text="{load_more}"),
             id="load_tasks",
             when="can_be_loaded",
-            on_click=upload_tasks,
+            on_click=repository.upload_more_items,
         ),
         state=TasksManagementStates.view_all,
-        getter=get_tasks,
+        getter=repository.get_user_resources,
     ),
     Window(
         Format(text="{item_text}"),
@@ -149,14 +143,14 @@ tasks_management_dialog = Dialog(
             state=TasksManagementStates.delete_task,
         ),
         state=TasksManagementStates.view_details,
-        getter=get_item_details,
+        getter=repository.get_item_details,
     ),
     Window(
         Format(text="{confirm_text}"),
         Button(
             text=Format(text="{confirm_delete_task_text}"),
             id="confirm_delete_task",
-            on_click=delete_task,
+            on_click=repository.delete_item,
         ),
         SwitchTo(
             text=Format(text="{back}"),
@@ -196,7 +190,7 @@ tasks_management_dialog = Dialog(
         Button(
             text=Format(text="{mark_text}"),
             id="mark_task_completed",
-            on_click=mark_task,
+            on_click=repository.mark_item,
         ),
         SwitchTo(
             text=Format(text="{back}"),
@@ -218,7 +212,7 @@ tasks_management_dialog = Dialog(
             type_factory=is_short_text(
                 max_length=settings.bot.max_name_length,
             ),
-            on_success=change_task_by_text(item="name"),
+            on_success=repository.change_attr_by_text(attr="name"),
             on_error=on_incorrect_text,
         ),
         getter=edit_name,
@@ -236,7 +230,9 @@ tasks_management_dialog = Dialog(
             type_factory=is_short_text(
                 max_length=settings.bot.max_description_length,
             ),
-            on_success=change_task_by_text(item="description"),
+            on_success=repository.change_attr_by_text(
+                attr="description"
+            ),
             on_error=on_incorrect_text,
         ),
         getter=getters.edit_task_description,
@@ -250,7 +246,7 @@ tasks_management_dialog = Dialog(
                 id="hour",
                 item_id_getter=itemgetter(1),
                 items="hours",
-                on_click=handlers.change_notification_hour,
+                on_click=repository.change_notification_hour,
             ),
             width=2,
         ),
@@ -265,7 +261,7 @@ tasks_management_dialog = Dialog(
     Window(
         Format(text="{calendar}"),
         Calendar(
-            id="calendar", on_click=handlers.change_deadline_date
+            id="calendar", on_click=repository.change_deadline_date
         ),
         SwitchTo(
             text=Format("{back}"),
@@ -283,7 +279,7 @@ tasks_management_dialog = Dialog(
                 id="hour",
                 item_id_getter=itemgetter(1),
                 items="hours",
-                on_click=handlers.change_deadline_time,
+                on_click=repository.change_deadline_time,
             ),
             width=2,
         ),
