@@ -52,6 +52,7 @@ class HabitOutSchema(IdSchema, HabitInSchema):
     completed: int
     total: int
     performance: int
+    date_of_completion: datetime.date | None
 
 
 class HabitCreateSchema(HabitSchema):
