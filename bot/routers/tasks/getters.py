@@ -85,6 +85,13 @@ async def edit_task_notification_hour(**kwargs):
     }
 
 
+async def change_deadline_date(**kwargs):
+    return {
+        "calendar": _("Выберете новую дату дедлайна"),
+        "back": _("Отменить выбор даты"),
+    }
+
+
 def get_texts_by_tasks(tasks: list[dict]):
     texts = []
     for task in tasks:

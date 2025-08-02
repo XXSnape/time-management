@@ -12,7 +12,13 @@ from backend.core.schemas.users import UserTelegramIdSchema
 from core.enums import Methods
 from core.exc import ServerIsUnavailableExc
 from core.schemas.users import UserTelegramIdSchema
-from core.utils.dt import get_moscow_tz_and_dt, get_pretty_dt
+from core.utils.dt import (
+    get_pretty_dt,
+    selected_date_validator,
+    parse_utc_string_to_dt,
+    convert_utc_to_moscow,
+    convert_moscow_dt_to_utc,
+)
 from core.utils.request import make_request
 from database.dao.users import UsersDAO
 from routers.tasks.getters import get_texts_by_tasks
@@ -57,17 +63,10 @@ async def on_date_selected(
     manager: DialogManager,
     selected_date: date,
 ):
-    __, dt = get_moscow_tz_and_dt()
-    if (
-        selected_date < dt.date()
-        or selected_date == dt.date()
-        and dt.hour == 23
-    ):
-        await callback.answer(
-            _(
-                "Дата должна быть позже или равна сегодняшней по Москве"
-            )
-        )
+    res = await selected_date_validator(
+        callback=callback, selected_date=selected_date
+    )
+    if not res:
         return
     manager.dialog_data.update(date=str(selected_date))
     await manager.next()
@@ -81,6 +80,26 @@ async def save_hour(
 ):
     dialog_manager.dialog_data.update(hour=int(item_id))
     await dialog_manager.next()
+
+
+async def catching_deadline_error(
+    callback: CallbackQuery, e: ServerIsUnavailableExc, create: bool
+):
+    if (not e.response) or e.response.status_code != codes.CONFLICT:
+        raise
+    json = e.response.json()
+    if create:
+        text = _("Не удалось создать задачу: {detail}").format(
+            detail=json["detail"]
+        )
+    else:
+        text = _("Не удалось обновить дедлайн: {detail}").format(
+            detail=json["detail"]
+        )
+    await callback.answer(
+        text,
+        show_alert=True,
+    )
 
 
 async def save_task(
@@ -108,10 +127,8 @@ async def save_task(
         day=moscow_date.day,
         hour=dialog_manager.dialog_data["hour"],
     )
-    moscow_tz = ZoneInfo("Europe/Moscow")
-    moscow_dt_aware = moscow_dt.replace(tzinfo=moscow_tz)
 
-    utc_dt = moscow_dt_aware.astimezone(datetime.timezone.utc)
+    utc_dt = convert_moscow_dt_to_utc(moscow_dt=moscow_dt)
     try:
         await make_request(
             client=client,
@@ -128,16 +145,8 @@ async def save_task(
             },
         )
     except ServerIsUnavailableExc as e:
-        if (
-            not e.response
-        ) or e.response.status_code != codes.CONFLICT:
-            raise
-        json = e.response.json()
-        await callback.answer(
-            _("Не удалось создать задачу: {detail}").format(
-                detail=json["detail"]
-            ),
-            show_alert=True,
+        await catching_deadline_error(
+            callback=callback, e=e, create=True
         )
         return
 
@@ -325,6 +334,41 @@ async def change_notification_hour(
     )
 
 
+async def change_deadline_date(
+    callback: CallbackQuery,
+    widget,
+    manager: DialogManager,
+    selected_date: date,
+):
+    res = await selected_date_validator(
+        callback=callback, selected_date=selected_date
+    )
+    if not res:
+        return
+    task_id = manager.dialog_data["current_task"]
+    deadline_utc = manager.dialog_data[f"task_{task_id}_data"][
+        "deadline_utc"
+    ]
+    utc_dt = parse_utc_string_to_dt(deadline_utc)
+    moscow_dt = convert_utc_to_moscow(utc_dt)
+    moscow_dt = moscow_dt.replace(
+        year=selected_date.year,
+        month=selected_date.month,
+        day=selected_date.day,
+    )
+    new_utc_dt = convert_moscow_dt_to_utc(moscow_dt=moscow_dt)
+    try:
+        await change_item_and_go_next(
+            dialog_manager=manager,
+            item="deadline_datetime",
+            value=str(new_utc_dt),
+        )
+    except ServerIsUnavailableExc as e:
+        await catching_deadline_error(
+            callback=callback, e=e, create=False
+        )
+
+
 def change_item_by_text(item: str):
     async def _wrapper(
         message: Message,
@@ -337,37 +381,3 @@ def change_item_by_text(item: str):
         )
 
     return _wrapper
-
-
-async def change_name(
-    message: Message,
-    widget: ManagedTextInput,
-    dialog_manager: DialogManager,
-    text: str,
-):
-    client: AsyncClient = dialog_manager.middleware_data["client"]
-    session = dialog_manager.middleware_data[
-        "session_without_commit"
-    ]
-    user = await UsersDAO(session=session).find_one_or_none(
-        UserTelegramIdSchema(
-            telegram_id=dialog_manager.event.from_user.id
-        )
-    )
-    task_id = dialog_manager.dialog_data["current_task"]
-    task = await make_request(
-        client=client,
-        endpoint=f"tasks/{task_id}",
-        method=Methods.patch,
-        json={"name": text},
-        access_token=user.access_token,
-    )
-    texts = get_texts_by_tasks(tasks=[task])
-    index_to_replace = get_index_from_cache(
-        texts=dialog_manager.dialog_data["tasks"], id=task_id
-    )
-    dialog_manager.dialog_data["tasks"][index_to_replace] = texts[0]
-    generate_task_info(
-        dialog_manager=dialog_manager, task=task, item_id=task_id
-    )
-    await dialog_manager.switch_to(ViewTaskStates.view_details)
