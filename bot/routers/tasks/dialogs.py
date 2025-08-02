@@ -12,12 +12,12 @@ from aiogram_dialog.widgets.kbd import (
     ScrollingGroup,
     SwitchTo,
 )
-from aiogram_dialog.widgets.text import Format, Const
+from aiogram_dialog.widgets.text import Format
 
 from core.config import settings
 from . import getters
 from . import handlers
-from .states import CreateTaskStates, ViewTaskStates
+from .states import CreateTaskStates, TasksManagementStates
 from routers.common.handlers import (
     back_to_selection,
     is_short_text,
@@ -100,7 +100,7 @@ create_task_dialog = Dialog(
 )
 
 
-view_tasks_dialog = Dialog(
+tasks_management_dialog = Dialog(
     Window(
         Format(text="{tasks_text}"),
         ScrollingGroup(
@@ -121,7 +121,7 @@ view_tasks_dialog = Dialog(
             when="can_be_loaded",
             on_click=handlers.upload_more_tasks,
         ),
-        state=ViewTaskStates.view_all,
+        state=TasksManagementStates.view_all,
         getter=getters.get_user_tasks,
     ),
     Window(
@@ -130,14 +130,14 @@ view_tasks_dialog = Dialog(
         SwitchTo(
             text=Format(text="{edit_text}"),
             id="edit_task",
-            state=ViewTaskStates.edit_task,
+            state=TasksManagementStates.edit_task,
         ),
         SwitchTo(
             text=Format(text="{delete_text}"),
             id="delete_task",
-            state=ViewTaskStates.delete_task,
+            state=TasksManagementStates.delete_task,
         ),
-        state=ViewTaskStates.view_details,
+        state=TasksManagementStates.view_details,
         getter=getters.get_task_details,
     ),
     Window(
@@ -150,9 +150,9 @@ view_tasks_dialog = Dialog(
         SwitchTo(
             text=Format(text="{back}"),
             id="cancel_task_deletion",
-            state=ViewTaskStates.view_details,
+            state=TasksManagementStates.view_details,
         ),
-        state=ViewTaskStates.delete_task,
+        state=TasksManagementStates.delete_task,
         getter=getters.delete_task,
     ),
     Window(
@@ -160,40 +160,39 @@ view_tasks_dialog = Dialog(
         SwitchTo(
             text=Format(text="{name}"),
             id="change_name",
-            state=ViewTaskStates.edit_name,
+            state=TasksManagementStates.edit_name,
         ),
         SwitchTo(
             text=Format(text="{description_text}"),
             id="change_description",
-            state=ViewTaskStates.edit_description,
+            state=TasksManagementStates.edit_description,
         ),
         SwitchTo(
             text=Format(text="{deadline_date_text}"),
             id="change_deadline_date",
-            state=ViewTaskStates.edit_deadline_date,
+            state=TasksManagementStates.edit_deadline_date,
         ),
         SwitchTo(
             text=Format(text="{deadline_time_text}"),
             id="change_deadline_time",
-            state=ViewTaskStates.edit_deadline_time,
+            state=TasksManagementStates.edit_deadline_time,
         ),
         SwitchTo(
             text=Format(text="{notification_hour_text}"),
             id="change_notification_hour",
-            state=ViewTaskStates.edit_hour,
+            state=TasksManagementStates.edit_hour,
         ),
         Button(
             text=Format(text="{mark_text}"),
             id="mark_task_completed",
             on_click=handlers.mark_task_completed,
-            # state=ViewTaskStates.mark,
         ),
         SwitchTo(
             text=Format(text="{back}"),
             id="cancel_task_edition",
-            state=ViewTaskStates.view_details,
+            state=TasksManagementStates.view_details,
         ),
-        state=ViewTaskStates.edit_task,
+        state=TasksManagementStates.edit_task,
         getter=getters.edit_task,
     ),
     Window(
@@ -201,7 +200,7 @@ view_tasks_dialog = Dialog(
         SwitchTo(
             text=Format("{back}"),
             id="cancel_edit_name",
-            state=ViewTaskStates.edit_task,
+            state=TasksManagementStates.edit_task,
         ),
         TextInput(
             id="change_task_name",
@@ -212,14 +211,14 @@ view_tasks_dialog = Dialog(
             on_error=on_incorrect_text,
         ),
         getter=getters.edit_task_name,
-        state=ViewTaskStates.edit_name,
+        state=TasksManagementStates.edit_name,
     ),
     Window(
         Format(text="{task_description}"),
         SwitchTo(
             text=Format("{back}"),
             id="cancel_edit_description",
-            state=ViewTaskStates.edit_task,
+            state=TasksManagementStates.edit_task,
         ),
         TextInput(
             id="change_task_description",
@@ -232,7 +231,7 @@ view_tasks_dialog = Dialog(
             on_error=on_incorrect_text,
         ),
         getter=getters.edit_task_description,
-        state=ViewTaskStates.edit_description,
+        state=TasksManagementStates.edit_description,
     ),
     Window(
         Format(text="{notification_hour_text}"),
@@ -249,10 +248,10 @@ view_tasks_dialog = Dialog(
         SwitchTo(
             text=Format("{back}"),
             id="cancel_edit_notification_hour",
-            state=ViewTaskStates.edit_task,
+            state=TasksManagementStates.edit_task,
         ),
         getter=getters.edit_task_notification_hour,
-        state=ViewTaskStates.edit_hour,
+        state=TasksManagementStates.edit_hour,
     ),
     Window(
         Format(text="{calendar}"),
@@ -262,10 +261,10 @@ view_tasks_dialog = Dialog(
         SwitchTo(
             text=Format("{back}"),
             id="cancel_edit_deadline_date",
-            state=ViewTaskStates.edit_task,
+            state=TasksManagementStates.edit_task,
         ),
         getter=getters.change_deadline_date,
-        state=ViewTaskStates.edit_deadline_date,
+        state=TasksManagementStates.edit_deadline_date,
     ),
     Window(
         Format(text="{hour_text}"),
@@ -282,9 +281,9 @@ view_tasks_dialog = Dialog(
         SwitchTo(
             text=Format("{back}"),
             id="cancel_edit_deadline_time",
-            state=ViewTaskStates.edit_task,
+            state=TasksManagementStates.edit_task,
         ),
         getter=getters.change_deadline_time,
-        state=ViewTaskStates.edit_deadline_time,
+        state=TasksManagementStates.edit_deadline_time,
     ),
 )

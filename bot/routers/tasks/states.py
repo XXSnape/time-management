@@ -9,7 +9,7 @@ class CreateTaskStates(StatesGroup):
     notification_hour = State()
 
 
-class ViewTaskStates(StatesGroup):
+class TasksManagementStates(StatesGroup):
     view_all = State()
     view_details = State()
     delete_task = State()

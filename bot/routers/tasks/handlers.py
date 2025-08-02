@@ -22,7 +22,10 @@ from core.utils.request import make_request
 from core.utils.server import check_items_count
 from database.dao.users import UsersDAO
 from routers.tasks.getters import get_texts_by_tasks
-from routers.tasks.states import CreateTaskStates, ViewTaskStates
+from routers.tasks.states import (
+    CreateTaskStates,
+    TasksManagementStates,
+)
 from aiogram.utils.i18n import gettext as _
 
 
@@ -52,7 +55,7 @@ async def start_view_tasks(
     dialog_manager: DialogManager,
 ):
     await dialog_manager.start(
-        ViewTaskStates.view_all,
+        TasksManagementStates.view_all,
         mode=StartMode.RESET_STACK,
     )
 
@@ -283,7 +286,9 @@ async def change_item_and_go_next(
     generate_task_info(
         dialog_manager=dialog_manager, task=task, item_id=task_id
     )
-    await dialog_manager.switch_to(ViewTaskStates.view_details)
+    await dialog_manager.switch_to(
+        TasksManagementStates.view_details
+    )
 
 
 async def change_notification_hour(
@@ -415,7 +420,7 @@ async def delete_task_from_the_view(
     dialog_manager.dialog_data["total_count"] = tasks_count[
         "total_count"
     ]
-    await dialog_manager.switch_to(ViewTaskStates.view_all)
+    await dialog_manager.switch_to(TasksManagementStates.view_all)
 
 
 async def delete_task(
