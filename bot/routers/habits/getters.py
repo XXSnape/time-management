@@ -55,6 +55,16 @@ async def get_hours(dialog_manager: DialogManager, **kwargs):
     }
 
 
+async def delete_habit(**kwargs):
+    return {
+        "confirm_text": _(
+            "Вы точно хотите удалить эту привычку? Отменить это действие будет нельзя."
+        ),
+        "confirm_delete_habit_text": _("Удалить привычку"),
+        "back": _("Вернуться к деталям"),
+    }
+
+
 def get_texts_by_habits(habits: list[dict]):
     texts = []
     for habit in habits:

@@ -10,6 +10,7 @@ from aiogram_dialog.widgets.kbd import (
     Group,
     ScrollingGroup,
     Select,
+    SwitchTo,
 )
 from aiogram_dialog.widgets.text import Format
 
@@ -23,6 +24,7 @@ from routers.common.handlers import (
     save_text_by_key,
     on_click_habit,
     upload_habits,
+    delete_habit,
 )
 
 from routers.common.getters import get_habits, get_item_details
@@ -140,12 +142,27 @@ habits_management_dialog = Dialog(
         #     id="edit_task",
         #     state=TasksManagementStates.edit_task,
         # ),
-        # SwitchTo(
-        #     text=Format(text="{delete_text}"),
-        #     id="delete_task",
-        #     state=TasksManagementStates.delete_task,
-        # ),
+        SwitchTo(
+            text=Format(text="{delete_text}"),
+            id="delete_habit",
+            state=HabitsManagementStates.delete_habit,
+        ),
         state=HabitsManagementStates.view_details,
         getter=get_item_details,
+    ),
+    Window(
+        Format(text="{confirm_text}"),
+        Button(
+            text=Format(text="{confirm_delete_habit_text}"),
+            id="confirm_delete_habit",
+            on_click=delete_habit,
+        ),
+        SwitchTo(
+            text=Format(text="{back}"),
+            id="cancel_habit_deletion",
+            state=HabitsManagementStates.view_details,
+        ),
+        state=HabitsManagementStates.delete_habit,
+        getter=getters.delete_habit,
     ),
 )

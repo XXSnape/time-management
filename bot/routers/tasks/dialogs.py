@@ -24,8 +24,9 @@ from routers.common.handlers import (
     on_incorrect_text,
     save_text_by_key,
     upload_tasks,
-    on_click_habit,
     on_click_task,
+    delete_task,
+    mark_task,
 )
 from routers.common.getters import get_tasks, get_item_details
 
@@ -149,7 +150,7 @@ tasks_management_dialog = Dialog(
         Button(
             text=Format(text="{confirm_delete_task_text}"),
             id="confirm_delete_task",
-            on_click=handlers.delete_task,
+            on_click=delete_task,
         ),
         SwitchTo(
             text=Format(text="{back}"),
@@ -189,7 +190,7 @@ tasks_management_dialog = Dialog(
         Button(
             text=Format(text="{mark_text}"),
             id="mark_task_completed",
-            on_click=handlers.mark_task_completed,
+            on_click=mark_task,
         ),
         SwitchTo(
             text=Format(text="{back}"),

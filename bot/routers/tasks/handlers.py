@@ -16,26 +16,18 @@ from core.utils.dt import (
     parse_utc_string_to_dt,
     convert_utc_to_moscow,
     convert_moscow_dt_to_utc,
-    get_moscow_dt,
 )
 from core.utils.request import make_request
 from core.utils.server import check_items_count
 from database.dao.users import UsersDAO
+
+# from routers.common.handlers import get_index_from_cache
 from routers.tasks.getters import get_texts_by_tasks
 from routers.tasks.states import (
     CreateTaskStates,
     TasksManagementStates,
 )
 from aiogram.utils.i18n import gettext as _
-
-
-def get_index_from_cache(texts: list, id: int):
-    to_delete_index = None
-    for index, (__, id_) in enumerate(texts):
-        if id_ == id:
-            to_delete_index = index
-            break
-    return to_delete_index
 
 
 async def start_create_task(
@@ -159,42 +151,6 @@ async def save_task(
     await dialog_manager.done()
 
 
-async def upload_more_tasks(
-    callback: CallbackQuery,
-    widget: Button,
-    dialog_manager: DialogManager,
-):
-    client: AsyncClient = dialog_manager.middleware_data["client"]
-    session = dialog_manager.middleware_data[
-        "session_without_commit"
-    ]
-    user = await UsersDAO(session=session).find_one_or_none(
-        UserTelegramIdSchema(
-            telegram_id=dialog_manager.event.from_user.id
-        )
-    )
-    result = await make_request(
-        client=client,
-        endpoint="tasks",
-        method=Methods.get,
-        access_token=user.access_token,
-        params={"page": dialog_manager.dialog_data["next_page"]},
-    )
-    check_items_count(
-        dialog_manager=dialog_manager,
-        total_count=result["total_count"],
-        can_be_equal=False,
-    )
-    count = result["total_count"] - len(
-        dialog_manager.dialog_data["tasks"]
-    )
-    new_texts = get_texts_by_tasks(result["items"][-count:])
-    dialog_manager.dialog_data.update(
-        last_loaded_page=dialog_manager.dialog_data["next_page"] + 1,
-        tasks=dialog_manager.dialog_data["tasks"] + new_texts,
-    )
-
-
 def generate_task_info(
     dialog_manager: DialogManager,
     item: dict,
@@ -228,6 +184,8 @@ def generate_task_info(
 async def change_item_and_go_next(
     dialog_manager: DialogManager, item: str, value: str | int
 ):
+    from routers.common.handlers import get_index_from_cache
+
     client: AsyncClient = dialog_manager.middleware_data["client"]
     session = dialog_manager.middleware_data[
         "session_without_commit"
@@ -337,78 +295,3 @@ def change_item_by_text(item: str):
         )
 
     return _wrapper
-
-
-async def delete_task_from_the_view(
-    dialog_manager: DialogManager,
-    callback: CallbackQuery,
-    json: dict | None,
-):
-    client: AsyncClient = dialog_manager.middleware_data["client"]
-    session = dialog_manager.middleware_data[
-        "session_without_commit"
-    ]
-    user = await UsersDAO(session=session).find_one_or_none(
-        UserTelegramIdSchema(
-            telegram_id=dialog_manager.event.from_user.id
-        )
-    )
-    task_id = dialog_manager.dialog_data["current_task"]
-    method = Methods.patch if json else Methods.delete
-    end_of_endpoint = "/completion" if json else ""
-    tasks_count = await make_request(
-        client=client,
-        endpoint=f"tasks/{task_id}{end_of_endpoint}",
-        method=method,
-        access_token=user.access_token,
-        json=json,
-    )
-    texts = dialog_manager.dialog_data["tasks"]
-    to_delete_index = get_index_from_cache(texts=texts, id=task_id)
-    texts.pop(to_delete_index)
-    if json is None:
-        text = _("Задача успешно удалена!")
-    else:
-        text = _("Задача выполнена! Поздравляем!")
-
-    await callback.answer(text, show_alert=True)
-    check_items_count(
-        dialog_manager=dialog_manager,
-        total_count=tasks_count["total_count"],
-        can_be_equal=True,
-    )
-    if (
-        tasks_count["pages"]
-        < dialog_manager.dialog_data["next_page"]
-    ):
-        dialog_manager.dialog_data["next_page"] = tasks_count[
-            "pages"
-        ]
-    dialog_manager.dialog_data["total_count"] = tasks_count[
-        "total_count"
-    ]
-    await dialog_manager.switch_to(TasksManagementStates.view_all)
-
-
-async def delete_task(
-    callback: CallbackQuery,
-    widget: Button,
-    dialog_manager: DialogManager,
-):
-    await delete_task_from_the_view(
-        dialog_manager=dialog_manager,
-        callback=callback,
-        json=None,
-    )
-
-
-async def mark_task_completed(
-    callback: CallbackQuery,
-    widget: Button,
-    dialog_manager: DialogManager,
-):
-    await delete_task_from_the_view(
-        dialog_manager=dialog_manager,
-        callback=callback,
-        json={"date_of_completion": str(get_moscow_dt().date())},
-    )

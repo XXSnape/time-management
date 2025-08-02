@@ -118,8 +118,8 @@ async def edit_task(
     dialog_manager: DialogManager,
     **kwargs,
 ):
-    task_id = dialog_manager.dialog_data["current_task"]
-    task_data = dialog_manager.dialog_data[f"task_{task_id}_data"]
+    task_id = dialog_manager.dialog_data["current_item"]
+    task_data = dialog_manager.dialog_data[f"item_{task_id}_data"]
     task_text = task_data["text"]
     return {
         "task_text": task_text,
