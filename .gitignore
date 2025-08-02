@@ -205,3 +205,4 @@ __marimo__/
 /backend/db/
 /backend/certs/
 /bot/redis_data/
+/bot/rabbitmq_data/
