@@ -9,8 +9,8 @@ def check_items_count(
     can_be_equal: bool,
 ) -> None:
     if can_be_equal:
-        if len(dialog_manager.dialog_data["tasks"]) > total_count:
+        if len(dialog_manager.dialog_data["items"]) > total_count:
             raise DataIsOutdated
     else:
-        if len(dialog_manager.dialog_data["tasks"]) >= total_count:
+        if len(dialog_manager.dialog_data["items"]) >= total_count:
             raise DataIsOutdated

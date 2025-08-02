@@ -21,9 +21,11 @@ from routers.common.handlers import (
     is_short_text,
     on_incorrect_text,
     save_text_by_key,
+    on_click_habit,
+    upload_habits,
 )
 
-from routers.common.getters import get_habits
+from routers.common.getters import get_habits, get_item_details
 
 create_habit_dialog = Dialog(
     Window(
@@ -115,19 +117,35 @@ habits_management_dialog = Dialog(
                 id="habit",
                 item_id_getter=operator.itemgetter(1),
                 items="items",
-                # on_click=...,
+                on_click=on_click_habit,
             ),
             id="all_habits",
             width=1,
             height=5,
         ),
-        # Button(
-        #     Format(text="{load_more}"),
-        #     id="load_habits",
-        #     when="can_be_loaded",
-        #     on_click=handlers.upload_more_tasks,
-        # ),
+        Button(
+            Format(text="{load_more}"),
+            id="load_habits",
+            when="can_be_loaded",
+            on_click=upload_habits,
+        ),
         state=HabitsManagementStates.view_all,
         getter=get_habits,
+    ),
+    Window(
+        Format(text="{item_text}"),
+        Back(text=Format(text="{back}")),
+        # SwitchTo(
+        #     text=Format(text="{edit_text}"),
+        #     id="edit_task",
+        #     state=TasksManagementStates.edit_task,
+        # ),
+        # SwitchTo(
+        #     text=Format(text="{delete_text}"),
+        #     id="delete_task",
+        #     state=TasksManagementStates.delete_task,
+        # ),
+        state=HabitsManagementStates.view_details,
+        getter=get_item_details,
     ),
 )

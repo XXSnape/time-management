@@ -5,7 +5,7 @@ from aiogram.utils.i18n import gettext as _
 from aiogram_dialog import DialogManager
 from httpx import AsyncClient
 
-from core.enums import Methods
+from core.enums import Methods, Resources
 from core.schemas.users import UserTelegramIdSchema
 from core.utils.request import make_request
 from database.dao.users import UsersDAO
@@ -33,7 +33,7 @@ async def view_tasks_or_habits(**kwargs):
 
 async def get_user_resources(
     dialog_manager: DialogManager,
-    resources: Literal["tasks", "habits"],
+    resources: Resources,
     **kwargs,
 ):
     from routers.habits.getters import get_texts_by_habits
@@ -75,7 +75,7 @@ async def get_user_resources(
         method=Methods.get,
         access_token=user.access_token,
     )
-    if resources == "tasks":
+    if resources == Resources.tasks:
         func = get_texts_by_tasks
     else:
         func = get_texts_by_habits
@@ -83,7 +83,7 @@ async def get_user_resources(
     dialog_manager.dialog_data.update(
         total_count=result["total_count"],
         next_page=2,
-        tasks=texts,
+        items=texts,
     )
     return {
         "items_text": items_text,
@@ -93,5 +93,20 @@ async def get_user_resources(
     }
 
 
-get_tasks = partial(get_user_resources, resources="tasks")
-get_habits = partial(get_user_resources, resources="habits")
+async def get_item_details(
+    dialog_manager: DialogManager,
+    **kwargs,
+):
+    item_id = dialog_manager.dialog_data["current_item"]
+    item_data = dialog_manager.dialog_data[f"item_{item_id}_data"]
+    item_text = item_data["text"]
+    return {
+        "item_text": item_text,
+        "edit_text": _("Редактировать"),
+        "delete_text": _("Удалить"),
+        "back": _("Вернуться"),
+    }
+
+
+get_tasks = partial(get_user_resources, resources=Resources.tasks)
+get_habits = partial(get_user_resources, resources=Resources.habits)

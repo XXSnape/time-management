@@ -40,6 +40,11 @@ def get_pretty_dt(dt_str: str) -> str:
     return moscow_dt.strftime("%d.%m.%Y %H:%M")
 
 
+def get_pretty_date(date_str: str) -> str:
+    date = datetime.datetime.strptime(date_str, "%Y-%m-%d")
+    return date.strftime("%d.%m.%Y")
+
+
 async def selected_date_validator(
     callback: CallbackQuery,
     selected_date: datetime.date,

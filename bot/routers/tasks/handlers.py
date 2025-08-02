@@ -197,10 +197,10 @@ async def upload_more_tasks(
 
 def generate_task_info(
     dialog_manager: DialogManager,
-    task: dict,
+    item: dict,
     item_id: str | int,
 ):
-    completed = "✅" if task["date_of_completion"] else "❌"
+    completed = "✅" if item["date_of_completion"] else "❌"
     text = _(
         "Название: {name}\n\n"
         "Описание: {description}\n\n"
@@ -208,54 +208,21 @@ def generate_task_info(
         "Дата дедлайна: {deadline}\n\n"
         "Успешно завершена - {completed}"
     ).format(
-        name=task["name"],
-        description=task["description"],
-        hours=task["hour_before_reminder"],
-        deadline=get_pretty_dt(task["deadline_datetime"]),
+        name=item["name"],
+        description=item["description"],
+        hours=item["hour_before_reminder"],
+        deadline=get_pretty_dt(item["deadline_datetime"]),
         completed=completed,
     )
     dialog_manager.dialog_data.update(
         {
-            f"task_{item_id}_data": {
+            f"item_{item_id}_data": {
                 "text": text,
-                "deadline_utc": task["deadline_datetime"],
+                "deadline_utc": item["deadline_datetime"],
             },
-            "current_task": int(item_id),
+            "current_item": int(item_id),
         }
     )
-
-
-async def on_click_task(
-    callback: CallbackQuery,
-    widget: Button,
-    dialog_manager: DialogManager,
-    item_id: str,
-):
-    task_data = dialog_manager.dialog_data.get(
-        f"task_{item_id}_data"
-    )
-    if task_data:
-        await dialog_manager.next()
-        return
-    client: AsyncClient = dialog_manager.middleware_data["client"]
-    session = dialog_manager.middleware_data[
-        "session_without_commit"
-    ]
-    user = await UsersDAO(session=session).find_one_or_none(
-        UserTelegramIdSchema(
-            telegram_id=dialog_manager.event.from_user.id
-        )
-    )
-    task = await make_request(
-        client=client,
-        endpoint=f"tasks/{item_id}",
-        method=Methods.get,
-        access_token=user.access_token,
-    )
-    generate_task_info(
-        dialog_manager=dialog_manager, task=task, item_id=item_id
-    )
-    await dialog_manager.next()
 
 
 async def change_item_and_go_next(
@@ -284,7 +251,7 @@ async def change_item_and_go_next(
     )
     dialog_manager.dialog_data["tasks"][index_to_replace] = texts[0]
     generate_task_info(
-        dialog_manager=dialog_manager, task=task, item_id=task_id
+        dialog_manager=dialog_manager, item=task, item_id=task_id
     )
     await dialog_manager.switch_to(
         TasksManagementStates.view_details

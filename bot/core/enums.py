@@ -23,3 +23,8 @@ class Methods(StrEnum):
     post = "post"
     delete = "delete"
     patch = "patch"
+
+
+class Resources(StrEnum):
+    tasks = auto()
+    habits = auto()

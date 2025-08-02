@@ -23,8 +23,11 @@ from routers.common.handlers import (
     is_short_text,
     on_incorrect_text,
     save_text_by_key,
+    upload_tasks,
+    on_click_habit,
+    on_click_task,
 )
-from routers.common.getters import get_tasks
+from routers.common.getters import get_tasks, get_item_details
 
 create_task_dialog = Dialog(
     Window(
@@ -110,7 +113,7 @@ tasks_management_dialog = Dialog(
                 id="tasks",
                 item_id_getter=operator.itemgetter(1),
                 items="items",
-                on_click=handlers.on_click_task,
+                on_click=on_click_task,
             ),
             id="all_tasks",
             width=1,
@@ -120,13 +123,13 @@ tasks_management_dialog = Dialog(
             Format(text="{load_more}"),
             id="load_tasks",
             when="can_be_loaded",
-            on_click=handlers.upload_more_tasks,
+            on_click=upload_tasks,
         ),
         state=TasksManagementStates.view_all,
         getter=get_tasks,
     ),
     Window(
-        Format(text="{task_text}"),
+        Format(text="{item_text}"),
         Back(text=Format(text="{back}")),
         SwitchTo(
             text=Format(text="{edit_text}"),
@@ -139,7 +142,7 @@ tasks_management_dialog = Dialog(
             state=TasksManagementStates.delete_task,
         ),
         state=TasksManagementStates.view_details,
-        getter=getters.get_task_details,
+        getter=get_item_details,
     ),
     Window(
         Format(text="{confirm_text}"),
