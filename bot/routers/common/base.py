@@ -102,6 +102,7 @@ class BaseRepository(ABC):
     ):
         load_more = _("Загрузить еще")
         items_text = _("Нажмите, чтобы посмотреть подробности")
+        back_to_view = _("Вернуться к выбору")
         items_from_cache = dialog_manager.dialog_data.get("items")
         scrolling_group_id = f"all_{self.resource}"
         if items_from_cache is not None:
@@ -119,6 +120,7 @@ class BaseRepository(ABC):
                 "items": items_from_cache,
                 "can_be_loaded": can_be_loaded,
                 "load_more": load_more,
+                "back": back_to_view,
             }
         client, session, access_token = (
             await self.get_client_session_token(dialog_manager)
@@ -140,6 +142,7 @@ class BaseRepository(ABC):
             "items": texts,
             "can_be_loaded": False,
             "load_more": load_more,
+            "back": back_to_view,
         }
 
     async def upload_more_items(

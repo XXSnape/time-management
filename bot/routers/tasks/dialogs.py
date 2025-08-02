@@ -19,11 +19,11 @@ from . import getters
 from . import handlers
 from .states import CreateTaskStates, TasksManagementStates
 from routers.common.handlers import (
-    back_to_selection,
+    back_to_creation_selection,
     is_short_text,
     on_incorrect_text,
     save_text_by_key,
-    # upload_tasks,
+    back_to_view_selection,
 )
 from routers.common.getters import (
     edit_name,
@@ -35,8 +35,8 @@ create_task_dialog = Dialog(
         Format(text="{task_name}"),
         Button(
             text=Format("{back}"),
-            id="back_to_selection",
-            on_click=back_to_selection,
+            id="back_to_creation_selection",
+            on_click=back_to_creation_selection,
         ),
         TextInput(
             id="task_name_input",
@@ -125,6 +125,11 @@ tasks_management_dialog = Dialog(
             id="load_tasks",
             when="can_be_loaded",
             on_click=repository.upload_more_items,
+        ),
+        Button(
+            Format(text="{back}"),
+            id="back_to_view_selection",
+            on_click=back_to_view_selection,
         ),
         state=TasksManagementStates.view_all,
         getter=repository.get_user_resources,

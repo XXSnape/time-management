@@ -3,16 +3,30 @@ from aiogram.utils.i18n import gettext as _
 from aiogram_dialog import DialogManager, StartMode
 from aiogram_dialog.widgets.input import ManagedTextInput
 from aiogram_dialog.widgets.kbd import Button
-from routers.common.states import CreateTaskHabitStates
+from routers.common.states import (
+    CreateTaskHabitStates,
+    ViewTasksHabitsStates,
+)
 
 
-async def back_to_selection(
+async def back_to_creation_selection(
     callback: CallbackQuery,
     widget: Button,
     dialog_manager: DialogManager,
 ):
     await dialog_manager.start(
         CreateTaskHabitStates.create_task_or_habit,
+        mode=StartMode.RESET_STACK,
+    )
+
+
+async def back_to_view_selection(
+    callback: CallbackQuery,
+    widget: Button,
+    dialog_manager: DialogManager,
+):
+    await dialog_manager.start(
+        ViewTasksHabitsStates.view_tasks_or_habits,
         mode=StartMode.RESET_STACK,
     )
 

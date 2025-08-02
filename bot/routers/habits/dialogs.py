@@ -18,10 +18,11 @@ from core.config import settings
 from . import getters, handlers
 from .states import CreateHabitStates, HabitsManagementStates
 from routers.common.handlers import (
-    back_to_selection,
+    back_to_creation_selection,
     is_short_text,
     on_incorrect_text,
     save_text_by_key,
+    back_to_view_selection,
 )
 
 from routers.common.getters import (
@@ -34,8 +35,8 @@ create_habit_dialog = Dialog(
         Format(text="{habit_name}"),
         Button(
             text=Format("{back}"),
-            id="back_to_selection",
-            on_click=back_to_selection,
+            id="back_to_creation_selection",
+            on_click=back_to_creation_selection,
         ),
         TextInput(
             id="habit_name_input",
@@ -130,6 +131,11 @@ habits_management_dialog = Dialog(
             id="load_habits",
             when="can_be_loaded",
             on_click=repository.upload_more_items,
+        ),
+        Button(
+            Format(text="{back}"),
+            id="back_to_view_selection",
+            on_click=back_to_view_selection,
         ),
         state=HabitsManagementStates.view_all,
         getter=repository.get_user_resources,
