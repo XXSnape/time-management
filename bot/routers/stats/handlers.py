@@ -177,32 +177,34 @@ async def get_stats_by_file(
         )
     )
     client: AsyncClient = dialog_manager.middleware_data["client"]
-    await dialog_manager.done()
+    result = await make_request(
+        client=client,
+        endpoint=f"{item}/statistics",
+        method=Methods.get,
+        access_token=user.access_token,
+    )
+    columns = [
+        "period",
+        "total",
+    ]
+    filename = "habits_statistics.csv"
     if item == "tasks":
-        result = await make_request(
-            client=client,
-            endpoint="tasks/statistics",
-            method=Methods.get,
-            access_token=user.access_token,
-        )
-        csv_buffer = io.StringIO()
-        writer = csv.writer(csv_buffer)
-        writer.writerow(
-            [
-                "period",
-                "total",
-                "completed",
-                "not_completed",
-                "performance (%)",
-            ]
-        )
-        for stat in result["items"]:
-            writer.writerow(list(stat.values()))
-        csv_bytes = csv_buffer.getvalue().encode()
-        csv_file = BufferedInputFile(
-            file=csv_bytes, filename="tasks_statistics.csv"
-        )
-        async with ChatActionSender.upload_document(
-            chat_id=callback.from_user.id, bot=callback.bot
-        ):
-            await callback.message.answer_document(document=csv_file)
+        columns += [
+            "completed",
+            "not_completed",
+            "performance (%)",
+        ]
+        filename = "tasks_statistics.csv"
+
+    csv_buffer = io.StringIO()
+    writer = csv.writer(csv_buffer)
+    writer.writerow(columns)
+    for stat in result["items"]:
+        writer.writerow(list(stat.values()))
+    csv_bytes = csv_buffer.getvalue().encode()
+    csv_file = BufferedInputFile(file=csv_bytes, filename=filename)
+    await dialog_manager.done()
+    async with ChatActionSender.upload_document(
+        chat_id=callback.from_user.id, bot=callback.bot
+    ):
+        await callback.message.answer_document(document=csv_file)
