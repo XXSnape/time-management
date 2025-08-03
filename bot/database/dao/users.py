@@ -1,4 +1,5 @@
 import logging
+from typing import Iterable
 
 from pydantic import BaseModel
 from sqlalchemy import select, delete
@@ -29,3 +30,17 @@ class UsersDAO(BaseDAO[User]):
                 telegram_id,
             )
             return Languages.ru
+
+    async def get_user_locales(self, ids: Iterable[int]):
+        query = select(
+            self.model.telegram_id, self.model.language
+        ).where(self.model.telegram_id.in_(ids))
+        try:
+            result = await self._session.execute(query)
+            return result.all()
+        except SQLAlchemyError:
+            logger.exception(
+                "Не удалось получить языки для пользователей %s",
+                ids,
+            )
+            return []
