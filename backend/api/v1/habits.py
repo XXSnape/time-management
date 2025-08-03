@@ -11,6 +11,10 @@ from core.dependencies.db import (
 )
 
 from core.schemas.common import PaginationSchema
+
+from core.schemas.common import UpdateDateOfCompletionSchema
+
+from services.common import mark_completed
 from core.schemas import habits as habits_schemas
 from core.schemas.result import ResultSchema
 from core.utils.enums import Weekday
@@ -92,6 +96,35 @@ async def get_active_user_habits(
         user_id=user_id,
         page=page,
         per_page=per_page,
+    )
+
+
+@router.patch(
+    "/{task_id}/completion",
+    response_model=PaginationSchema,
+)
+async def mark_habit_completed(
+    updated_date_of_completion: UpdateDateOfCompletionSchema,
+    task_id: int,
+    user_id: UserId,
+    session: SessionWithCommit,
+    per_page: Annotated[
+        int,
+        Query(
+            ge=1,
+            le=100,
+            description="Количество записей на странице (макс. 100)",
+        ),
+    ] = 10,
+):
+    return await mark_completed(
+        session=session,
+        user_id=user_id,
+        entity_id=task_id,
+        dao=HabitsDAO,
+        exc=habits.exc,
+        per_page=per_page,
+        updated_date_of_completion=updated_date_of_completion,
     )
 
 
