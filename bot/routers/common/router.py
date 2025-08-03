@@ -8,6 +8,7 @@ from routers.common.states import (
     CreateTaskHabitStates,
     ViewTasksHabitsStates,
 )
+from routers.stats.states import StatsTasksHabitsStates
 
 router = Router(name=__name__)
 
@@ -23,12 +24,13 @@ async def create_task_or_habit(
     )
 
 
-@router.message(Command(Commands.view.name))
-async def view_tasks_or_habits(
+@router.message(Command(Commands.stats.name))
+async def stats_tasks_or_habits(
     message: Message,
     dialog_manager: DialogManager,
 ):
     await dialog_manager.start(
-        state=ViewTasksHabitsStates.view_tasks_or_habits,
+        state=StatsTasksHabitsStates.stats_tasks_or_habits,
+        # state=ViewTasksHabitsStates.view_tasks_or_habits,
         mode=StartMode.RESET_STACK,
     )
