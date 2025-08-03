@@ -1,56 +1,37 @@
 import asyncio
 import datetime
+import logging
 
 from core.config import broker, app, bot
 from core.keyboards.habits import completed_or_not_completed_habit_kb
 from core.keyboards.tasks import complete_task_kb
-from core.utils.dt import get_pretty_dt, get_moscow_dt
-from database.dao.users import UsersDAO
+from core.tasks.utils import (
+    get_ru_and_en_quotes,
+    translate_task,
+    translate_habit,
+    get_users_locales,
+)
+from core.utils.dt import get_moscow_dt
 from dependencies import HttpClient, Session
 from core.enums import Methods, Languages, Weekday
 from core.utils.request import make_request
 
 
-def translate_task(
-    language: Languages, name: str, deadline: str
-) -> str:
-    moscow_dt = get_pretty_dt(deadline)
-    if language == Languages.ru:
-        return (
-            "Напоминание о задаче:\n\n"
-            f"Название: {name}\n\n"
-            f"Дата и время дедлайна: {moscow_dt}"
-        )
-    return (
-        "Reminder about the task:\n\n"
-        f"Title: {name}\n\n"
-        f"Deadline date and time: {moscow_dt}"
-    )
-
-
-def translate_habit(language: Languages, name: str) -> str:
-    if language == Languages.ru:
-        return "Напоминание о привычке:\n\n" f"Название: {name}\n\n"
-    return "Reminder about the habit:\n\n" f"Title: {name}\n\n"
+logger = logging.getLogger(__name__)
 
 
 @broker.subscriber("remind_about_tasks")
 async def reminder_about_tasks(client: HttpClient, session: Session):
+    quotes = await get_ru_and_en_quotes(client)
+
     tasks = await make_request(
         client=client,
         endpoint="tasks/schedules",
         method=Methods.get,
     )
-    users = set(
-        task["user"]["telegram_id"] for task in tasks["items"]
+    user_and_locale = await get_users_locales(
+        items=tasks["items"], session=session
     )
-    user_with_locale = await UsersDAO(
-        session=session
-    ).get_user_locales(users)
-    user_and_locale = {
-        telegram_id: telegram_id
-        for telegram_id, locale in user_with_locale
-    }
     for task in tasks["items"]:
         user_id = task["user"]["telegram_id"]
         language = user_and_locale.get(user_id, Languages.ru)
@@ -58,6 +39,7 @@ async def reminder_about_tasks(client: HttpClient, session: Session):
             language=language,
             name=task["name"],
             deadline=task["deadline_datetime"],
+            motivation=quotes[language],
         )
         await bot.send_message(
             chat_id=user_id,
@@ -78,6 +60,7 @@ async def reminder_about_habits(
     weekdays = {num: day for num, day in zip(range(7), Weekday)}
     day = weekdays[moscow_dt.date().weekday()]
     hour = moscow_dt.hour
+    quotes = await get_ru_and_en_quotes(client)
     habits = await make_request(
         client=client,
         endpoint="habits/schedules",
@@ -87,20 +70,17 @@ async def reminder_about_habits(
             "hour": hour,
         },
     )
-    users = set(
-        task["user"]["telegram_id"] for task in habits["items"]
+    user_and_locale = await get_users_locales(
+        items=habits["items"], session=session
     )
-    user_with_locale = await UsersDAO(
-        session=session
-    ).get_user_locales(users)
-    user_and_locale = {
-        telegram_id: telegram_id
-        for telegram_id, locale in user_with_locale
-    }
     for habit in habits["items"]:
         user_id = habit["user"]["telegram_id"]
         language = user_and_locale.get(user_id, Languages.ru)
-        text = translate_habit(language=language, name=habit["name"])
+        text = translate_habit(
+            language=language,
+            name=habit["name"],
+            motivation=quotes[language],
+        )
         await bot.send_message(
             chat_id=user_id,
             text=text,

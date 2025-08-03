@@ -19,8 +19,6 @@ from aiogram.utils.i18n import gettext as _
 
 class BaseRepository(ABC):
     resource: Resources
-    completed: str
-    deleted: str
     states: StatesGroup
 
     @property
