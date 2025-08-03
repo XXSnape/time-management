@@ -33,7 +33,7 @@ async def get_stats_by_text(
     widget: Button,
     dialog_manager: DialogManager,
 ):
-    item = dialog_manager.dialog_data["stats_type"]
+    resource = dialog_manager.dialog_data["stats_type"]
     session = dialog_manager.middleware_data[
         "session_without_commit"
     ]
@@ -43,17 +43,17 @@ async def get_stats_by_text(
         )
     )
     client: AsyncClient = dialog_manager.middleware_data["client"]
-    await dialog_manager.done()
-    if item == "tasks":
-        result = await make_request(
-            client=client,
-            endpoint="tasks/statistics",
-            method=Methods.get,
-            access_token=user.access_token,
-        )
-        items = result["items"]
+    result = await make_request(
+        client=client,
+        endpoint=f"{resource}/statistics",
+        method=Methods.get,
+        access_token=user.access_token,
+    )
+    items = result["items"]
+
+    if resource == "tasks":
         text_result = _(
-            "Статистика за последнее время\n\n\n"
+            "Статистика по задачам за последнее время\n\n\n"
             "За последнюю неделю:\n\n"
             "Всего задач: {week_1_total}\n"
             "Успешно выполнено: {week_1_completed}\n"
@@ -125,7 +125,41 @@ async def get_stats_by_text(
             all_not_completed=items[6]["not_completed"],
             all_performance=items[6]["performance"],
         )
-        await callback.message.answer(text_result)
+
+    else:
+        text_result = _(
+            "Статистика по количеству завершенных привычек за последнее время\n\n\n"
+            "За последнюю неделю:\n"
+            "Всего привычек: {week_1_total}\n\n\n"
+            #
+            "За последний месяц:\n"
+            "Всего привычек: {month_1_total}\n\n\n"
+            #
+            "За последние 3 месяца:\n"
+            "Всего привычек: {month_3_total}\n\n\n"
+            #
+            "За последние 6 месяцев:\n"
+            "Всего привычек: {month_6_total}\n\n\n"
+            #
+            "За последние 9 месяцев:\n"
+            "Всего привычек: {month_9_total}\n\n\n"
+            #
+            "За последний год:\n"
+            "Всего привычек: {year_1_total}\n\n\n"
+            #
+            "За все время:\n"
+            "Всего привычек: {all_total}"
+        ).format(
+            week_1_total=items[0]["total"],
+            month_1_total=items[1]["total"],
+            month_3_total=items[2]["total"],
+            month_6_total=items[3]["total"],
+            month_9_total=items[4]["total"],
+            year_1_total=items[5]["total"],
+            all_total=items[6]["total"],
+        )
+    await dialog_manager.done()
+    await callback.message.answer(text_result)
 
 
 async def get_stats_by_file(
