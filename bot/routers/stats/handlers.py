@@ -1,6 +1,7 @@
 from typing import Literal
 
 from aiogram.types import CallbackQuery
+from aiogram.utils.chat_action import ChatActionSender
 from aiogram_dialog import DialogManager
 from aiogram_dialog.widgets.kbd import Button
 from httpx import AsyncClient
@@ -9,6 +10,9 @@ from backend.core.schemas.users import UserTelegramIdSchema
 from core.enums import Methods
 from core.utils.request import make_request
 from database.dao.users import UsersDAO
+import io
+import csv
+from aiogram.types import BufferedInputFile
 from aiogram.utils.i18n import gettext as _
 
 
@@ -122,3 +126,49 @@ async def get_stats_by_text(
             all_performance=items[6]["performance"],
         )
         await callback.message.answer(text_result)
+
+
+async def get_stats_by_file(
+    callback: CallbackQuery,
+    widget: Button,
+    dialog_manager: DialogManager,
+):
+    item = dialog_manager.dialog_data["stats_type"]
+    session = dialog_manager.middleware_data[
+        "session_without_commit"
+    ]
+    user = await UsersDAO(session=session).find_one_or_none(
+        UserTelegramIdSchema(
+            telegram_id=dialog_manager.event.from_user.id
+        )
+    )
+    client: AsyncClient = dialog_manager.middleware_data["client"]
+    await dialog_manager.done()
+    if item == "tasks":
+        result = await make_request(
+            client=client,
+            endpoint="tasks/statistics",
+            method=Methods.get,
+            access_token=user.access_token,
+        )
+        csv_buffer = io.StringIO()
+        writer = csv.writer(csv_buffer)
+        writer.writerow(
+            [
+                "period",
+                "total",
+                "completed",
+                "not_completed",
+                "performance (%)",
+            ]
+        )
+        for stat in result["items"]:
+            writer.writerow(list(stat.values()))
+        csv_bytes = csv_buffer.getvalue().encode()
+        csv_file = BufferedInputFile(
+            file=csv_bytes, filename="tasks_statistics.csv"
+        )
+        async with ChatActionSender.upload_document(
+            chat_id=callback.from_user.id, bot=callback.bot
+        ):
+            await callback.message.answer_document(document=csv_file)

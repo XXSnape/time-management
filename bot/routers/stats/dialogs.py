@@ -26,10 +26,14 @@ stats_tasks_or_habits_dialog = Dialog(
         Format(text="{text_or_file}"),
         Button(
             text=Format(text="{text}"),
-            id="stats_file",
+            id="stats_text",
             on_click=handlers.get_stats_by_text,
         ),
-        Button(text=Format(text="{file}"), id="stats_file"),
+        Button(
+            text=Format(text="{file}"),
+            id="stats_file",
+            on_click=handlers.get_stats_by_file,
+        ),
         Back(text=Format(text="{back}"), id="stats_back"),
         state=StatsTasksHabitsStates.text_or_file,
         getter=getters.text_or_file,
