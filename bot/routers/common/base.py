@@ -1,7 +1,7 @@
 from aiogram.fsm.state import StatesGroup
 from aiogram.types import CallbackQuery, Message
 from aiogram_dialog.widgets.input import ManagedTextInput
-from aiogram_dialog.widgets.kbd import Button
+from aiogram_dialog.widgets.kbd import Button, ManagedMultiselect
 from httpx import AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -328,6 +328,21 @@ class BaseRepository(ABC):
 
         return _wrapper
 
+    def cancel_multiselect(self, multiselect_id: str):
+        async def _wrapper(
+            callback: CallbackQuery,
+            widget: Button,
+            dialog_manager: DialogManager,
+        ):
+            multiselect: ManagedMultiselect = dialog_manager.find(
+                multiselect_id
+            )
+            await multiselect.reset_checked()
+            dialog_manager.dialog_data.pop("is_first_viewing")
+            await dialog_manager.switch_to(self.states.edit)
+
+        return _wrapper
+
     def change_attr_by_multiselect(
         self, attr: str, multiselect_id: str
     ):
@@ -336,9 +351,12 @@ class BaseRepository(ABC):
             widget: Button,
             dialog_manager: DialogManager,
         ):
-            checkbox = dialog_manager.find(
+            multiselect: ManagedMultiselect = dialog_manager.find(
                 multiselect_id
-            ).get_checked()
+            )
+            checkbox = multiselect.get_checked()
+            dialog_manager.dialog_data.pop("is_first_viewing")
+            await multiselect.reset_checked()
             await self._change_item_and_go_next(
                 dialog_manager=dialog_manager,
                 item=attr,

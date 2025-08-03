@@ -146,12 +146,12 @@ habits_management_dialog = Dialog(
         SwitchTo(
             text=Format(text="{edit_text}"),
             id="edit_habit",
-            state=HabitsManagementStates.edit_habit,
+            state=HabitsManagementStates.edit,
         ),
         SwitchTo(
             text=Format(text="{delete_text}"),
             id="delete_habit",
-            state=HabitsManagementStates.delete_habit,
+            state=HabitsManagementStates.delete,
         ),
         state=HabitsManagementStates.view_details,
         getter=repository.get_item_details,
@@ -168,7 +168,7 @@ habits_management_dialog = Dialog(
             id="cancel_habit_deletion",
             state=HabitsManagementStates.view_details,
         ),
-        state=HabitsManagementStates.delete_habit,
+        state=HabitsManagementStates.delete,
         getter=getters.delete_habit,
     ),
     Window(
@@ -203,7 +203,7 @@ habits_management_dialog = Dialog(
             id="cancel_habit_edition",
             state=HabitsManagementStates.view_details,
         ),
-        state=HabitsManagementStates.edit_habit,
+        state=HabitsManagementStates.edit,
         getter=getters.edit_habit,
     ),
     Window(
@@ -211,7 +211,7 @@ habits_management_dialog = Dialog(
         SwitchTo(
             text=Format("{back}"),
             id="cancel_edit_habit_name",
-            state=HabitsManagementStates.edit_habit,
+            state=HabitsManagementStates.edit,
         ),
         TextInput(
             id="change_habit_name",
@@ -229,7 +229,7 @@ habits_management_dialog = Dialog(
         SwitchTo(
             text=Format("{back}"),
             id="cancel_edit_purpose",
-            state=HabitsManagementStates.edit_habit,
+            state=HabitsManagementStates.edit,
         ),
         TextInput(
             id="change_habit_purpose",
@@ -264,10 +264,10 @@ habits_management_dialog = Dialog(
             ),
             id="update_habit_days",
         ),
-        SwitchTo(
+        Button(
             text=Format("{back}"),
+            on_click=repository.cancel_multiselect("multi_days"),
             id="cancel_edit_days",
-            state=HabitsManagementStates.edit_habit,
         ),
         state=HabitsManagementStates.edit_days,
         getter=getters.edit_habit_days,
@@ -293,10 +293,10 @@ habits_management_dialog = Dialog(
             ),
             id="update_habit_hours",
         ),
-        SwitchTo(
+        Button(
             text=Format("{back}"),
+            on_click=repository.cancel_multiselect("multi_hours"),
             id="cancel_edit_hours",
-            state=HabitsManagementStates.edit_habit,
         ),
         state=HabitsManagementStates.edit_hours,
         getter=getters.edit_habit_hours,

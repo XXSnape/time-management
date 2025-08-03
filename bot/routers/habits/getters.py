@@ -102,16 +102,14 @@ async def edit_by_multiselect(
 ):
     habit_id = dialog_manager.dialog_data["current_item"]
     habit_data = dialog_manager.dialog_data[f"item_{habit_id}_data"]
-    selected = habit_data[key]
+    selected = [str(item) for item in habit_data[key]]
     multiselect = dialog_manager.find(multiselect_id)
-    key_for_first = f"first_{multiselect_id}_{key}"
-    first = dialog_manager.dialog_data.get(key_for_first)
-
+    first = dialog_manager.dialog_data.get("is_first_viewing")
     if first is None:
         for __, item_id in data:
             if item_id in selected:
                 await multiselect.set_checked(item_id, True)
-        dialog_manager.dialog_data[key_for_first] = False
+        dialog_manager.dialog_data["is_first_viewing"] = False
 
 
 async def edit_habit_days(

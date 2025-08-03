@@ -140,12 +140,12 @@ tasks_management_dialog = Dialog(
         SwitchTo(
             text=Format(text="{edit_text}"),
             id="edit_task",
-            state=TasksManagementStates.edit_task,
+            state=TasksManagementStates.edit,
         ),
         SwitchTo(
             text=Format(text="{delete_text}"),
             id="delete_task",
-            state=TasksManagementStates.delete_task,
+            state=TasksManagementStates.delete,
         ),
         state=TasksManagementStates.view_details,
         getter=repository.get_item_details,
@@ -162,7 +162,7 @@ tasks_management_dialog = Dialog(
             id="cancel_task_deletion",
             state=TasksManagementStates.view_details,
         ),
-        state=TasksManagementStates.delete_task,
+        state=TasksManagementStates.delete,
         getter=getters.delete_task,
     ),
     Window(
@@ -202,7 +202,7 @@ tasks_management_dialog = Dialog(
             id="cancel_task_edition",
             state=TasksManagementStates.view_details,
         ),
-        state=TasksManagementStates.edit_task,
+        state=TasksManagementStates.edit,
         getter=getters.edit_task,
     ),
     Window(
@@ -210,7 +210,7 @@ tasks_management_dialog = Dialog(
         SwitchTo(
             text=Format("{back}"),
             id="cancel_edit_task_name",
-            state=TasksManagementStates.edit_task,
+            state=TasksManagementStates.edit,
         ),
         TextInput(
             id="change_task_name",
@@ -228,7 +228,7 @@ tasks_management_dialog = Dialog(
         SwitchTo(
             text=Format("{back}"),
             id="cancel_edit_description",
-            state=TasksManagementStates.edit_task,
+            state=TasksManagementStates.edit,
         ),
         TextInput(
             id="change_task_description",
@@ -258,7 +258,7 @@ tasks_management_dialog = Dialog(
         SwitchTo(
             text=Format("{back}"),
             id="cancel_edit_notification_hour",
-            state=TasksManagementStates.edit_task,
+            state=TasksManagementStates.edit,
         ),
         getter=getters.edit_task_notification_hour,
         state=TasksManagementStates.edit_hour,
@@ -271,7 +271,7 @@ tasks_management_dialog = Dialog(
         SwitchTo(
             text=Format("{back}"),
             id="cancel_edit_deadline_date",
-            state=TasksManagementStates.edit_task,
+            state=TasksManagementStates.edit,
         ),
         getter=getters.change_deadline_date,
         state=TasksManagementStates.edit_deadline_date,
@@ -291,7 +291,7 @@ tasks_management_dialog = Dialog(
         SwitchTo(
             text=Format("{back}"),
             id="cancel_edit_deadline_time",
-            state=TasksManagementStates.edit_task,
+            state=TasksManagementStates.edit,
         ),
         getter=getters.change_deadline_time,
         state=TasksManagementStates.edit_deadline_time,

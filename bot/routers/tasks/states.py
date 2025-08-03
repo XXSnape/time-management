@@ -12,8 +12,8 @@ class CreateTaskStates(StatesGroup):
 class TasksManagementStates(StatesGroup):
     view_all = State()
     view_details = State()
-    delete_task = State()
-    edit_task = State()
+    delete = State()
+    edit = State()
     edit_name = State()
     edit_description = State()
     edit_deadline_date = State()

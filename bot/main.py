@@ -89,9 +89,9 @@ async def main():
     )
     try:
         logger.info("Запускаем бота...")
-        register_tasks()
-        await broker.connect()
-        scheduler.start()
+        # register_tasks()
+        # await broker.connect()
+        # scheduler.start()
         await dp.start_polling(bot)
     except (KeyboardInterrupt, asyncio.CancelledError):
         logger.info("Завершение работы пользователем")

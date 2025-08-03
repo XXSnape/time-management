@@ -11,8 +11,8 @@ class CreateHabitStates(StatesGroup):
 class HabitsManagementStates(StatesGroup):
     view_all = State()
     view_details = State()
-    delete_habit = State()
-    edit_habit = State()
+    delete = State()
+    edit = State()
     edit_name = State()
     edit_purpose = State()
     edit_days = State()
