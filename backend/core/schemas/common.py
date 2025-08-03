@@ -37,5 +37,5 @@ class UpdateDateOfCompletionSchema(BaseModel):
 
 
 class BaseStatisticSchema(BaseModel):
-    total: int
     period: Periods
+    total: int

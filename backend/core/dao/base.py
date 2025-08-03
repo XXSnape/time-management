@@ -25,7 +25,7 @@ class BaseDAO[M: Base]:
         (timedelta(weeks=26), "6 Months"),
         (timedelta(weeks=39), "9 Months"),
         (timedelta(weeks=52), "1 Year"),
-        (None, "Аll time"),
+        (None, "All time"),
     )
 
     def __init__(self, session: AsyncSession):

@@ -19,5 +19,5 @@ Periods = Literal[
     "6 Months",
     "9 Months",
     "1 Year",
-    "Аll time",
+    "All time",
 ]
