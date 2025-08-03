@@ -73,6 +73,7 @@ class TasksDao(BaseDAO[Task]):
                     User.is_active,
                 ),
             )
+            .join(self.model.user)
             .where(
                 self.model.date_of_completion.is_(None),
                 User.is_active.is_(True),
