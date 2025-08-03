@@ -4,7 +4,7 @@ from .common import generate_inline_kb
 
 from aiogram.filters.callback_data import CallbackData
 
-from core.enums import Languages, Weekday
+from core.enums import Languages
 
 
 class HabitCbData(CallbackData, prefix="habit_execution"):

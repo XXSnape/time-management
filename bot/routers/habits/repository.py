@@ -1,9 +1,13 @@
+from aiogram.filters.callback_data import CallbackData
+from aiogram.types import CallbackQuery
 from aiogram.utils.i18n import gettext as _
 from aiogram_dialog import DialogManager
+from httpx import AsyncClient
 
-from core.enums import Resources, Weekday
+from core.enums import Resources, Weekday, Methods
 from core.utils.dt import get_pretty_date
-from routers.common.base import BaseRepository
+from core.utils.request import make_request
+from routers.common.repository import BaseRepository
 from routers.habits.states import HabitsManagementStates
 
 
@@ -18,6 +22,40 @@ class HabitRepository(BaseRepository):
     @property
     def deleted(self):
         return _("Привычка успешно удалена!")
+
+    @property
+    def item_been_marked(self) -> str:
+        return _("🙂Привычка уже отмечена!")
+
+    async def make_request_to_mark_as_reminder(
+        self,
+        client: AsyncClient,
+        callback: CallbackQuery,
+        callback_data: CallbackData,
+        access_token: str,
+    ):
+        await make_request(
+            client=client,
+            endpoint=f"habits/{callback_data.habit_id}/mark",
+            method=Methods.post,
+            access_token=access_token,
+            json={
+                "reminder_date": callback_data.date,
+                "reminder_hour": callback_data.hour,
+                "is_completed": callback_data.completed,
+            },
+            delete_markup=False,
+        )
+        if callback_data.completed:
+            await callback.answer(
+                _("Привычка отмечена как выполненная!"),
+                show_alert=True,
+            )
+        else:
+            await callback.answer(
+                _("Привычка отмечена как невыполненная!"),
+                show_alert=True,
+            )
 
     def get_texts_by_items(
         self, items: list[dict]

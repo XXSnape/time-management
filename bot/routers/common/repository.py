@@ -1,8 +1,9 @@
+from aiogram.filters.callback_data import CallbackData
 from aiogram.fsm.state import StatesGroup
 from aiogram.types import CallbackQuery, Message
 from aiogram_dialog.widgets.input import ManagedTextInput
 from aiogram_dialog.widgets.kbd import Button, ManagedMultiselect
-from httpx import AsyncClient
+from httpx import AsyncClient, codes
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.enums import Resources, Methods
@@ -12,7 +13,7 @@ from core.utils.request import make_request
 from database.dao.users import UsersDAO
 from abc import ABC, abstractmethod
 from aiogram_dialog import DialogManager
-from core.exc import DataIsOutdated
+from core.exc import DataIsOutdated, ServerIsUnavailableExc
 from aiogram.utils.i18n import gettext as _
 
 
@@ -32,6 +33,11 @@ class BaseRepository(ABC):
     def deleted(self) -> str:
         raise NotImplementedError
 
+    @property
+    @abstractmethod
+    def item_been_marked(self) -> str:
+        raise NotImplementedError
+
     @abstractmethod
     def get_texts_by_items(
         self, items: list[dict]
@@ -46,6 +52,45 @@ class BaseRepository(ABC):
         item_id: str | int,
     ) -> None:
         raise NotImplementedError
+
+    @abstractmethod
+    async def make_request_to_mark_as_reminder(
+        self,
+        client: AsyncClient,
+        callback_data: CallbackData,
+        callback: CallbackQuery,
+        access_token: str,
+    ):
+        raise NotImplementedError
+
+    async def mark_item_as_reminder(
+        self,
+        callback: CallbackQuery,
+        session: AsyncSession,
+        client: AsyncClient,
+        callback_data: CallbackData,
+    ):
+        user = await UsersDAO(session=session).find_one_or_none(
+            UserTelegramIdSchema(telegram_id=callback.from_user.id)
+        )
+        try:
+            await self.make_request_to_mark_as_reminder(
+                client=client,
+                callback_data=callback_data,
+                access_token=user.access_token,
+                callback=callback,
+            )
+        except ServerIsUnavailableExc as e:
+            if e.response and e.response.status_code in (
+                codes.NOT_FOUND,
+                codes.CONFLICT,
+            ):
+                await callback.answer(
+                    self.item_been_marked, show_alert=True
+                )
+            else:
+                raise
+        await callback.message.delete_reply_markup()
 
     @staticmethod
     async def get_client_session_token(

@@ -1,10 +1,12 @@
 from datetime import date
 
+from aiogram.filters.callback_data import CallbackData
 from aiogram.types import CallbackQuery
 from aiogram_dialog import DialogManager
 from aiogram_dialog.widgets.kbd import Select
+from httpx import AsyncClient
 
-from core.enums import Resources
+from core.enums import Resources, Methods
 from core.exc import ServerIsUnavailableExc
 from core.utils.dt import (
     get_pretty_dt,
@@ -12,8 +14,10 @@ from core.utils.dt import (
     convert_utc_to_moscow,
     convert_moscow_dt_to_utc,
     selected_date_validator,
+    get_moscow_dt,
 )
-from routers.common.base import BaseRepository
+from core.utils.request import make_request
+from routers.common.repository import BaseRepository
 from routers.tasks.handlers import catching_deadline_error
 from routers.tasks.states import TasksManagementStates
 from aiogram.utils.i18n import gettext as _
@@ -30,6 +34,30 @@ class TaskRepository(BaseRepository):
     @property
     def deleted(self):
         return _("Задача успешно удалена!")
+
+    @property
+    def item_been_marked(self) -> str:
+        return _("🙂Задача уже выполнена!")
+
+    async def make_request_to_mark_as_reminder(
+        self,
+        client: AsyncClient,
+        callback: CallbackQuery,
+        callback_data: CallbackData,
+        access_token: str,
+    ):
+        await make_request(
+            client=client,
+            endpoint=f"tasks/{callback_data.task_id}/completion",
+            method=Methods.patch,
+            access_token=access_token,
+            json={"date_of_completion": str(get_moscow_dt().date())},
+            delete_markup=False,
+        )
+        await callback.answer(
+            _("Задача успешно выполнена! Поздравляем!"),
+            show_alert=True,
+        )
 
     def get_texts_by_items(
         self, items: list[dict]
