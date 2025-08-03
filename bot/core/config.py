@@ -148,12 +148,13 @@ bot = Bot(
 )
 
 scheduler = AsyncIOScheduler(
-    jobstores={
-        "default": RedisJobStore(
-            host=settings.redis.host,
-            port=settings.redis.port,
-        )
-    }
+    # jobstores={
+    #     "default": RedisJobStore(
+    #         host=settings.redis.host,
+    #         port=settings.redis.port,
+    #     )
+    # }
+    # CHANGE TO REDIS
 )
 
 

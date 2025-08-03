@@ -1,20 +1,39 @@
+import asyncio
+import logging
+from contextlib import suppress
+
+from aiogram import Bot
+from aiogram.exceptions import (
+    TelegramForbiddenError,
+    TelegramRetryAfter,
+    TelegramAPIError,
+)
 from aiogram.filters.callback_data import CallbackData
 from aiogram.fsm.state import StatesGroup
 from aiogram.types import CallbackQuery, Message
 from aiogram_dialog.widgets.input import ManagedTextInput
 from aiogram_dialog.widgets.kbd import Button, ManagedMultiselect
-from httpx import AsyncClient, codes
+from httpx import AsyncClient, codes, HTTPError
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from core.enums import Resources, Methods
+from core.enums import Resources, Methods, Languages
 from core.schemas.users import UserTelegramIdSchema
 from core.utils.dt import get_moscow_dt
+from core.utils.locales import get_users_locales
+from core.utils.quotes import get_ru_and_en_quotes
 from core.utils.request import make_request
 from database.dao.users import UsersDAO
 from abc import ABC, abstractmethod
 from aiogram_dialog import DialogManager
-from core.exc import DataIsOutdated, ServerIsUnavailableExc
+from core.exc import (
+    DataIsOutdated,
+    ServerIsUnavailableExc,
+    UnauthorizedExc,
+)
 from aiogram.utils.i18n import gettext as _
+
+
+logger = logging.getLogger(__name__)
 
 
 class BaseRepository(ABC):
@@ -52,6 +71,21 @@ class BaseRepository(ABC):
         raise NotImplementedError
 
     @abstractmethod
+    def translate_reminder_item(
+        self, item: dict, language: Languages, motivation: str | None
+    ) -> str:
+        raise NotImplementedError
+
+    @abstractmethod
+    def generate_reminder_keyboard(
+        self,
+        language: Languages,
+        item_id: int,
+        **generate_kb_kwargs: int | str,
+    ):
+        raise NotImplementedError
+
+    @abstractmethod
     async def make_request_to_mark_as_reminder(
         self,
         client: AsyncClient,
@@ -60,6 +94,83 @@ class BaseRepository(ABC):
         access_token: str,
     ):
         raise NotImplementedError
+
+    async def remind_about_items(
+        self,
+        client: AsyncClient,
+        session: AsyncSession,
+        bot: Bot,
+        params: dict[str, str | int] | None,
+        **generate_kb_kwargs,
+    ):
+        try:
+            result = await make_request(
+                client=client,
+                endpoint=f"{self.resource}/schedules",
+                method=Methods.get,
+                params=params,
+            )
+        except (UnauthorizedExc, ServerIsUnavailableExc):
+            logger.exception("Произошла ошибка при загрузке")
+            return
+        if not result["items"]:
+            return
+
+        quotes = await get_ru_and_en_quotes(client)
+        user_and_locale = await get_users_locales(
+            items=result["items"], session=session
+        )
+        banned = set[int]()
+        for item in result["items"]:
+            user_id = item["user"]["telegram_id"]
+            if user_id in banned:
+                continue
+            language = user_and_locale.get(user_id, Languages.ru)
+            text = self.translate_reminder_item(
+                item=item,
+                language=language,
+                motivation=quotes[language],
+            )
+
+            while True:
+                try:
+                    await bot.send_message(
+                        chat_id=user_id,
+                        text=text,
+                        reply_markup=self.generate_reminder_keyboard(
+                            language=language,
+                            item_id=item["id"],
+                            **generate_kb_kwargs,
+                        ),
+                    )
+                    break
+                except TelegramForbiddenError:
+                    logger.error(
+                        "Бот заблокирован пользователем %s", user_id
+                    )
+                    banned.add(user_id)
+                    break
+                except TelegramRetryAfter as e:
+                    logger.warning(
+                        "Бот заблокирован на %s секунд",
+                        e.retry_after,
+                    )
+                    await asyncio.sleep(e.retry_after + 1)
+                except TelegramAPIError:
+                    logger.exception(
+                        "Не удалось отправить напоминанию пользователю %s",
+                        user_id,
+                    )
+                    break
+
+        for user_id in banned:
+            with suppress(UnauthorizedExc, ServerIsUnavailableExc):
+                await make_request(
+                    client=client,
+                    endpoint=f"users/{user_id}",
+                    method=Methods.patch,
+                    json={"is_active": False},
+                )
 
     async def mark_item_as_reminder(
         self,

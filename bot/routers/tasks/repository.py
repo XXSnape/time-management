@@ -6,8 +6,10 @@ from aiogram_dialog import DialogManager
 from aiogram_dialog.widgets.kbd import Select
 from httpx import AsyncClient
 
-from core.enums import Resources, Methods
+from core.enums import Resources, Methods, Languages
 from core.exc import ServerIsUnavailableExc
+from core.keyboards.tasks import complete_task_kb
+from core.utils.quotes import add_motivation
 from core.utils.dt import (
     get_pretty_dt,
     parse_utc_string_to_dt,
@@ -57,6 +59,42 @@ class TaskRepository(BaseRepository):
         await callback.answer(
             _("Задача успешно выполнена! Поздравляем!"),
             show_alert=True,
+        )
+
+    def translate_reminder_item(
+        self,
+        item: dict,
+        language: Languages,
+        motivation: str | None,
+    ) -> str:
+        moscow_dt = get_pretty_dt(item["deadline_datetime"])
+        if language == Languages.ru:
+            result = (
+                "Напоминание о задаче:\n\n"
+                f"Название: {item['name']}\n\n"
+                f"Дата и время дедлайна: {moscow_dt}"
+            )
+        else:
+            result = (
+                "Reminder about the task:\n\n"
+                f"Title: {item['name']}\n\n"
+                f"Deadline date and time: {moscow_dt}"
+            )
+        return add_motivation(
+            language=language,
+            motivation=motivation,
+            result=result,
+        )
+
+    def generate_reminder_keyboard(
+        self,
+        language: Languages,
+        item_id: int,
+        **generate_kb_kwargs: int | str,
+    ):
+        return complete_task_kb(
+            task_id=item_id,
+            language=language,
         )
 
     def get_texts_by_items(

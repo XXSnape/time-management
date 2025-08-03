@@ -4,7 +4,9 @@ from aiogram.utils.i18n import gettext as _
 from aiogram_dialog import DialogManager
 from httpx import AsyncClient
 
-from core.enums import Resources, Weekday, Methods
+from core.enums import Resources, Weekday, Methods, Languages
+from core.keyboards.habits import completed_or_not_completed_habit_kb
+from core.utils.quotes import add_motivation
 from core.utils.dt import get_pretty_date
 from core.utils.request import make_request
 from routers.common.repository import BaseRepository
@@ -56,6 +58,38 @@ class HabitRepository(BaseRepository):
                 _("Привычка отмечена как невыполненная!"),
                 show_alert=True,
             )
+
+    def translate_reminder_item(
+        self,
+        item: dict,
+        language: Languages,
+        motivation: str | None,
+    ) -> str:
+        if language == Languages.ru:
+            result = (
+                "Напоминание о привычке:\n\n"
+                f"Название: {item['name']}"
+            )
+        else:
+            result = (
+                "Reminder about the habit:\n\n"
+                f"Title: {item['name']}"
+            )
+        return add_motivation(
+            language=language, motivation=motivation, result=result
+        )
+
+    def generate_reminder_keyboard(
+        self,
+        language: Languages,
+        item_id: int,
+        **generate_kb_kwargs: int | str,
+    ):
+        return completed_or_not_completed_habit_kb(
+            habit_id=item_id,
+            language=language,
+            **generate_kb_kwargs,
+        )
 
     def get_texts_by_items(
         self, items: list[dict]
