@@ -11,7 +11,7 @@ router.include_routers(
     cancel_router,
     start_router,
     auth_router,
-    common_router,
     tasks_router,
     habits_router,
+    common_router,
 )

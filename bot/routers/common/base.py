@@ -9,7 +9,6 @@ from core.enums import Resources, Methods
 from core.schemas.users import UserTelegramIdSchema
 from core.utils.dt import get_moscow_dt
 from core.utils.request import make_request
-from core.utils.server import check_items_count
 from database.dao.users import UsersDAO
 from abc import ABC, abstractmethod
 from aiogram_dialog import DialogManager
@@ -161,7 +160,7 @@ class BaseRepository(ABC):
             access_token=access_token,
             params={"page": dialog_manager.dialog_data["next_page"]},
         )
-        check_items_count(
+        self.check_items_count(
             dialog_manager=dialog_manager,
             total_count=result["total_count"],
             can_be_equal=False,
@@ -241,7 +240,7 @@ class BaseRepository(ABC):
             text = self.completed
 
         await callback.answer(text, show_alert=True)
-        check_items_count(
+        self.check_items_count(
             dialog_manager=dialog_manager,
             total_count=items_count["total_count"],
             can_be_equal=True,

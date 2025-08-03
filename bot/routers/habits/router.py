@@ -5,9 +5,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.enums import Methods
 from core.exc import ServerIsUnavailableExc
-from core.keyboards.tasks import TaskCbData
+from core.keyboards.habits import HabitCbData
 from core.schemas.users import UserTelegramIdSchema
-from core.utils.dt import get_moscow_dt
 from core.utils.request import make_request
 from database.dao.users import UsersDAO
 from aiogram.utils.i18n import gettext as _
@@ -16,10 +15,10 @@ from aiogram.utils.i18n import gettext as _
 router = Router(name=__name__)
 
 
-@router.callback_query(TaskCbData.filter())
-async def mark_task_completed(
+@router.callback_query(HabitCbData.filter())
+async def mark_habit_completed_or_not(
     callback: CallbackQuery,
-    callback_data: TaskCbData,
+    callback_data: HabitCbData,
     client: AsyncClient,
     session_without_commit: AsyncSession,
 ):
@@ -31,19 +30,30 @@ async def mark_task_completed(
     try:
         await make_request(
             client=client,
-            endpoint=f"tasks/{callback_data.task_id}/completion",
-            method=Methods.patch,
+            endpoint=f"habits/{callback_data.habit_id}/mark",
+            method=Methods.post,
             access_token=user.access_token,
-            json={"date_of_completion": str(get_moscow_dt().date())},
+            json={
+                "reminder_date": callback_data.date,
+                "reminder_hour": callback_data.hour,
+                "is_completed": callback_data.completed,
+            },
             delete_markup=False,
         )
-        await callback.answer(
-            _("Задача успешно отмечена!"), show_alert=True
-        )
+        if callback_data.completed:
+            await callback.answer(
+                _("Привычка отмечена как выполненная!"),
+                show_alert=True,
+            )
+        else:
+            await callback.answer(
+                _("Привычка отмечена как невыполненная!"),
+                show_alert=True,
+            )
     except ServerIsUnavailableExc as e:
         if e.response and e.response.status_code == codes.NOT_FOUND:
             await callback.answer(
-                _("🙂Задача уже была отмечена"), show_alert=True
+                _("🙂Привычка уже была отмечена"), show_alert=True
             )
         else:
             raise

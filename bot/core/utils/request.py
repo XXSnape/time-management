@@ -21,6 +21,7 @@ async def make_request(
     json: dict | None = None,
     access_token: str | None = None,
     params: dict | None = None,
+    delete_markup: bool = True,
 ) -> dict | None:
     cookies = None
     if access_token:
@@ -39,13 +40,15 @@ async def make_request(
             codes.UNAUTHORIZED,
             codes.FORBIDDEN,
         ):
-            raise UnauthorizedExc
+            raise UnauthorizedExc(delete_markup=delete_markup)
         try:
             response.raise_for_status()
         except HTTPStatusError as e:
             logger.exception("Ошибка при запросе к серверу")
-            raise ServerIsUnavailableExc(response=e.response)
+            raise ServerIsUnavailableExc(
+                response=e.response, delete_markup=delete_markup
+            )
         return response.json()
     except RequestError:
         logger.exception("Ошибка при запросе к серверу")
-        raise ServerIsUnavailableExc
+        raise ServerIsUnavailableExc(delete_markup=delete_markup)

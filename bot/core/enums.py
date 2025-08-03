@@ -1,5 +1,3 @@
-from enum import StrEnum
-
 from enum import StrEnum, auto
 
 
