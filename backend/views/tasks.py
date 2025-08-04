@@ -1,22 +1,26 @@
+import datetime
 from datetime import timedelta
 from typing import Annotated
 
 from fastapi import APIRouter, Request, Form, HTTPException
-from starlette.responses import RedirectResponse
 
+from core.dao.tasks import TasksDao
 from core.dependencies.auth import UserDep
 from core.dependencies.db import (
     SessionWithoutCommit,
     SessionWithCommit,
 )
+from core.schemas.common import UpdateDateOfCompletionSchema
 from core.schemas.tasks import TaskInSchema, TaskUpdateSchema
 from core.utils.dt import convert_utc_to_moscow, validate_dt
 from core.utils.templates import templates
+from services.common import mark_completed
 from services.tasks import (
     get_active_user_tasks,
     create_task,
     get_task_by_id,
     update_task,
+    exc,
 )
 
 router = APIRouter()
@@ -141,5 +145,45 @@ async def edit_task_post(
             "request": request,
             "username": user.username,
             **result,
+        },
+    )
+
+
+@router.get("/tasks/{task_id}/completion")
+async def mark_task(
+    request: Request,
+    user: UserDep,
+    task_id: int,
+    session: SessionWithCommit,
+):
+    updated_date_of_completion = UpdateDateOfCompletionSchema(
+        date_of_completion=datetime.datetime.now(datetime.UTC).date()
+    )
+    await mark_completed(
+        session=session,
+        user_id=user.id,
+        entity_id=task_id,
+        dao=TasksDao,
+        exc=exc,
+        per_page=10,
+        updated_date_of_completion=updated_date_of_completion,
+    )
+    tasks = await get_active_user_tasks(
+        session=session,
+        user_id=user.id,
+        page=1,
+        per_page=10,
+    )
+    for task in tasks.items:
+        task.deadline_datetime = convert_utc_to_moscow(
+            task.deadline_datetime
+        )
+
+    return templates.TemplateResponse(
+        "tasks-list.html",
+        {
+            "request": request,
+            "username": user.username,
+            **tasks.model_dump(),
         },
     )
