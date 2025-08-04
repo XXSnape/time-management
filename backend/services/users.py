@@ -28,7 +28,10 @@ async def create_user(
             detail="Пользователь уже существует",
         )
     return users_schemas.TokenSchema(
-        access_token=get_access_token(user_id=user.id)
+        access_token=get_access_token(
+            user_id=user.id,
+            username=user.username,
+        )
     )
 
 
@@ -51,7 +54,10 @@ async def create_new_access_token(
     ):
         raise unauthed_exc
     return users_schemas.TokenSchema(
-        access_token=get_access_token(user_id=user.id),
+        access_token=get_access_token(
+            user_id=user.id,
+            username=user.username,
+        ),
     )
 
 
