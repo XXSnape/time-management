@@ -1,4 +1,5 @@
 from aiogram import Router
+from .activity import router as activity_router
 from .cancel import router as cancel_router
 from .start import router as start_router
 from .auth import router as auth_router
@@ -18,4 +19,5 @@ router.include_routers(
     common_router,
     stats_router,
     languages_router,
+    activity_router,
 )
