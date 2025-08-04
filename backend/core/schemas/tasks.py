@@ -12,12 +12,12 @@ from core.schemas.users import UserTelegramIdSchema
 
 
 class LittleInfoTaskSchema(BaseModel):
-    name: str
+    name: Annotated[str, Field(max_length=50)]
     deadline_datetime: datetime.datetime
 
 
 class TaskInSchema(LittleInfoTaskSchema):
-    description: str
+    description: Annotated[str, Field(max_length=300)]
     hour_before_reminder: Annotated[
         int,
         Field(ge=1, le=24),

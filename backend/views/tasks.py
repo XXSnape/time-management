@@ -1,10 +1,17 @@
-from fastapi import APIRouter, Request
+from datetime import timedelta
+from typing import Annotated
+
+from fastapi import APIRouter, Request, Form, HTTPException
 
 from core.dependencies.auth import UserDep
-from core.dependencies.db import SessionWithoutCommit
+from core.dependencies.db import (
+    SessionWithoutCommit,
+    SessionWithCommit,
+)
+from core.schemas.tasks import TaskInSchema
 from core.utils.dt import convert_utc_to_moscow
 from core.utils.templates import templates
-from services.tasks import get_active_user_tasks
+from services.tasks import get_active_user_tasks, create_task
 
 router = APIRouter()
 
@@ -36,3 +43,36 @@ async def get_tasks(
             **tasks.model_dump(),
         },
     )
+
+
+@router.get("/tasks/create")
+async def create_task_get(request: Request, user: UserDep):
+    return templates.TemplateResponse(
+        "tasks-create.html",
+        {
+            "request": request,
+            "username": user.username,
+        },
+    )
+
+
+@router.post("/tasks/create")
+async def create_task_post(
+    request: Request,
+    user: UserDep,
+    task_in: Annotated[TaskInSchema, Form()],
+    session: SessionWithCommit,
+):
+    task_in.deadline_datetime -= timedelta(hours=3)
+    try:
+        await create_task(
+            user_id=user.id, task_in=task_in, session=session
+        )
+    except HTTPException:
+        return templates.TemplateResponse(
+            "tasks-create.html",
+            {
+                "request": request,
+                "username": user.username,
+            },
+        )

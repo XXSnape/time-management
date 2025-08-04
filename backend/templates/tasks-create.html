@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="form-container">
+    <h1>Создать новую задачу</h1>
+    
+    <form method="post" action="/tasks/create" class="task-form">
+        <div class="form-group">
+            <label for="name">Название задачи*</label>
+            <input type="text" id="name" name="name" maxlength="40" required>
+            <small>Максимум 40 символов</small>
+        </div>
+        
+        <div class="form-group">
+            <label for="deadline_datetime">Срок выполнения*</label>
+            <input type="datetime-local" id="deadline_datetime" name="deadline_datetime" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="description">Описание</label>
+            <textarea id="description" name="description" maxlength="250" rows="4"></textarea>
+            <small>Максимум 250 символов</small>
+        </div>
+        
+        <div class="form-group">
+            <label for="hour_before_reminder">Напомнить за (часов)*</label>
+            <input type="number" id="hour_before_reminder" name="hour_before_reminder" 
+                   min="1" max="24" value="1" required>
+            <small>От 1 до 24 часов</small>
+        </div>
+        
+        <div class="form-actions">
+            <button type="submit" class="submit-btn">Создать задачу</button>
+            <a href="/tasks" class="cancel-btn">Отмена</a>
+        </div>
+    </form>
+</div>
+{% endblock %}
