@@ -14,7 +14,7 @@ from core.schemas.common import UpdateDateOfCompletionSchema
 from core.schemas.tasks import TaskInSchema, TaskUpdateSchema
 from core.utils.dt import convert_utc_to_moscow, validate_dt
 from core.utils.templates import templates
-from services.common import mark_completed
+from services.common import mark_completed, delete_entity
 from services.tasks import (
     get_active_user_tasks,
     create_task,
@@ -167,6 +167,42 @@ async def mark_task(
         exc=exc,
         per_page=10,
         updated_date_of_completion=updated_date_of_completion,
+    )
+    tasks = await get_active_user_tasks(
+        session=session,
+        user_id=user.id,
+        page=1,
+        per_page=10,
+    )
+    for task in tasks.items:
+        task.deadline_datetime = convert_utc_to_moscow(
+            task.deadline_datetime
+        )
+
+    return templates.TemplateResponse(
+        "tasks-list.html",
+        {
+            "request": request,
+            "username": user.username,
+            **tasks.model_dump(),
+        },
+    )
+
+
+@router.post("/tasks/{task_id}/delete")
+async def delete_task(
+    request: Request,
+    user: UserDep,
+    task_id: int,
+    session: SessionWithCommit,
+):
+    await delete_entity(
+        session=session,
+        user_id=user.id,
+        entity_id=task_id,
+        dao=TasksDao,
+        exc=exc,
+        per_page=10,
     )
     tasks = await get_active_user_tasks(
         session=session,
