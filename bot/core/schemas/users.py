@@ -1,5 +1,7 @@
 from pydantic import BaseModel
 
+from core.enums import Languages
+
 
 class UserTelegramIdSchema(BaseModel):
     telegram_id: int
@@ -11,4 +13,4 @@ class UserSchema(UserTelegramIdSchema):
 
 class UserUpdateSchema(BaseModel):
     access_token: str | None = None
-    language: str | None = None
+    language: Languages | None = None

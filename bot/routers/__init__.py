@@ -6,6 +6,7 @@ from .common import router as common_router
 from .tasks import router as tasks_router
 from .habits import router as habits_router
 from .stats import router as stats_router
+from .languages import router as languages_router
 
 router = Router(name=__name__)
 router.include_routers(
@@ -16,4 +17,5 @@ router.include_routers(
     habits_router,
     common_router,
     stats_router,
+    languages_router,
 )
