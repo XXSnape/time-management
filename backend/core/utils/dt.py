@@ -1,4 +1,5 @@
 import datetime
+from zoneinfo import ZoneInfo
 
 from fastapi import HTTPException, status
 
@@ -17,3 +18,23 @@ def validate_dt(
             detail="Входящие дата и время меньше, чем текущее",
         )
     return deadline_utc
+
+
+def parse_utc_string_to_dt(dt_str: str) -> datetime.datetime:
+    return datetime.datetime.strptime(
+        dt_str,
+        "%Y-%m-%dT%H:%M:%SZ",
+    )
+
+
+def convert_utc_to_moscow(
+    utc_dt: datetime.datetime,
+) -> datetime.datetime:
+    if utc_dt.tzinfo is None:
+        utc_dt = utc_dt.replace(tzinfo=datetime.timezone.utc)
+    return utc_dt.astimezone(ZoneInfo("Europe/Moscow"))
+
+
+def get_moscow_dt(dt_str: str) -> datetime.datetime:
+    moscow_dt = convert_utc_to_moscow(dt)
+    return moscow_dt
