@@ -50,114 +50,48 @@ async def get_stats_by_text(
         access_token=user.access_token,
     )
     items = result["items"]
-
+    times = [
+        _("За последнюю неделю:"),
+        _("За последний месяц:"),
+        _("За последние 3 месяца:"),
+        _("За последние 6 месяцев:"),
+        _("За последние 9 месяцев:"),
+        _("За последний год:"),
+        _("За все время:"),
+    ]
+    text_result = ""
     if resource == "tasks":
-        text_result = _(
+        text_result += _(
             "Статистика по задачам за последнее время\n\n\n"
-            "За последнюю неделю:\n\n"
-            "Всего задач: {week_1_total}\n"
-            "Успешно выполнено: {week_1_completed}\n"
-            "Не выполнено в срок: {week_1_not_completed}\n"
-            "Результативность: {week_1_performance}%\n\n\n"
-            #
-            "За последний месяц:\n\n"
-            "Всего задач: {month_1_total}\n"
-            "Успешно выполнено: {month_1_completed}\n"
-            "Не выполнено в срок: {month_1_not_completed}\n"
-            "Результативность: {month_1_performance}%\n\n\n"
-            #
-            "За последние 3 месяца:\n\n"
-            "Всего задач: {month_3_total}\n"
-            "Успешно выполнено: {month_3_completed}\n"
-            "Не выполнено в срок: {month_3_not_completed}\n"
-            "Результативность: {month_3_performance}%\n\n\n"
-            #
-            "За последние 6 месяцев:\n\n"
-            "Всего задач: {month_6_total}\n"
-            "Успешно выполнено: {month_6_completed}\n"
-            "Не выполнено в срок: {month_6_not_completed}\n"
-            "Результативность: {month_6_performance}%\n\n\n"
-            #
-            "За последние 9 месяцев:\n\n"
-            "Всего задач: {month_9_total}\n"
-            "Успешно выполнено: {month_9_completed}\n"
-            "Не выполнено в срок: {month_9_not_completed}\n"
-            "Результативность: {month_9_performance}%\n\n\n"
-            #
-            "За последний год:\n\n"
-            "Всего задач: {year_1_total}\n"
-            "Успешно выполнено: {year_1_completed}\n"
-            "Не выполнено в срок: {year_1_not_completed}\n"
-            "Результативность: {year_1_performance}%\n\n\n"
-            #
-            "За все время:\n\n"
-            "Всего задач: {all_total}\n"
-            "Успешно выполнено: {all_completed}\n"
-            "Не выполнено в срок: {all_not_completed}\n"
-            "Результативность: {all_performance}%"
-        ).format(
-            week_1_total=items[0]["total"],
-            week_1_completed=items[0]["completed"],
-            week_1_not_completed=items[0]["not_completed"],
-            week_1_performance=items[0]["performance"],
-            month_1_total=items[1]["total"],
-            month_1_completed=items[1]["completed"],
-            month_1_not_completed=items[1]["not_completed"],
-            month_1_performance=items[1]["performance"],
-            month_3_total=items[2]["total"],
-            month_3_completed=items[2]["completed"],
-            month_3_not_completed=items[2]["not_completed"],
-            month_3_performance=items[2]["performance"],
-            month_6_total=items[3]["total"],
-            month_6_completed=items[3]["completed"],
-            month_6_not_completed=items[3]["not_completed"],
-            month_6_performance=items[3]["performance"],
-            month_9_total=items[4]["total"],
-            month_9_completed=items[4]["completed"],
-            month_9_not_completed=items[4]["not_completed"],
-            month_9_performance=items[4]["performance"],
-            year_1_total=items[5]["total"],
-            year_1_completed=items[5]["completed"],
-            year_1_not_completed=items[5]["not_completed"],
-            year_1_performance=items[5]["performance"],
-            all_total=items[6]["total"],
-            all_completed=items[6]["completed"],
-            all_not_completed=items[6]["not_completed"],
-            all_performance=items[6]["performance"],
         )
+        template = _(
+            "{time}\n\n"
+            "Всего задач: {total}\n"
+            "Успешно выполнено: {completed}\n"
+            "Не выполнено в срок: {not_completed}\n"
+            "Результативность: {performance}%\n\n\n"
+        )
+
+        for time, item in zip(times, items):
+            text_result += template.format(
+                time=time,
+                total=item["total"],
+                completed=item["completed"],
+                not_completed=item["not_completed"],
+                performance=item["performance"],
+            )
 
     else:
-        text_result = _(
-            "Статистика по количеству завершенных привычек за последнее время\n\n\n"
-            "За последнюю неделю:\n"
-            "Всего привычек: {week_1_total}\n\n\n"
-            #
-            "За последний месяц:\n"
-            "Всего привычек: {month_1_total}\n\n\n"
-            #
-            "За последние 3 месяца:\n"
-            "Всего привычек: {month_3_total}\n\n\n"
-            #
-            "За последние 6 месяцев:\n"
-            "Всего привычек: {month_6_total}\n\n\n"
-            #
-            "За последние 9 месяцев:\n"
-            "Всего привычек: {month_9_total}\n\n\n"
-            #
-            "За последний год:\n"
-            "Всего привычек: {year_1_total}\n\n\n"
-            #
-            "За все время:\n"
-            "Всего привычек: {all_total}"
-        ).format(
-            week_1_total=items[0]["total"],
-            month_1_total=items[1]["total"],
-            month_3_total=items[2]["total"],
-            month_6_total=items[3]["total"],
-            month_9_total=items[4]["total"],
-            year_1_total=items[5]["total"],
-            all_total=items[6]["total"],
+        text_result += _(
+            "Статистика по количеству завершенных "
+            "привычек за последнее время\n\n\n"
         )
+        template = _("{time}\nВсего привычек: {total}\n\n\n")
+        for time, item in zip(times, items):
+            text_result += template.format(
+                time=time,
+                total=item["total"],
+            )
     await dialog_manager.done()
     await callback.message.answer(text_result)
 

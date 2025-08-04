@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-07-31 14:45+0300\n"
+"POT-Creation-Date: 2025-08-04 14:30+0300\n"
 "PO-Revision-Date: 2025-07-31 14:01+0300\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -18,32 +18,702 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.17.0\n"
 
-#: routers/start.py:13
+#: core/utils/db.py:22
+#, python-brace-format
+msgid "Пожалуйста, сначала пройдите регистрацию /{command}"
+msgstr ""
+
+#: core/utils/dt.py:60
+msgid "Дата должна быть позже или равна сегодняшней по Москве"
+msgstr ""
+
+#: routers/common_handlers.py:37
+msgid "Извините, сервер временно недоступен. Попробуйте позже!"
+msgstr ""
+
+#: routers/common_handlers.py:55
+#, python-brace-format
+msgid ""
+"Видимо, ваша сессия устарела! Пожалуйста, войдите снова через команду "
+"/{command}"
+msgstr ""
+
+#: routers/common_handlers.py:73
+msgid "Данные кажутся устаревшими! Пожалуйста, введите команду снова🙂"
+msgstr ""
+
+#: routers/start.py:22
 #, python-brace-format
 msgid ""
 "Здравствуйте, {name}!\n"
 "\n"
 "Это бот для помощи отслеживания задач и привычек!"
 msgstr ""
-"Hello, {name}!\n"
-"\n"
-"This is a bot to help you track your tasks and habits!"
 
-#: routers/auth/getters.py:7
+#: routers/activity/getters.py:7
+msgid ""
+"Если вы активируете бота, он будет присылать информацию о задачах и "
+"привычках, иначе не будет"
+msgstr ""
+
+#: routers/activity/getters.py:9
+msgid "Активировать"
+msgstr ""
+
+#: routers/activity/getters.py:10
+msgid "Деактивировать"
+msgstr ""
+
+#: routers/activity/handlers.py:25
+msgid "✅Бот будет присылать напоминания о задачах и привычках"
+msgstr ""
+
+#: routers/activity/handlers.py:29
+msgid "❌Бот больше не будет присылать напоминания о задачах и привычках"
+msgstr ""
+
+#: routers/auth/getters.py:22
 #, python-brace-format
 msgid ""
 "🔒{username}, пожалуйста, выбери вариант авторизации в зависимости от "
 "того, есть ли у тебя уже аккаунт\n"
 msgstr ""
-"🔒{username}, please select an authorization option depending on "
-"whether you already have an account\n"
+"🔒{username}, please select an authorization option depending on whether "
+"you already have an account\n"
 
-
-#: routers/auth/getters.py:10
-msgid "🚪Вход"
-msgstr "🚪Entrance"
-
-#: routers/auth/getters.py:11
+#: routers/auth/getters.py:25
 msgid "🎯Регистрация"
 msgstr "🎯Check"
+
+#: routers/auth/getters.py:26
+msgid "🔄Обновить сессию"
+msgstr ""
+
+#: routers/auth/getters.py:34
+msgid "Пожалуйста введите логин"
+msgstr ""
+
+#: routers/auth/getters.py:40
+msgid "Пожалуйста введите пароль"
+msgstr ""
+
+#: routers/auth/getters.py:41
+msgid "Исправить логин"
+msgstr ""
+
+#: routers/auth/handlers.py:50
+#, python-brace-format
+msgid "Пользователь «{username}» уже существует!"
+msgstr ""
+
+#: routers/auth/handlers.py:96
+#, python-brace-format
+msgid ""
+"Регистрация пользователя «{username}» успешно завершена!\n"
+"\n"
+"Пожалуйста, удалите пароль из переписки и запомните его!"
+msgstr ""
+
+#: routers/auth/handlers.py:131
+msgid "Сессия успешно обновлена!"
+msgstr ""
+
+#: routers/auth/handlers.py:133
+msgid "Неверный логин или пароль"
+msgstr ""
+
+#: routers/common/getters.py:7
+msgid "Вы хотите создать задачу или привычку?"
+msgstr ""
+
+#: routers/common/getters.py:9
+msgid "Задача"
+msgstr ""
+
+#: routers/common/getters.py:10
+msgid "Привычка"
+msgstr ""
+
+#: routers/common/getters.py:17
+msgid "Вы хотите узнать информацию о действующих задачах или привычках?"
+msgstr ""
+
+#: routers/common/getters.py:19 routers/stats/getters.py:10
+msgid "Задачи"
+msgstr ""
+
+#: routers/common/getters.py:20 routers/stats/getters.py:9
+msgid "Привычки"
+msgstr ""
+
+#: routers/common/getters.py:26
+msgid "Введите новое название"
+msgstr ""
+
+#: routers/common/getters.py:27
+msgid "Отменить ввод названия"
+msgstr ""
+
+#: routers/common/handlers.py:51
+#, python-brace-format
+msgid "Текст должен быть не длиннее {max_length} символов"
+msgstr ""
+
+#: routers/common/repository.py:256
+msgid "Загрузить еще"
+msgstr ""
+
+#: routers/common/repository.py:257
+msgid "Нажмите, чтобы посмотреть подробности"
+msgstr ""
+
+#: routers/common/repository.py:258 routers/habits/getters.py:11
+#: routers/tasks/getters.py:13
+msgid "Вернуться к выбору"
+msgstr ""
+
+#: routers/common/repository.py:533
+msgid "Редактировать"
+msgstr ""
+
+#: routers/common/repository.py:534
+msgid "Удалить"
+msgstr ""
+
+#: routers/common/repository.py:535
+msgid "Вернуться"
+msgstr ""
+
+#: routers/habits/getters.py:10
+msgid "Введите название привычки"
+msgstr ""
+
+#: routers/habits/getters.py:18
+msgid "Введите, зачем вам эта привычка (для мотивации)"
+msgstr ""
+
+#: routers/habits/getters.py:20
+msgid "Изменить название"
+msgstr ""
+
+#: routers/habits/getters.py:26 routers/habits/repository.py:114
+msgid "Понедельник"
+msgstr ""
+
+#: routers/habits/getters.py:27 routers/habits/repository.py:115
+msgid "Вторник"
+msgstr ""
+
+#: routers/habits/getters.py:28 routers/habits/repository.py:116
+msgid "Среда"
+msgstr ""
+
+#: routers/habits/getters.py:29 routers/habits/repository.py:117
+msgid "Четверг"
+msgstr ""
+
+#: routers/habits/getters.py:30 routers/habits/repository.py:118
+msgid "Пятница"
+msgstr ""
+
+#: routers/habits/getters.py:31 routers/habits/repository.py:119
+msgid "Суббота"
+msgstr ""
+
+#: routers/habits/getters.py:32 routers/habits/repository.py:120
+msgid "Воскресенье"
+msgstr ""
+
+#: routers/habits/getters.py:40
+msgid "Выберете дни недели, когда вам присылать напоминание"
+msgstr ""
+
+#: routers/habits/getters.py:43 routers/habits/getters.py:56
+#: routers/habits/getters.py:132 routers/habits/getters.py:150
+#: routers/languages/getters.py:14
+msgid "Сохранить"
+msgstr ""
+
+#: routers/habits/getters.py:44
+msgid "Изменить цель привычки"
+msgstr ""
+
+#: routers/habits/getters.py:53
+msgid "Выберете часы, когда вам отправлять напоминание"
+msgstr ""
+
+#: routers/habits/getters.py:57
+msgid "Изменить дни недели"
+msgstr ""
+
+#: routers/habits/getters.py:65
+msgid "Вы точно хотите удалить эту привычку? Отменить это действие будет нельзя."
+msgstr ""
+
+#: routers/habits/getters.py:67
+msgid "Удалить привычку"
+msgstr ""
+
+#: routers/habits/getters.py:68 routers/habits/getters.py:86
+#: routers/tasks/getters.py:101 routers/tasks/getters.py:122
+msgid "Вернуться к деталям"
+msgstr ""
+
+#: routers/habits/getters.py:81 routers/tasks/getters.py:114
+msgid "Название"
+msgstr ""
+
+#: routers/habits/getters.py:82
+msgid "Цель"
+msgstr ""
+
+#: routers/habits/getters.py:83
+msgid "Дни напоминаний"
+msgstr ""
+
+#: routers/habits/getters.py:84
+msgid "Часы напоминаний"
+msgstr ""
+
+#: routers/habits/getters.py:85
+msgid "Отметить завершённой"
+msgstr ""
+
+#: routers/habits/getters.py:92
+msgid "Введите новую цель для привычки"
+msgstr ""
+
+#: routers/habits/getters.py:93
+msgid "Отменить ввод цели"
+msgstr ""
+
+#: routers/habits/getters.py:128
+msgid "Выберете дни, когда вам присылать напоминание о привычке"
+msgstr ""
+
+#: routers/habits/getters.py:131
+msgid "Отменить выбор дней"
+msgstr ""
+
+#: routers/habits/getters.py:146
+msgid "Выберете часы, когда вам отправлять напоминания"
+msgstr ""
+
+#: routers/habits/getters.py:149
+msgid "Отменить выбор часов"
+msgstr ""
+
+#: routers/habits/getters.py:157 routers/habits/repository.py:99
+#, python-brace-format
+msgid "{name}"
+msgstr ""
+
+#: routers/habits/handlers.py:73
+msgid "Привычка успешно создана!"
+msgstr ""
+
+#: routers/habits/repository.py:22
+msgid "Поздравляем с новой полезной привычкой!"
+msgstr ""
+
+#: routers/habits/repository.py:26
+msgid "Привычка успешно удалена!"
+msgstr ""
+
+#: routers/habits/repository.py:30
+msgid "🙂Привычка уже отмечена!"
+msgstr ""
+
+#: routers/habits/repository.py:53
+msgid "Привычка отмечена как выполненная!"
+msgstr ""
+
+#: routers/habits/repository.py:58
+msgid "Привычка отмечена как невыполненная!"
+msgstr ""
+
+#: routers/habits/repository.py:123
+#, python-brace-format
+msgid ""
+"Название: {name}\n"
+"\n"
+"Цель: {purpose}\n"
+"\n"
+"Дни напоминания: {days}\n"
+"\n"
+"Часы напоминания: {hours}\n"
+"\n"
+"Количество успешных выполнений: {completed}\n"
+"\n"
+"Всего было напоминаний: {total}\n"
+"\n"
+"% Выполнений: {performance}\n"
+"\n"
+"Создана: {created}\n"
+"\n"
+"Успешно завершена - {is_completed}\n"
+"\n"
+msgstr ""
+
+#: routers/languages/getters.py:8
+msgid "Русский"
+msgstr ""
+
+#: routers/languages/getters.py:9
+msgid "Английский"
+msgstr ""
+
+#: routers/languages/getters.py:12
+msgid "Выберете язык бота"
+msgstr ""
+
+#: routers/stats/getters.py:7
+msgid "Нужна статистика о задачах или привычках?"
+msgstr ""
+
+#: routers/stats/getters.py:17
+msgid "Нужна статистика текстом или csv файлом?"
+msgstr ""
+
+#: routers/stats/getters.py:19
+msgid "Текст"
+msgstr ""
+
+#: routers/stats/getters.py:20
+msgid "Файл"
+msgstr ""
+
+#: routers/stats/getters.py:21
+msgid "Назад к выбору"
+msgstr ""
+
+#: routers/stats/handlers.py:54
+msgid "За последнюю неделю:"
+msgstr "For the last week:"
+
+#: routers/stats/handlers.py:55
+msgid "За последний месяц:"
+msgstr "For the last month:"
+
+#: routers/stats/handlers.py:56
+msgid "За последние 3 месяца:"
+msgstr "For the last 3 months:"
+
+#: routers/stats/handlers.py:57
+msgid "За последние 6 месяцев:"
+msgstr "For the last 6 months:"
+
+#: routers/stats/handlers.py:58
+msgid "За последние 9 месяцев:"
+msgstr "For the last 9 months:"
+
+#: routers/stats/handlers.py:59
+msgid "За последний год:"
+msgstr "For the last year:"
+
+#: routers/stats/handlers.py:60
+msgid "За все время:"
+msgstr "For all the time:"
+
+#: routers/stats/handlers.py:65
+msgid ""
+"Статистика по задачам за последнее время\n"
+"\n"
+"\n"
+msgstr ""
+"Recent task statistics\n"
+"\n"
+"\n"
+
+#: routers/stats/handlers.py:68
+#, python-brace-format
+msgid ""
+"{time}\n"
+"\n"
+"Всего задач: {total}\n"
+"Успешно выполнено: {completed}\n"
+"Не выполнено в срок: {not_completed}\n"
+"Результативность: {performance}%\n"
+"\n"
+"\n"
+msgstr ""
+"{time}\n"
+"\n"
+"Total tasks: {total}\n"
+"Successfully completed: {completed}\n"
+"Not completed on time: {not_completed}\n"
+"Performance: {performance}%\n"
+"\n"
+"\n"
+
+#: routers/stats/handlers.py:160
+msgid ""
+"Статистика по количеству завершенных привычек за последнее время\n"
+"\n"
+"\n"
+msgstr ""
+"Statistics on the number of completed habits in recent times\n"
+"\n"
+"\n"
+
+#: routers/stats/handlers.py:163
+#, python-brace-format
+msgid ""
+"{time}\n"
+"Всего привычек: {total}\n"
+"\n"
+"\n"
+msgstr ""
+"{time}\n"
+"Total habits: {total}\n"
+"\n"
+"\n"
+
+#: routers/tasks/getters.py:12
+msgid "Введите название задачи"
+msgstr ""
+
+#: routers/tasks/getters.py:19
+msgid "Введите описание задачи"
+msgstr ""
+
+#: routers/tasks/getters.py:20
+msgid "Вернуться к названию"
+msgstr ""
+
+#: routers/tasks/getters.py:26
+msgid "Введите новое описание для задачи"
+msgstr ""
+
+#: routers/tasks/getters.py:27
+msgid "Отменить ввод описания"
+msgstr ""
+
+#: routers/tasks/getters.py:33
+msgid "Выберите дату дедлайна"
+msgstr ""
+
+#: routers/tasks/getters.py:34
+msgid "Изменить описание"
+msgstr ""
+
+#: routers/tasks/getters.py:50
+msgid "Выберете час дедлайна"
+msgstr ""
+
+#: routers/tasks/getters.py:51
+msgid "Изменить дату дедлайна"
+msgstr ""
+
+#: routers/tasks/getters.py:59
+msgid "Выберете, за сколько часов до дедлайна нужно напомнить о задаче"
+msgstr ""
+
+#: routers/tasks/getters.py:61
+msgid "Изменить час дедлайна"
+msgstr ""
+
+#: routers/tasks/getters.py:69
+msgid "Измените, за сколько часов до дедлайна нужно напомнить о задаче"
+msgstr ""
+
+#: routers/tasks/getters.py:71
+msgid "Отменить редактирование часов до напоминания"
+msgstr ""
+
+#: routers/tasks/getters.py:77
+msgid "Выберете новую дату дедлайна"
+msgstr ""
+
+#: routers/tasks/getters.py:78
+msgid "Отменить выбор даты"
+msgstr ""
+
+#: routers/tasks/getters.py:85 routers/tasks/repository.py:105
+#, python-brace-format
+msgid "{name} [{deadline}]"
+msgstr ""
+
+#: routers/tasks/getters.py:98
+msgid "Вы точно хотите удалить эту задачу? Отменить это действие будет нельзя."
+msgstr ""
+
+#: routers/tasks/getters.py:100
+msgid "Удалить задачу"
+msgstr ""
+
+#: routers/tasks/getters.py:115
+msgid "Описание"
+msgstr ""
+
+#: routers/tasks/getters.py:116
+msgid "Дата дедлайна"
+msgstr ""
+
+#: routers/tasks/getters.py:117
+msgid "Время дедлайна"
+msgstr ""
+
+#: routers/tasks/getters.py:119
+msgid "Количество часов до напоминания"
+msgstr ""
+
+#: routers/tasks/getters.py:121
+msgid "Отметить выполненной"
+msgstr ""
+
+#: routers/tasks/getters.py:129
+msgid "Выберете новый час дедлайна"
+msgstr ""
+
+#: routers/tasks/getters.py:130
+msgid "Отменить выбор часа дедлайна"
+msgstr ""
+
+#: routers/tasks/handlers.py:80
+#, python-brace-format
+msgid "Не удалось создать задачу: {detail}"
+msgstr ""
+
+#: routers/tasks/handlers.py:84
+#, python-brace-format
+msgid "Не удалось обновить дедлайн: {detail}"
+msgstr ""
+
+#: routers/tasks/handlers.py:142
+msgid "Задача успешно создана!"
+msgstr ""
+
+#: routers/tasks/repository.py:34 routers/tasks/repository.py:60
+msgid "Задача успешно выполнена! Поздравляем!"
+msgstr ""
+
+#: routers/tasks/repository.py:38
+msgid "Задача успешно удалена!"
+msgstr ""
+
+#: routers/tasks/repository.py:42
+msgid "🙂Задача уже выполнена!"
+msgstr ""
+
+#: routers/tasks/repository.py:120
+#, python-brace-format
+msgid ""
+"Название: {name}\n"
+"\n"
+"Описание: {description}\n"
+"\n"
+"Количество часов до напоминания о дедлайне: {hours}\n"
+"\n"
+"Дата дедлайна: {deadline}\n"
+"\n"
+"Успешно завершена - {completed}"
+msgstr ""
+
+#~ msgid ""
+#~ "Здравствуйте, {name}!\n"
+#~ "\n"
+#~ "Это бот для помощи отслеживания задач и привычек!"
+#~ msgstr ""
+#~ "Hello, {name}!\n"
+#~ "\n"
+#~ "This is a bot to help you track your tasks and habits!"
+
+#~ msgid "🚪Вход"
+#~ msgstr "🚪Entrance"
+
+#~ msgid "Число: {num}"
+#~ msgstr "Number: {num}"
+
+#~ msgid ""
+#~ "Статистика по задачам за последнее время\n"
+#~ "\n"
+#~ "\n"
+#~ "За последнюю неделю:\n"
+#~ "\n"
+#~ "Всего задач: {week_1_total}\n"
+#~ "Успешно выполнено: {week_1_completed}\n"
+#~ "Не выполнено в срок: {week_1_not_completed}\n"
+#~ "Результативность: {week_1_performance}%\n"
+#~ "\n"
+#~ "\n"
+#~ "За последний месяц:\n"
+#~ "\n"
+#~ "Всего задач: {month_1_total}\n"
+#~ "Успешно выполнено: {month_1_completed}\n"
+#~ "Не выполнено в срок: {month_1_not_completed}\n"
+#~ "Результативность: {month_1_performance}%\n"
+#~ "\n"
+#~ "\n"
+#~ "За последние 3 месяца:\n"
+#~ "\n"
+#~ "Всего задач: {month_3_total}\n"
+#~ "Успешно выполнено: {month_3_completed}\n"
+#~ "Не выполнено в срок: {month_3_not_completed}\n"
+#~ "Результативность: {month_3_performance}%\n"
+#~ "\n"
+#~ "\n"
+#~ "За последние 6 месяцев:\n"
+#~ "\n"
+#~ "Всего задач: {month_6_total}\n"
+#~ "Успешно выполнено: {month_6_completed}\n"
+#~ "Не выполнено в срок: {month_6_not_completed}\n"
+#~ "Результативность: {month_6_performance}%\n"
+#~ "\n"
+#~ "\n"
+#~ "За последние 9 месяцев:\n"
+#~ "\n"
+#~ "Всего задач: {month_9_total}\n"
+#~ "Успешно выполнено: {month_9_completed}\n"
+#~ "Не выполнено в срок: {month_9_not_completed}\n"
+#~ "Результативность: {month_9_performance}%\n"
+#~ "\n"
+#~ "\n"
+#~ "За последний год:\n"
+#~ "\n"
+#~ "Всего задач: {year_1_total}\n"
+#~ "Успешно выполнено: {year_1_completed}\n"
+#~ "Не выполнено в срок: {year_1_not_completed}\n"
+#~ "Результативность: {year_1_performance}%\n"
+#~ "\n"
+#~ "\n"
+#~ "За все время:\n"
+#~ "\n"
+#~ "Всего задач: {all_total}\n"
+#~ "Успешно выполнено: {all_completed}\n"
+#~ "Не выполнено в срок: {all_not_completed}\n"
+#~ "Результативность: {all_performance}%"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Статистика по количеству завершенных привычек за последнее время\n"
+#~ "\n"
+#~ "\n"
+#~ "За последнюю неделю:\n"
+#~ "Всего привычек: {week_1_total}\n"
+#~ "\n"
+#~ "\n"
+#~ "За последний месяц:\n"
+#~ "Всего привычек: {month_1_total}\n"
+#~ "\n"
+#~ "\n"
+#~ "За последние 3 месяца:\n"
+#~ "Всего привычек: {month_3_total}\n"
+#~ "\n"
+#~ "\n"
+#~ "За последние 6 месяцев:\n"
+#~ "Всего привычек: {month_6_total}\n"
+#~ "\n"
+#~ "\n"
+#~ "За последние 9 месяцев:\n"
+#~ "Всего привычек: {month_9_total}\n"
+#~ "\n"
+#~ "\n"
+#~ "За последний год:\n"
+#~ "Всего привычек: {year_1_total}\n"
+#~ "\n"
+#~ "\n"
+#~ "За все время:\n"
+#~ "Всего привычек: {all_total}"
+#~ msgstr ""
 
