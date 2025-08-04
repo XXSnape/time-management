@@ -130,7 +130,7 @@ msgstr ""
 "✖️/{cancel} - AN IMPORTANT COMMAND FOR CANCELLING ANY COMMAND. If you "
 "want to completely leave creating a task or habit, viewing, "
 "authorization - just enter this command and the dialogue will start \"from a clean "
-"slate\n"
+"slate\"\n"
 "\n"
 "\n"
 "\n"
@@ -587,7 +587,7 @@ msgstr "🏷️Enter the task name"
 
 #: routers/tasks/getters.py:19
 msgid "✨Введите описание задачи"
-msgstr "🏷️Enter the task name"
+msgstr "🏷️Enter the task description"
 
 #: routers/tasks/getters.py:20
 msgid "⬅️Вернуться к названию"
