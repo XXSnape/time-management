@@ -2,16 +2,22 @@ from datetime import timedelta
 from typing import Annotated
 
 from fastapi import APIRouter, Request, Form, HTTPException
+from starlette.responses import RedirectResponse
 
 from core.dependencies.auth import UserDep
 from core.dependencies.db import (
     SessionWithoutCommit,
     SessionWithCommit,
 )
-from core.schemas.tasks import TaskInSchema
-from core.utils.dt import convert_utc_to_moscow
+from core.schemas.tasks import TaskInSchema, TaskUpdateSchema
+from core.utils.dt import convert_utc_to_moscow, validate_dt
 from core.utils.templates import templates
-from services.tasks import get_active_user_tasks, create_task
+from services.tasks import (
+    get_active_user_tasks,
+    create_task,
+    get_task_by_id,
+    update_task,
+)
 
 router = APIRouter()
 
@@ -76,3 +82,64 @@ async def create_task_post(
                 "username": user.username,
             },
         )
+
+
+@router.get("/tasks/{task_id}/edit")
+async def edit_task_get(
+    request: Request,
+    user: UserDep,
+    task_id: int,
+    session: SessionWithoutCommit,
+):
+    task = await get_task_by_id(
+        session=session, user_id=user.id, task_id=task_id
+    )
+    result = task.model_dump()
+    d = convert_utc_to_moscow(result["deadline_datetime"])
+    result["deadline_datetime"] = str(
+        convert_utc_to_moscow(result["deadline_datetime"])
+    )
+    return templates.TemplateResponse(
+        "tasks-edit.html",
+        {
+            "request": request,
+            "username": user.username,
+            **result,
+        },
+    )
+
+
+@router.post("/tasks/{task_id}/edit")
+async def edit_task_post(
+    request: Request,
+    user: UserDep,
+    task_id: int,
+    session: SessionWithCommit,
+    updated_task_in: Annotated[TaskUpdateSchema, Form()],
+):
+    updated_task_in.deadline_datetime -= timedelta(hours=3)
+    try:
+        await update_task(
+            session=session,
+            user_id=user.id,
+            task_id=task_id,
+            updated_task_in=updated_task_in,
+        )
+    except HTTPException:
+        pass
+
+    task = await get_task_by_id(
+        session=session, user_id=user.id, task_id=task_id
+    )
+    result = task.model_dump()
+    result["deadline_datetime"] = str(
+        convert_utc_to_moscow(result["deadline_datetime"])
+    )
+    return templates.TemplateResponse(
+        "tasks-edit.html",
+        {
+            "request": request,
+            "username": user.username,
+            **result,
+        },
+    )

@@ -40,8 +40,8 @@ class TaskCreateSchema(TaskInSchema):
 
 
 class TaskUpdateSchema(TaskInSchema):
-    name: str | None = None
-    description: str | None = None
+    name: Annotated[str | None, Field(max_length=50)] = None
+    description: Annotated[str | None, Field(max_length=300)] = None
     hour_before_reminder: Annotated[
         int | None,
         Field(ge=1, le=24),

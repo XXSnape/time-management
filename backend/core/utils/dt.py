@@ -33,8 +33,3 @@ def convert_utc_to_moscow(
     if utc_dt.tzinfo is None:
         utc_dt = utc_dt.replace(tzinfo=datetime.timezone.utc)
     return utc_dt.astimezone(ZoneInfo("Europe/Moscow"))
-
-
-def get_moscow_dt(dt_str: str) -> datetime.datetime:
-    moscow_dt = convert_utc_to_moscow(dt)
-    return moscow_dt
