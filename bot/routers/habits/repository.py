@@ -7,7 +7,6 @@ from httpx import AsyncClient
 from core.enums import Resources, Weekday, Methods, Languages
 from core.keyboards.habits import completed_or_not_completed_habit_kb
 from core.utils.quotes import add_motivation
-from core.utils.dt import get_pretty_date
 from core.utils.request import make_request
 from routers.common.repository import BaseRepository
 from routers.habits.states import HabitsManagementStates
@@ -50,12 +49,12 @@ class HabitRepository(BaseRepository):
         )
         if callback_data.completed:
             await callback.answer(
-                _("Привычка отмечена как выполненная!"),
+                _("✅Привычка отмечена как выполненная!"),
                 show_alert=True,
             )
         else:
             await callback.answer(
-                _("Привычка отмечена как невыполненная!"),
+                _("❌Привычка отмечена как невыполненная!"),
                 show_alert=True,
             )
 
@@ -67,13 +66,13 @@ class HabitRepository(BaseRepository):
     ) -> str:
         if language == Languages.ru:
             result = (
-                "Напоминание о привычке:\n\n"
-                f"Название: {item['name']}"
+                "🔔Напоминание о привычке:\n\n"
+                f"🏷️Название: {item['name']}"
             )
         else:
             result = (
-                "Reminder about the habit:\n\n"
-                f"Title: {item['name']}"
+                "🔔Reminder about the habit:\n\n"
+                f"🏷️Title: {item['name']}"
             )
         return add_motivation(
             language=language, motivation=motivation, result=result
@@ -125,9 +124,8 @@ class HabitRepository(BaseRepository):
             "Дни напоминания: {days}\n\n"
             "Часы напоминания: {hours}\n\n"
             "Количество успешных выполнений: {completed}\n\n"
-            "Всего было напоминаний: {total}\n\n"
+            "Всего отмечено напоминаний: {total}\n\n"
             "% Выполнений: {performance}\n\n"
-            "Создана: {created}\n\n"
             "Успешно завершена - {is_completed}\n\n"
         ).format(
             name=item["name"],
@@ -145,7 +143,6 @@ class HabitRepository(BaseRepository):
             completed=item["completed"],
             total=item["total"],
             performance=item["performance"],
-            created=get_pretty_date(item["created"]),
             is_completed=is_completed,
         )
         dialog_manager.dialog_data.update(

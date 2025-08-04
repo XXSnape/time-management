@@ -152,7 +152,7 @@ class BaseRepository(ABC):
                     break
                 except TelegramRetryAfter as e:
                     logger.warning(
-                        "Бот заблокирован на %s секунд",
+                        "Бот остановлен телеграмом на %s секунд",
                         e.retry_after,
                     )
                     await asyncio.sleep(e.retry_after + 1)

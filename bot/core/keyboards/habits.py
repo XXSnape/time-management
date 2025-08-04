@@ -22,11 +22,11 @@ def completed_or_not_completed_habit_kb(
 ):
 
     if language == Languages.ru:
-        completed_text = "Отметить выполненной"
-        not_completed_text = "Отметить невыполненной"
+        completed_text = "✅Отметить выполненной"
+        not_completed_text = "❌Отметить невыполненной"
     else:
-        completed_text = "Mark Completed"
-        not_completed_text = "Mark as unfulfilled"
+        completed_text = "✅Mark Completed"
+        not_completed_text = "❌Mark as unfulfilled"
     completed_cb_data = HabitCbData(
         habit_id=habit_id, date=date, hour=hour, completed=True
     )

@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 
 async def get_ru_and_en_quotes(
     client: AsyncClient,
-) -> dict[str, str | None]:
+) -> dict[Languages, str | None]:
     ru_quote = None
     en_quote = None
     try:
@@ -42,7 +42,9 @@ def add_motivation(
     if not motivation:
         return result
     if language == Languages.ru:
-        result = f"{result}\n\n\nМотивационная цитата: {motivation}"
+        result = (
+            f"{result}\n\n\n💬Мотивационная цитата: {motivation}"
+        )
     else:
-        result = f"{result}\n\n\nMotivational quote: {motivation}"
+        result = f"{result}\n\n\n💬Motivational quote: {motivation}"
     return result

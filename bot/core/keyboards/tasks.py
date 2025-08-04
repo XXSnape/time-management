@@ -13,9 +13,9 @@ class TaskCbData(CallbackData, prefix="task_completed"):
 
 def complete_task_kb(task_id: int, language: Languages):
     if language == Languages.ru:
-        text = "Отметить выполненной"
+        text = "🚩Отметить выполненной"
     else:
-        text = "Mark Completed"
+        text = "🚩Mark Completed"
     return generate_inline_kb(
         [
             InlineKeyboardButton(

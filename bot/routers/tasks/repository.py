@@ -57,7 +57,7 @@ class TaskRepository(BaseRepository):
             delete_markup=False,
         )
         await callback.answer(
-            _("Задача успешно выполнена! Поздравляем!"),
+            _("❤️Задача успешно выполнена! Поздравляем!"),
             show_alert=True,
         )
 
@@ -70,15 +70,15 @@ class TaskRepository(BaseRepository):
         moscow_dt = get_pretty_dt(item["deadline_datetime"])
         if language == Languages.ru:
             result = (
-                "Напоминание о задаче:\n\n"
-                f"Название: {item['name']}\n\n"
-                f"Дата и время дедлайна: {moscow_dt}"
+                "🔔Напоминание о задаче:\n\n"
+                f"🏷️Название: {item['name']}\n\n"
+                f"⏰Дата и время дедлайна: {moscow_dt}"
             )
         else:
             result = (
-                "Reminder about the task:\n\n"
-                f"Title: {item['name']}\n\n"
-                f"Deadline date and time: {moscow_dt}"
+                "🔔Reminder about the task:\n\n"
+                f"🏷️Title: {item['name']}\n\n"
+                f"⏰Deadline date and time: {moscow_dt}"
             )
         return add_motivation(
             language=language,
@@ -160,8 +160,8 @@ class TaskRepository(BaseRepository):
         **kwargs: int,
     ):
 
-        task_id = manager.dialog_data["current_task"]
-        deadline_utc = manager.dialog_data[f"task_{task_id}_data"][
+        task_id = manager.dialog_data["current_item"]
+        deadline_utc = manager.dialog_data[f"item_{task_id}_data"][
             "deadline_utc"
         ]
         utc_dt = parse_utc_string_to_dt(deadline_utc)
