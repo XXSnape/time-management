@@ -3,11 +3,15 @@ from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 
 import uvicorn
-from fastapi import FastAPI
+from fastapi import FastAPI, Request, status
+from starlette.responses import RedirectResponse
+from starlette.staticfiles import StaticFiles
 
 from api import router as api_router
 from core.config import settings
 from core.dependencies.db import db_helper
+from core.utils.exc import RedirectException
+from views import router as views_router
 
 logging.basicConfig(
     level=settings.logging.log_level_value,
@@ -29,6 +33,19 @@ main_app = FastAPI(
     lifespan=lifespan,
 )
 main_app.include_router(api_router)
+main_app.include_router(views_router)
+main_app.mount(
+    "/static", StaticFiles(directory="static"), name="static"
+)
+
+
+@main_app.exception_handler(RedirectException)
+async def redirect_exception_handler(
+    request: Request, exc: RedirectException
+):
+    return RedirectResponse(
+        url="/login",
+    )
 
 
 if __name__ == "__main__":
