@@ -84,6 +84,7 @@ class HabitsDAO(BaseDAO[Habit]):
             .join(Timer)
             .join(User)
             .where(
+                self.model.date_of_completion.is_(None),
                 Schedule.day == day,
                 Timer.notification_hour == hour,
                 User.is_active.is_(True),

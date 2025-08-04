@@ -48,7 +48,6 @@ class HabitUpdateSchema(BaseModel):
 
 
 class HabitOutSchema(IdSchema, HabitInSchema):
-    created: datetime.date
     completed: int
     total: int
     performance: int
