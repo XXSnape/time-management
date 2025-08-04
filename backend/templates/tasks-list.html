@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="tasks-container">
+    <div class="tasks-header">
+        <h1>Мои задачи</h1>
+        <a href="/tasks/create" class="create-btn">+ Создать</a>
+    </div>
+
+    <div class="task-list">
+        {% if not items %}
+            <p>Нет задач</p>
+        {% else %}
+            {% for task in items %}
+            <div class="task-card">
+                <h3>{{ task.name }}</h3>
+                <p>Срок: {{ task.deadline_datetime }}</p>
+                <div class="task-actions">
+                    <a href="/tasks/{{ task.id }}/edit">Редактировать</a>
+                    <form action="/tasks/{{ task.id }}/delete" method="post" style="display:inline;">
+                        <button type="submit">Удалить</button>
+                    </form>
+                </div>
+            </div>
+            {% endfor %}
+        {% endif %}
+    </div>
+
+    <div class="pagination">
+        {% if page > 1 %}
+            <a href="?page={{ page - 1 }}">← Назад</a>
+        {% endif %}
+        
+        {% for p in range(1, pages + 1) %}
+            {% if p == page %}
+                <span class="current-page">{{ p }}</span>
+            {% else %}
+                <a href="?page={{ p }}">{{ p }}</a>
+            {% endif %}
+        {% endfor %}
+        
+        {% if page < pages %}
+            <a href="?page={{ page + 1 }}">Вперед →</a>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
