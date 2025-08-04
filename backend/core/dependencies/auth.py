@@ -3,6 +3,8 @@ from typing import Annotated, TypeAlias
 from fastapi import Depends, HTTPException, status, Cookie
 from jwt import InvalidTokenError
 
+from core.schemas.users import UserForTemplateSchema
+from core.utils.exc import RedirectException
 from services import auth
 
 from core.config import settings
@@ -44,4 +46,24 @@ def get_user_id(
     return int(payload.get("sub"))
 
 
+def get_user_for_template(
+    token: Annotated[
+        str | None, Cookie(alias=settings.auth_jwt.cookie_key_token)
+    ] = None,
+):
+    try:
+        payload = auth.decode_jwt(
+            token=token,
+        )
+    except InvalidTokenError:
+        raise RedirectException
+    return UserForTemplateSchema(
+        id=int(payload.get("sub")),
+        username=payload.get("username"),
+    )
+
+
 UserId: TypeAlias = Annotated[int, Depends(get_user_id)]
+UserDep: TypeAlias = Annotated[
+    UserForTemplateSchema, Depends(get_user_for_template)
+]

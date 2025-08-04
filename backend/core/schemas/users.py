@@ -1,8 +1,14 @@
 from pydantic import BaseModel
 
+from core.schemas.common import IdSchema
+
 
 class UserSchema(BaseModel):
     username: str
+
+
+class UserForTemplateSchema(IdSchema, UserSchema):
+    pass
 
 
 class UserInSchema(UserSchema):
