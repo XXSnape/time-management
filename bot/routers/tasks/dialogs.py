@@ -136,7 +136,6 @@ tasks_management_dialog = Dialog(
     ),
     Window(
         Format(text="{item_text}"),
-        Back(text=Format(text="{back}")),
         SwitchTo(
             text=Format(text="{edit_text}"),
             id="edit_task",
@@ -147,6 +146,7 @@ tasks_management_dialog = Dialog(
             id="delete_task",
             state=TasksManagementStates.delete,
         ),
+        Back(text=Format(text="{back}")),
         state=TasksManagementStates.view_details,
         getter=repository.get_item_details,
     ),

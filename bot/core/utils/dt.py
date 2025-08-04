@@ -57,8 +57,9 @@ async def selected_date_validator(
     ):
         await callback.answer(
             _(
-                "Дата должна быть позже или равна сегодняшней по Москве"
-            )
+                "❗Дата должна быть позже или равна сегодняшней по Москве"
+            ),
+            show_alert=True,
         )
         return False
     return True

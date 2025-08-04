@@ -31,11 +31,11 @@ class TaskRepository(BaseRepository):
 
     @property
     def completed(self):
-        return _("Задача успешно выполнена! Поздравляем!")
+        return _("❤️Задача успешно выполнена! Поздравляем!")
 
     @property
     def deleted(self):
-        return _("Задача успешно удалена!")
+        return _("✅Задача успешно удалена!")
 
     @property
     def item_been_marked(self) -> str:
@@ -117,11 +117,11 @@ class TaskRepository(BaseRepository):
     ) -> None:
         completed = "✅" if item["date_of_completion"] else "❌"
         text = _(
-            "Название: {name}\n\n"
-            "Описание: {description}\n\n"
-            "Количество часов до напоминания о дедлайне: {hours}\n\n"
-            "Дата дедлайна: {deadline}\n\n"
-            "Успешно завершена - {completed}"
+            "🏷️Название: {name}\n\n"
+            "✨Описание: {description}\n\n"
+            "🕒Количество часов до напоминания о дедлайне: {hours}\n\n"
+            "📆Дата дедлайна: {deadline}\n\n"
+            "🚩Успешно завершена - {completed}"
         ).format(
             name=item["name"],
             description=item["description"],

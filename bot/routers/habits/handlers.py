@@ -70,6 +70,6 @@ async def save_habit(
         },
     )
     await callback.answer(
-        _("Привычка успешно создана!"), show_alert=True
+        _("✅Привычка успешно создана!"), show_alert=True
     )
     await dialog_manager.done()

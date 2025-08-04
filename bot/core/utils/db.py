@@ -19,7 +19,7 @@ async def check_user_in_database(
     ):
         await message.answer(
             _(
-                "Пожалуйста, сначала пройдите регистрацию /{command}"
+                "🪪Пожалуйста, сначала пройдите регистрацию /{command}"
             ).format(command=Commands.auth.name)
         )
         return False

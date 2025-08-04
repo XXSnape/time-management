@@ -47,7 +47,7 @@ async def correct_login(
             await message.delete()
             await message.answer(
                 _(
-                    "Пользователь «{username}» уже существует!"
+                    "⚠️Пользователь «{username}» уже существует!"
                 ).format(username=text)
             )
             await dialog_manager.switch_to(
@@ -93,7 +93,7 @@ async def create_user(
     )
     await message.answer(
         _(
-            "Регистрация пользователя «{username}» успешно завершена!\n\n"
+            "🏆Регистрация пользователя «{username}» успешно завершена!\n\n"
             "Пожалуйста, удалите пароль из переписки и запомните его!"
         ).format(username=dialog_manager.dialog_data["username"])
     )
@@ -128,7 +128,7 @@ async def login_user(
                 access_token=json["access_token"]
             ),
         )
-        await message.answer(_("Сессия успешно обновлена!"))
+        await message.answer(_("🔄Сессия успешно обновлена!"))
     except UnauthorizedExc:
-        await message.answer(_("Неверный логин или пароль"))
+        await message.answer(_("❗Неверный логин или пароль"))
     await dialog_manager.done()

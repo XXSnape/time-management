@@ -35,8 +35,8 @@ async def change_language(
         values=UserUpdateSchema(language=lang),
     )
     if lang == Languages.ru:
-        success = "Язык успешно обновлен!"
+        success = "✅Язык успешно обновлен!"
     else:
-        success = "The language has been successfully updated!"
+        success = "✅The language has been successfully updated!"
     await dialog_manager.done()
     await callback.answer(success, show_alert=True)

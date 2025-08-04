@@ -142,7 +142,6 @@ habits_management_dialog = Dialog(
     ),
     Window(
         Format(text="{item_text}"),
-        Back(text=Format(text="{back}")),
         SwitchTo(
             text=Format(text="{edit_text}"),
             id="edit_habit",
@@ -153,6 +152,7 @@ habits_management_dialog = Dialog(
             id="delete_habit",
             state=HabitsManagementStates.delete,
         ),
+        Back(text=Format(text="{back}")),
         state=HabitsManagementStates.view_details,
         getter=repository.get_item_details,
     ),

@@ -48,7 +48,7 @@ async def on_incorrect_text(
 ):
     await message.answer(
         _(
-            "Текст должен быть не длиннее {max_length} символов"
+            "❗Текст должен быть не длиннее {max_length} символов"
         ).format(max_length=str(error))
     )
 

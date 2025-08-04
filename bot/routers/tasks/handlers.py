@@ -77,11 +77,11 @@ async def catching_deadline_error(
         raise
     json = e.response.json()
     if create:
-        text = _("Не удалось создать задачу: {detail}").format(
+        text = _("❌Не удалось создать задачу: {detail}").format(
             detail=json["detail"]
         )
     else:
-        text = _("Не удалось обновить дедлайн: {detail}").format(
+        text = _("❌Не удалось обновить дедлайн: {detail}").format(
             detail=json["detail"]
         )
     await callback.answer(
@@ -139,6 +139,6 @@ async def save_task(
         return
 
     await callback.answer(
-        _("Задача успешно создана!"), show_alert=True
+        _("✅Задача успешно создана!"), show_alert=True
     )
     await dialog_manager.done()

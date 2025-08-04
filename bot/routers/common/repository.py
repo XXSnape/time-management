@@ -253,9 +253,9 @@ class BaseRepository(ABC):
         dialog_manager: DialogManager,
         **kwargs,
     ):
-        load_more = _("Загрузить еще")
-        items_text = _("Нажмите, чтобы посмотреть подробности")
-        back_to_view = _("Вернуться к выбору")
+        load_more = _("📥Загрузить еще")
+        items_text = _("🔎Нажмите, чтобы посмотреть подробности")
+        back_to_view = _("⬅️Вернуться к выбору")
         items_from_cache = dialog_manager.dialog_data.get("items")
         scrolling_group_id = f"all_{self.resource}"
         if items_from_cache is not None:
@@ -530,7 +530,7 @@ class BaseRepository(ABC):
         item_text = item_data["text"]
         return {
             "item_text": item_text,
-            "edit_text": _("Редактировать"),
-            "delete_text": _("Удалить"),
-            "back": _("Вернуться"),
+            "edit_text": _("✏️Редактировать"),
+            "delete_text": _("🗑️Удалить"),
+            "back": _("⬅️Вернуться"),
         }
