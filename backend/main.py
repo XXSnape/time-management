@@ -45,6 +45,10 @@ def f():
             "reminder_text": "Напомнить за (часов)",
             "reminder_constraint_text": "От 1 до 24 часов",
             "cancel_text": "Отмена",
+            "edit_task_text": "Редактировать задачу",
+            "save_changes_text": "Сохранить изменения",
+            "completed_text": "✓ Выполнена",
+            "mark_text": "Отметить завершённой",
         },
         "en": {
             "app_text": "Tasks and Habits",
@@ -70,6 +74,10 @@ def f():
             "reminder_text": "Remind me in (hours)",
             "reminder_constraint_text": "1 to 24 hours",
             "cancel_text": "Cancel",
+            "edit_task_text": "Edit task",
+            "save_changes_text": "Save changes",
+            "completed_text": "✓ Completed",
+            "mark_text": "Mark Completed",
         },
     }
 

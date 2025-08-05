@@ -112,6 +112,7 @@ async def edit_task_get(
     user: UserDep,
     task_id: int,
     session: SessionWithoutCommit,
+    translations: Translations,
 ):
     task = await get_task_by_id(
         session=session, user_id=user.id, task_id=task_id
@@ -126,6 +127,7 @@ async def edit_task_get(
             "request": request,
             "username": user.username,
             **result,
+            **translations,
         },
     )
 
