@@ -1,4 +1,5 @@
 import datetime
+from contextlib import suppress
 from datetime import timedelta
 from typing import Annotated
 
@@ -64,7 +65,7 @@ async def get_tasks(
     )
 
 
-@router.get("/tasks/create")
+@router.get("/tasks/create", name="tasks:create")
 async def create_task_get(request: Request, user: UserDep):
     return templates.TemplateResponse(
         "tasks-create.html",
@@ -84,20 +85,20 @@ async def create_task_post(
 ):
     task_in.deadline_datetime -= timedelta(hours=3)
     try:
-        await create_task(
+        task = await create_task(
             user_id=user.id, task_in=task_in, session=session
         )
     except HTTPException:
-        return templates.TemplateResponse(
-            "tasks-create.html",
-            {
-                "request": request,
-                "username": user.username,
-            },
+        return RedirectResponse(
+            request.url_for("tasks:create"),
+            status_code=status.HTTP_303_SEE_OTHER,
         )
+    return RedirectResponse(
+        request.url_for("tasks:edit", task_id=task.id)
+    )
 
 
-@router.get("/tasks/{task_id}/edit")
+@router.get("/tasks/{task_id}/edit", name="tasks:edit")
 async def edit_task_get(
     request: Request,
     user: UserDep,
@@ -108,7 +109,6 @@ async def edit_task_get(
         session=session, user_id=user.id, task_id=task_id
     )
     result = task.model_dump()
-    d = convert_utc_to_moscow(result["deadline_datetime"])
     result["deadline_datetime"] = str(
         convert_utc_to_moscow(result["deadline_datetime"])
     )
@@ -131,30 +131,16 @@ async def edit_task_post(
     updated_task_in: Annotated[TaskUpdateSchema, Form()],
 ):
     updated_task_in.deadline_datetime -= timedelta(hours=3)
-    try:
+    with suppress(HTTPException):
         await update_task(
             session=session,
             user_id=user.id,
             task_id=task_id,
             updated_task_in=updated_task_in,
         )
-    except HTTPException:
-        pass
-
-    task = await get_task_by_id(
-        session=session, user_id=user.id, task_id=task_id
-    )
-    result = task.model_dump()
-    result["deadline_datetime"] = str(
-        convert_utc_to_moscow(result["deadline_datetime"])
-    )
-    return templates.TemplateResponse(
-        "tasks-edit.html",
-        {
-            "request": request,
-            "username": user.username,
-            **result,
-        },
+    return RedirectResponse(
+        request.url_for("tasks:edit", task_id=task_id),
+        status_code=status.HTTP_303_SEE_OTHER,
     )
 
 
@@ -177,25 +163,7 @@ async def mark_task(
         per_page=10,
         updated_date_of_completion=updated_date_of_completion,
     )
-    tasks = await get_active_user_tasks(
-        session=session,
-        user_id=user.id,
-        page=1,
-        per_page=10,
-    )
-    for task in tasks.items:
-        task.deadline_datetime = convert_utc_to_moscow(
-            task.deadline_datetime
-        )
-
-    return templates.TemplateResponse(
-        "tasks-list.html",
-        {
-            "request": request,
-            "username": user.username,
-            **tasks.model_dump(),
-        },
-    )
+    return RedirectResponse(request.url_for("tasks:view"))
 
 
 @router.post("/tasks/{task_id}/delete")
@@ -235,16 +203,6 @@ async def delete_task(
         exc=exc,
         per_page=10,
     )
-    tasks = await get_active_user_tasks(
-        session=session,
-        user_id=user.id,
-        page=1,
-        per_page=10,
-    )
-    for task in tasks.items:
-        task.deadline_datetime = convert_utc_to_moscow(
-            task.deadline_datetime
-        )
     return RedirectResponse(
         url=redirect_url,
         status_code=status.HTTP_303_SEE_OTHER,
