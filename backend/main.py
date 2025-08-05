@@ -54,6 +54,8 @@ def f():
             "all_completed_text": "Выполнено:",
             "not_completed_text": "Не выполнено:",
             "performance_text": "Процент выполнения:",
+            "my_habits_text": "Мои привычки",
+            "no_habits_text": "Нет привычек",
         },
         "en": {
             "app_text": "Tasks and Habits",
@@ -88,6 +90,8 @@ def f():
             "all_completed_text": "Completed:",
             "not_completed_text": "Not completed:",
             "performance_text": "Percentage of completion:",
+            "my_habits_text": "My habits",
+            "no_habits_text": "No habits",
         },
     }
 

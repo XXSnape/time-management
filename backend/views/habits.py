@@ -16,6 +16,7 @@ from core.dependencies.db import (
     SessionWithoutCommit,
     SessionWithCommit,
 )
+from core.dependencies.language import Translations
 from core.schemas.common import UpdateDateOfCompletionSchema
 from core.schemas.habits import HabitInSchema, HabitUpdateSchema
 from core.utils.enums import Weekday
@@ -36,6 +37,7 @@ async def get_habits(
     request: Request,
     user: UserDep,
     session: SessionWithoutCommit,
+    translations: Translations,
     page: int = 1,
     per_page: int = 10,
 ):
@@ -51,6 +53,7 @@ async def get_habits(
             "request": request,
             "username": user.username,
             **habits.model_dump(),
+            **translations,
         },
     )
 
