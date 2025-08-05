@@ -1,6 +1,7 @@
 import logging
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
+from pathlib import Path
 
 import uvicorn
 from fastapi import FastAPI, Request
@@ -37,7 +38,11 @@ main_app = FastAPI(
 main_app.include_router(api_router)
 main_app.include_router(views_router)
 main_app.mount(
-    "/static", StaticFiles(directory="static"), name="static"
+    "/static",
+    StaticFiles(
+        directory=Path(__file__).resolve().parent / "static"
+    ),
+    name="static",
 )
 
 

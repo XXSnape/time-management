@@ -1,11 +1,9 @@
-import datetime
-
 from fastapi import HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.dao.tasks import TasksDao
 
-from backend.core.utils.dt import validate_dt
+from core.utils.dt import validate_dt
 from core.schemas import tasks as tasks_schemas
 from core.schemas.common import DateOfCompletionSchema, IdSchema
 

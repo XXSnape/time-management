@@ -1,0 +1,10 @@
+services:
+  postgres_test:
+    container_name: postgres_test
+    image: postgres:14.8-alpine3.18
+    ports:
+      - '5432:5432'
+    environment:
+      POSTGRES_PASSWORD: postgres_test
+      POSTGRES_USER: postgres_test
+      POSTGRES_DB: postgres_test
