@@ -19,7 +19,7 @@ from core.dependencies.db import (
     SessionWithoutCommit,
     SessionWithCommit,
 )
-from core.dependencies.language import Translations
+from core.dependencies.language import Translations, Language
 from core.schemas.common import UpdateDateOfCompletionSchema
 from core.schemas.tasks import TaskInSchema, TaskUpdateSchema
 from core.utils.dt import convert_utc_to_moscow, validate_dt
@@ -224,15 +224,33 @@ async def get_stats(
     request: Request,
     user: UserDep,
     session: SessionWithoutCommit,
+    language: Language,
+    translations: Translations,
 ):
     stats = await get_tasks_statistics(
         session=session, user_id=user.id
     )
+    result = stats.model_dump()
+    if language == "ru":
+        for stat, period in zip(
+            result["items"],
+            [
+                "1 Неделя",
+                "1 Месяц",
+                "3 Месяца",
+                "6 Месяцев",
+                "9 Месяцев",
+                "1 Год",
+                "Все время",
+            ],
+        ):
+            stat["period"] = period
     return templates.TemplateResponse(
         "tasks-stats.html",
         {
             "request": request,
             "username": user.username,
-            **stats.model_dump(),
+            **result,
+            **translations,
         },
     )

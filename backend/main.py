@@ -49,6 +49,11 @@ def f():
             "save_changes_text": "Сохранить изменения",
             "completed_text": "✓ Выполнена",
             "mark_text": "Отметить завершённой",
+            "tasks_stats_text": "📊Статистика выполнения задач",
+            "all_tasks_text": "Всего задач:",
+            "all_completed_text": "Выполнено:",
+            "not_completed_text": "Не выполнено:",
+            "performance_text": "Процент выполнения:",
         },
         "en": {
             "app_text": "Tasks and Habits",
@@ -78,6 +83,11 @@ def f():
             "save_changes_text": "Save changes",
             "completed_text": "✓ Completed",
             "mark_text": "Mark Completed",
+            "tasks_stats_text": "📊Task performance statistics",
+            "all_tasks_text": "Total tasks:",
+            "all_completed_text": "Completed:",
+            "not_completed_text": "Not completed:",
+            "performance_text": "Percentage of completion:",
         },
     }
 

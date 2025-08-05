@@ -3,8 +3,8 @@
 {% block content %}
 <div class="stats-container">
     <div class="stats-header">
-        <a href="{{ url_for('tasks:view') }}" class="back-btn">Назад</a>
-        <h1>Статистика выполнения задач</h1>
+        <a href="{{ url_for('tasks:view') }}" class="back-btn">{{ back_text }}</a>
+        <h1>{{ tasks_stats_text }}</h1>
     </div>
     
     <div class="stats-grid">
@@ -12,19 +12,19 @@
         <div class="stat-card">
             <h3>{{ item.period }}</h3>
             <div class="stat-row">
-                <span>Всего задач:</span>
+                <span>{{ all_tasks_text }}</span>
                 <span>{{ item.total }}</span>
             </div>
             <div class="stat-row completed">
-                <span>Выполнено:</span>
+                <span>{{ all_completed_text }}</span>
                 <span>{{ item.completed }}</span>
             </div>
             <div class="stat-row not-completed">
-                <span>Не выполнено:</span>
+                <span>{{ not_completed_text }}</span>
                 <span>{{ item.not_completed }}</span>
             </div>
             <div class="performance">
-                <span>Процент выполнения:</span>
+                <span>{{ performance_text }}</span>
                 <span class="percent">{{ item.performance }}%</span>
             </div>
         </div>
