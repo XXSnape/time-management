@@ -340,3 +340,73 @@ input[type="text"] {
     color: #2196F3;
     font-size: 1.2em;
 }
+
+.multiselect-days {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 10px;
+    margin-top: 5px;
+}
+
+.day-checkbox {
+    display: flex;
+    align-items: center;
+    padding: 27px;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.day-checkbox:hover {
+    background: #f5f5f5;
+}
+
+.day-checkbox input {
+    margin-right: 8px;
+}
+
+.day-label {
+    white-space: nowrap;
+}
+
+
+/* Стили для выбора часов */
+.multiselect-hours {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 5px;
+}
+
+.hour-checkbox {
+    padding: 6px 10px;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9em;
+}
+
+.hour-checkbox:hover {
+    background: #f0f0f0;
+}
+
+.hour-checkbox input {
+    margin-right: 3px;
+}
+
+.day-checkbox input:checked + span,
+.hour-checkbox input:checked + span {
+    font-weight: bold;
+    color: #2c3e50;
+}
+
+.day-checkbox input:checked {
+    accent-color: #4CAF50;
+}
+
+.hour-checkbox input:checked {
+    accent-color: #2196F3;
+}

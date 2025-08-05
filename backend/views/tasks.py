@@ -144,7 +144,7 @@ async def edit_task_post(
     )
 
 
-@router.get("/tasks/{task_id}/completion")
+@router.get("/tasks/{task_id}/completion", name="tasks:mark")
 async def mark_task(
     request: Request,
     user: UserDep,
