@@ -19,7 +19,10 @@ from core.dependencies.db import (
 from core.dependencies.language import Translations, Language
 from core.schemas.common import UpdateDateOfCompletionSchema
 from core.schemas.habits import HabitInSchema, HabitUpdateSchema
-from core.utils.enums import Weekday
+from core.utils.localization import (
+    localize_periods,
+    localize_weekdays,
+)
 from core.utils.templates import templates
 from services.common import mark_completed, delete_entity
 from services.habits import (
@@ -65,27 +68,12 @@ async def create_habit_get(
     language: Language,
     translations: Translations,
 ):
-    if language == "ru":
-        days = [
-            "Понедельник",
-            "Вторник",
-            "Среда",
-            "Четверг",
-            "Пятница",
-            "Суббота",
-            "Воскресенье",
-        ]
-    else:
-        days = [day.title() for day in Weekday]
-
     return templates.TemplateResponse(
         "habits-create.html",
         {
             "request": request,
             "username": user.username,
-            "days": [
-                (day, value) for day, value in zip(days, Weekday)
-            ],
+            "days": localize_weekdays(language=language),
             **translations,
         },
     )
@@ -120,28 +108,13 @@ async def edit_habit_get(
         habit_id=habit_id, user_id=user.id, session=session
     )
     result = habit.model_dump()
-    if language == "ru":
-        days = [
-            "Понедельник",
-            "Вторник",
-            "Среда",
-            "Четверг",
-            "Пятница",
-            "Суббота",
-            "Воскресенье",
-        ]
-    else:
-        days = [day.title() for day in Weekday]
-
     return templates.TemplateResponse(
         "habits-edit.html",
         {
             "request": request,
             "username": user.username,
             **result,
-            "all_days": [
-                (day, value) for day, value in zip(days, Weekday)
-            ],
+            "all_days": localize_weekdays(language=language),
             **translations,
         },
     )
@@ -223,15 +196,20 @@ async def get_stats(
     request: Request,
     user: UserDep,
     session: SessionWithoutCommit,
+    translations: Translations,
+    language: Language,
 ):
     stats = await get_habit_statistics(
         session=session, user_id=user.id
     )
+    result = stats.model_dump()
+    localize_periods(result=result, language=language)
     return templates.TemplateResponse(
         "habits-stats.html",
         {
             "request": request,
             "username": user.username,
-            **stats.model_dump(),
+            **result,
+            **translations,
         },
     )

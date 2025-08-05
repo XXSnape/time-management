@@ -63,6 +63,8 @@ def f():
             "habit_reminder_text": "Часы напоминания (0-23)",
             "create_new_habit_text": "Создать новую привычку",
             "edit_habit_text": "✏️Редактировать привычку",
+            "habits_stats_text": "📊Статистика выполнения привычек",
+            "habit_completed_text": "Всего завершено привычек",
         },
         "en": {
             "app_text": "Tasks and Habits",
@@ -106,6 +108,8 @@ def f():
             "habit_reminder_text": "Reminder hours (0-23)",
             "create_new_habit_text": "Create a new habit",
             "edit_habit_text": "✏️Edit habit",
+            "habits_stats_text": "📊 Habits completion statistics",
+            "habit_completed_text": "Habits completed",
         },
     }
 

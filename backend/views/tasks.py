@@ -22,7 +22,8 @@ from core.dependencies.db import (
 from core.dependencies.language import Translations, Language
 from core.schemas.common import UpdateDateOfCompletionSchema
 from core.schemas.tasks import TaskInSchema, TaskUpdateSchema
-from core.utils.dt import convert_utc_to_moscow, validate_dt
+from core.utils.dt import convert_utc_to_moscow
+from core.utils.localization import localize_periods
 from core.utils.templates import templates
 from services.common import mark_completed, delete_entity
 from services.tasks import (
@@ -231,20 +232,7 @@ async def get_stats(
         session=session, user_id=user.id
     )
     result = stats.model_dump()
-    if language == "ru":
-        for stat, period in zip(
-            result["items"],
-            [
-                "1 Неделя",
-                "1 Месяц",
-                "3 Месяца",
-                "6 Месяцев",
-                "9 Месяцев",
-                "1 Год",
-                "Все время",
-            ],
-        ):
-            stat["period"] = period
+    localize_periods(language=language, result=result)
     return templates.TemplateResponse(
         "tasks-stats.html",
         {

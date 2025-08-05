@@ -3,8 +3,8 @@
 {% block content %}
 <div class="stats-container">
     <div class="stats-header">
-        <a href="{{ url_for('habits:view') }}" class="back-btn">Назад</a>
-        <h1>Статистика выполнения привычек</h1>
+        <a href="{{ url_for('habits:view') }}" class="back-btn">{{ back_text }}</a>
+        <h1>{{ habits_stats_text }}</h1>
     </div>
     
     <div class="stats-grid">
@@ -12,7 +12,7 @@
         <div class="stat-card">
             <h3>{{ item.period }}</h3>
             <div class="stat-row">
-                <span>Всего завершено привычек:</span>
+                <span>{{ habit_completed_text }}</span>
                 <span>{{ item.total }}</span>
             </div>
         </div>
