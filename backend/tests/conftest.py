@@ -3,7 +3,7 @@
 """
 
 from typing import AsyncGenerator
-from datetime import datetime, timedelta, UTC
+from datetime import datetime, timedelta, UTC, date
 
 import pytest
 from httpx import ASGITransport, AsyncClient
@@ -16,7 +16,16 @@ from sqlalchemy.ext.asyncio import (
 
 from core.config import settings
 from core.dependencies.db import db_helper
-from core.models import Base, User, Task
+from core.models import (
+    Base,
+    User,
+    Task,
+    Habit,
+    Timer,
+    Tracker,
+    Schedule,
+)
+from core.utils.enums import Weekday
 from services.auth import get_access_token, hash_password
 from main import main_app
 
@@ -56,6 +65,7 @@ async def init_db():
             password=hash_password("456"),
         )
         session.add(user2)
+        print("hello")
         await session.flush()
 
         now = datetime.now(UTC)
@@ -89,8 +99,96 @@ async def init_db():
                 user_id=user1.id,
                 date_of_completion=now.date(),
             ),
+            Task(
+                name="Просроченное задание",
+                description="Не отправлено вовремя",
+                deadline_datetime=now - timedelta(days=3),
+                hour_before_reminder=1,
+                user_id=user1.id,
+            ),
         ]
         session.add_all(tasks)
+
+        habit1 = Habit(
+            name="Утренняя зарядка",
+            purpose="Быть бодрым",
+            user_id=user1.id,
+        )
+        habit2 = Habit(
+            name="Чтение",
+            purpose="Развиваться",
+            user_id=user1.id,
+        )
+        habit3 = Habit(
+            name="Медитация",
+            purpose="Снизить стресс",
+            user_id=user1.id,
+            date_of_completion=now.date(),
+        )
+        session.add_all([habit1, habit2, habit3])
+        await session.flush()
+
+        timers1 = [
+            Timer(notification_hour=7, habit_id=habit1.id),
+            Timer(notification_hour=8, habit_id=habit1.id),
+        ]
+        schedules1 = [
+            Schedule(day=Weekday.MONDAY, habit_id=habit1.id),
+            Schedule(day=Weekday.TUESDAY, habit_id=habit1.id),
+        ]
+        trackers1 = [
+            Tracker(
+                reminder_date=date(year=2025, month=8, day=4),
+                reminder_hour=7,
+                is_completed=True,
+                habit_id=habit1.id,
+            ),
+            Tracker(
+                reminder_date=now.date(),
+                reminder_hour=8,
+                is_completed=False,
+                habit_id=habit1.id,
+            ),
+        ]
+
+        timers2 = [
+            Timer(notification_hour=8, habit_id=habit2.id),
+            Timer(notification_hour=21, habit_id=habit2.id),
+        ]
+        schedules2 = [
+            Schedule(day=Weekday.TUESDAY, habit_id=habit2.id),
+            Schedule(day=Weekday.WEDNESDAY, habit_id=habit2.id),
+        ]
+        trackers2 = [
+            Tracker(
+                reminder_date=now.date(),
+                reminder_hour=21,
+                is_completed=True,
+                habit_id=habit2.id,
+            ),
+        ]
+
+        timers3 = [
+            Timer(notification_hour=7, habit_id=habit3.id),
+            Timer(notification_hour=8, habit_id=habit3.id),
+        ]
+        schedules3 = [
+            Schedule(day=Weekday.MONDAY, habit_id=habit3.id),
+            Schedule(day=Weekday.TUESDAY, habit_id=habit3.id),
+            Schedule(day=Weekday.SUNDAY, habit_id=habit3.id),
+        ]
+        trackers3 = [
+            Tracker(
+                reminder_date=now.date(),
+                reminder_hour=10,
+                is_completed=True,
+                habit_id=habit3.id,
+            ),
+        ]
+
+        session.add_all(timers1 + timers2 + timers3)
+        session.add_all(schedules1 + schedules2 + schedules3)
+        session.add_all(trackers1 + trackers2 + trackers3)
         await session.commit()
 
 
