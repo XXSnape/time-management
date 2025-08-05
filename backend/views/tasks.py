@@ -23,7 +23,7 @@ from core.dependencies.language import Translations, Language
 from core.schemas.common import UpdateDateOfCompletionSchema
 from core.schemas.tasks import TaskInSchema, TaskUpdateSchema
 from core.utils.dt import convert_utc_to_moscow
-from core.utils.localization import localize_periods
+from core.locales.localization import localize_periods
 from core.utils.templates import templates
 from services.common import mark_completed, delete_entity
 from services.tasks import (
@@ -59,7 +59,7 @@ async def get_tasks(
         )
 
     return templates.TemplateResponse(
-        "tasks-list.html",
+        "tasks/tasks-list.html",
         {
             "request": request,
             "username": user.username,
@@ -76,7 +76,7 @@ async def create_task_get(
     translations: Translations,
 ):
     return templates.TemplateResponse(
-        "tasks-create.html",
+        "tasks/tasks-create.html",
         {
             "request": request,
             "username": user.username,
@@ -123,7 +123,7 @@ async def edit_task_get(
         convert_utc_to_moscow(result["deadline_datetime"])
     )
     return templates.TemplateResponse(
-        "tasks-edit.html",
+        "tasks/tasks-edit.html",
         {
             "request": request,
             "username": user.username,
@@ -234,7 +234,7 @@ async def get_stats(
     result = stats.model_dump()
     localize_periods(language=language, result=result)
     return templates.TemplateResponse(
-        "tasks-stats.html",
+        "tasks/tasks-stats.html",
         {
             "request": request,
             "username": user.username,

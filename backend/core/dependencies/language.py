@@ -24,6 +24,7 @@ def get_translations(
     return request.app.state.translations[language]
 
 
+Language: TypeAlias = Annotated[str, Depends(get_locale)]
 Translations: TypeAlias = Annotated[
     dict[str, str], Depends(get_translations)
 ]

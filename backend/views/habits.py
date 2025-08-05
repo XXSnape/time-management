@@ -19,7 +19,7 @@ from core.dependencies.db import (
 from core.dependencies.language import Translations, Language
 from core.schemas.common import UpdateDateOfCompletionSchema
 from core.schemas.habits import HabitInSchema, HabitUpdateSchema
-from core.utils.localization import (
+from core.locales.localization import (
     localize_periods,
     localize_weekdays,
 )
@@ -51,7 +51,7 @@ async def get_habits(
         per_page=per_page,
     )
     return templates.TemplateResponse(
-        "habits-list.html",
+        "habits/habits-list.html",
         {
             "request": request,
             "username": user.username,
@@ -69,7 +69,7 @@ async def create_habit_get(
     translations: Translations,
 ):
     return templates.TemplateResponse(
-        "habits-create.html",
+        "habits/habits-create.html",
         {
             "request": request,
             "username": user.username,
@@ -109,7 +109,7 @@ async def edit_habit_get(
     )
     result = habit.model_dump()
     return templates.TemplateResponse(
-        "habits-edit.html",
+        "habits/habits-edit.html",
         {
             "request": request,
             "username": user.username,
@@ -205,7 +205,7 @@ async def get_stats(
     result = stats.model_dump()
     localize_periods(result=result, language=language)
     return templates.TemplateResponse(
-        "habits-stats.html",
+        "habits/habits-stats.html",
         {
             "request": request,
             "username": user.username,
