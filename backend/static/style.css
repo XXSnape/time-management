@@ -92,17 +92,17 @@ input[type="text"] {
     margin-top: 15px;
 }
 
-.tasks-container {
+.items-container {
     max-width: 800px;
     margin: 0 auto;
     padding: 20px;
 }
 
-.task-list {
+.item-list {
     margin: 20px 0;
 }
 
-.task-card {
+.item-card {
     border: 1px solid #ddd;
     border-radius: 5px;
     padding: 15px;
@@ -110,16 +110,16 @@ input[type="text"] {
     background: #f9f9f9;
 }
 
-.task-card h3 {
+.item-card h3 {
     margin-top: 0;
     color: #333;
 }
 
-.task-actions {
+.item-actions {
     margin-top: 10px;
 }
 
-.task-actions a, .task-actions button {
+.item-actions a, .item-actions button {
     margin-right: 10px;
     padding: 5px 10px;
     text-decoration: none;
@@ -149,7 +149,7 @@ input[type="text"] {
     border-color: #007bff;
 }
 
-.tasks-header {
+.items-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -195,7 +195,7 @@ input[type="text"] {
     padding: 20px;
 }
 
-.task-form {
+.item-form {
     background: #f9f9f9;
     padding: 20px;
     border-radius: 8px;
