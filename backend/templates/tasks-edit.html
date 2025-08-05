@@ -31,11 +31,11 @@
         <div class="form-actions">
             <button type="submit" class="submit-btn">Сохранить изменения</button>
             {% if not date_of_completion %}
-                <a href="/tasks/{{ id }}/completion" class="complete-btn">✓ Отметить выполненной</a>
+                <a href="{{ url_for('tasks:mark', task_id=id)  }}" class="complete-btn">✓ Отметить выполненной</a>
             {% else %}
                 <span class="completed-label">✓ Выполнена: {{ date_of_completion }}</span>
             {% endif %}
-            <a href="/tasks" class="cancel-btn">Отмена</a>
+            <a href="{{ url_for('tasks:view')}}" class="cancel-btn">Отмена</a>
         </div>
     </form>
 </div>

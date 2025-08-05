@@ -1,19 +1,16 @@
 import datetime
-from contextlib import suppress
-from datetime import timedelta
 from typing import Annotated
 
 from fastapi import (
     APIRouter,
     Request,
     Form,
-    HTTPException,
     status,
 )
 from starlette.responses import RedirectResponse
 
 from api.v1.habits import get_active_user_habits, get_habit_by_id
-from core.dao.tasks import TasksDao
+from core.dao.habits import HabitsDAO
 from core.dependencies.auth import UserDep
 from core.dependencies.db import (
     SessionWithoutCommit,
@@ -21,17 +18,16 @@ from core.dependencies.db import (
 )
 from core.schemas.common import UpdateDateOfCompletionSchema
 from core.schemas.habits import HabitInSchema, HabitUpdateSchema
-from core.schemas.tasks import TaskInSchema, TaskUpdateSchema
-from core.utils.dt import convert_utc_to_moscow, validate_dt
 from core.utils.enums import Weekday
 from core.utils.templates import templates
 from services.common import mark_completed, delete_entity
-from services.habits import create_habit, update_habit
-from services.tasks import (
-    create_task,
-    get_task_by_id,
-    update_task,
+from services.habits import (
+    create_habit,
+    update_habit,
     exc,
+    get_habit_statistics,
+)
+from services.tasks import (
     get_tasks_statistics,
 )
 
@@ -149,7 +145,7 @@ async def edit_habit_post(
 
 
 @router.get("/habits/{habit_id}/completion", name="habits:mark")
-async def mark_task(
+async def mark_habit(
     request: Request,
     user: UserDep,
     habit_id: int,
@@ -161,26 +157,26 @@ async def mark_task(
     await mark_completed(
         session=session,
         user_id=user.id,
-        entity_id=task_id,
-        dao=TasksDao,
+        entity_id=habit_id,
+        dao=HabitsDAO,
         exc=exc,
         per_page=10,
         updated_date_of_completion=updated_date_of_completion,
     )
-    return RedirectResponse(request.url_for("tasks:view"))
+    return RedirectResponse(request.url_for("habits:view"))
 
 
-@router.post("/habits/{task_id}/delete")
-async def delete_task(
+@router.post("/habits/{habit_id}/delete")
+async def delete_habit(
     request: Request,
     user: UserDep,
-    task_id: int,
+    habit_id: int,
     session: SessionWithCommit,
     page: int = 1,
     per_page: int = 10,
 ):
     redirect_url = request.url_for(
-        "tasks:view"
+        "habits:view"
     ).include_query_params(
         page=page,
         per_page=per_page,
@@ -188,8 +184,8 @@ async def delete_task(
     await delete_entity(
         session=session,
         user_id=user.id,
-        entity_id=task_id,
-        dao=TasksDao,
+        entity_id=habit_id,
+        dao=HabitsDAO,
         exc=exc,
         per_page=10,
     )
@@ -205,11 +201,11 @@ async def get_stats(
     user: UserDep,
     session: SessionWithoutCommit,
 ):
-    stats = await get_tasks_statistics(
+    stats = await get_habit_statistics(
         session=session, user_id=user.id
     )
     return templates.TemplateResponse(
-        "tasks-stats.html",
+        "habits-stats.html",
         {
             "request": request,
             "username": user.username,

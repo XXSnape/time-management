@@ -3,24 +3,23 @@
 {% block content %}
 <div class="items-container">
     <div class="items-header">
-        <h1>Мои задачи</h1>
+        <h1>Мои привычки</h1>
         <div class="header-actions">
-            <a href="{{ url_for('tasks:stats') }}" class="stats-btn">📊 Статистика</a>
-            <a href="{{ url_for('tasks:create') }}" class="create-btn">+ Создать</a>
+            <a href="{{ url_for('habits:stats') }}" class="stats-btn">📊 Статистика</a>
+            <a href="{{ url_for('habits:create') }}" class="create-btn">+ Создать</a>
         </div>
     </div>
 
     <div class="item-list">
         {% if not items %}
-            <p>Нет задач</p>
+            <p>Нет привычек</p>
         {% else %}
-            {% for task in items %}
+            {% for habit in items %}
             <div class="item-card">
-                <h3>{{ task.name }}</h3>
-                <p>Срок: {{ task.deadline_datetime }}</p>
+                <h3>{{ habit.name }}</h3>
                 <div class="item-actions">
-                    <a href="{{ url_for('tasks:edit', task_id=task.id) }}">Редактировать</a>
-                <form action="/tasks/{{ task.id }}/delete{% if request.query_params %}?{{ request.query_params }}{% endif %}" method="post" style="display:inline;">
+                    <a href="{{ url_for('habits:edit', habit_id=habit.id) }}">Редактировать</a>
+                <form action="/habits/{{ habit.id }}/delete{% if request.query_params %}?{{ request.query_params }}{% endif %}" method="post" style="display:inline;">
                     <button type="submit">Удалить</button>
                 </form>
                 </div>

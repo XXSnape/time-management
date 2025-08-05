@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="stats-container">
+    <div class="stats-header">
+        <h1>Статистика выполнения привычек</h1>
+        <a href="{{ url_for('habits:view') }}">Назад</a>
+    </div>
+    
+    <div class="stats-grid">
+        {% for item in items %}
+        <div class="stat-card">
+            <h3>{{ item.period }}</h3>
+            <div class="stat-row">
+                <span>Всего завершено привычек:</span>
+                <span>{{ item.total }}</span>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
