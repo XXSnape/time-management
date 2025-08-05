@@ -21,6 +21,7 @@ from services.tasks import (
     get_task_by_id,
     update_task,
     exc,
+    get_tasks_statistics,
 )
 
 router = APIRouter()
@@ -221,5 +222,24 @@ async def delete_task(
             "request": request,
             "username": user.username,
             **tasks.model_dump(),
+        },
+    )
+
+
+@router.get("/tasks/stats")
+async def get_stats(
+    request: Request,
+    user: UserDep,
+    session: SessionWithoutCommit,
+):
+    stats = await get_tasks_statistics(
+        session=session, user_id=user.id
+    )
+    return templates.TemplateResponse(
+        "tasks-stats.html",
+        {
+            "request": request,
+            "username": user.username,
+            **stats.model_dump(),
         },
     )

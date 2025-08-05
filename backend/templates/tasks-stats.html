@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="stats-container">
+    <h1>Статистика выполнения задач</h1>
+    
+    <div class="stats-grid">
+        {% for item in items %}
+        <div class="stat-card">
+            <h3>{{ item.period }}</h3>
+            <div class="stat-row">
+                <span>Всего задач:</span>
+                <span>{{ item.total }}</span>
+            </div>
+            <div class="stat-row completed">
+                <span>Выполнено:</span>
+                <span>{{ item.completed }}</span>
+            </div>
+            <div class="stat-row not-completed">
+                <span>Не выполнено:</span>
+                <span>{{ item.not_completed }}</span>
+            </div>
+            <div class="performance">
+                <span>Процент выполнения:</span>
+                <span class="percent">{{ item.performance }}%</span>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
