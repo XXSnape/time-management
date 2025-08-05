@@ -2,24 +2,24 @@
 
 {% block content %}
 <div class="form-container">
-    <h1>Редактировать привычку</h1>
+    <h1>{{ edit_habit_text }}</h1>
     
     <form method="post" action="/habits/{{ id }}/edit" class="item-form">
         <div class="form-group">
-            <label for="name">Название привычки*</label>
+            <label for="name">{{ habit_name_text }}*</label>
             <input type="text" id="name" name="name" maxlength="40"
                    value="{{ name }}" required>
-            <small>Максимум 40 символов</small>
+            <small>{{ max_40_text }}</small>
         </div>
 
         <div class="form-group">
-            <label for="purpose">Цель привычки</label>
+            <label for="purpose">{{ habit_purpose_text }}</label>
             <textarea id="purpose" name="purpose" maxlength="250" rows="3">{{ purpose }}</textarea>
-            <small>Максимум 250 символов</small>
+            <small>{{ max_250 }}</small>
         </div>
 
         <div class="form-group">
-            <label>Дни недели*</label>
+            <label>{{ days_text }}*</label>
             <div class="multiselect-days">
                 {% for day in all_days %}
                 <label class="day-checkbox">
@@ -32,7 +32,7 @@
         </div>
 
         <div class="form-group">
-            <label>Часы напоминания (0-23)*</label>
+            <label>{{ habit_reminder_text }}*</label>
             <div class="multiselect-hours">
                 {% for hour in range(24) %}
                 <label class="hour-checkbox">
@@ -45,13 +45,13 @@
         </div>
         
         <div class="form-actions">
-            <button type="submit" class="submit-btn">Сохранить изменения</button>
+            <button type="submit" class="submit-btn">{{ save_changes_text }}</button>
             {% if not date_of_completion %}
-                <a href="{{ url_for('habits:mark', habit_id=id) }}" class="complete-btn">✓ Отметить выполненной</a>
+                <a href="{{ url_for('habits:mark', habit_id=id) }}" class="complete-btn">{{ mark_text }}</a>
             {% else %}
-                <span class="completed-label">✓ Выполнена: {{ date_of_completion }}</span>
+                <span class="completed-label">{{ completed_text }}: {{ date_of_completion }}</span>
             {% endif %}
-            <a href="{{ url_for('habits:view')}}" class="cancel-btn">Отмена</a>
+            <a href="{{ url_for('habits:view')}}" class="cancel-btn">{{ cancel_text }}</a>
         </div>
     </form>
 </div>

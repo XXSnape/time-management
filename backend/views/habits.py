@@ -113,26 +113,36 @@ async def edit_habit_get(
     user: UserDep,
     habit_id: int,
     session: SessionWithoutCommit,
+    language: Language,
+    translations: Translations,
 ):
     habit = await get_habit_by_id(
         habit_id=habit_id, user_id=user.id, session=session
     )
     result = habit.model_dump()
-    result["all_days"] = [
-        ("Понедельник", Weekday.MONDAY),
-        ("Вторник", Weekday.TUESDAY),
-        ("Среда", Weekday.WEDNESDAY),
-        ("Четверг", Weekday.THURSDAY),
-        ("Пятница", Weekday.FRIDAY),
-        ("Суббота", Weekday.SATURDAY),
-        ("Воскресенье", Weekday.SUNDAY),
-    ]
+    if language == "ru":
+        days = [
+            "Понедельник",
+            "Вторник",
+            "Среда",
+            "Четверг",
+            "Пятница",
+            "Суббота",
+            "Воскресенье",
+        ]
+    else:
+        days = [day.title() for day in Weekday]
+
     return templates.TemplateResponse(
         "habits-edit.html",
         {
             "request": request,
             "username": user.username,
             **result,
+            "all_days": [
+                (day, value) for day, value in zip(days, Weekday)
+            ],
+            **translations,
         },
     )
 

@@ -3,7 +3,7 @@ from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 
 import uvicorn
-from fastapi import FastAPI, Request, status
+from fastapi import FastAPI, Request
 from starlette.responses import RedirectResponse
 from starlette.staticfiles import StaticFiles
 
@@ -45,7 +45,7 @@ def f():
             "reminder_text": "Напомнить за (часов)",
             "reminder_constraint_text": "От 1 до 24 часов",
             "cancel_text": "Отмена",
-            "edit_task_text": "Редактировать задачу",
+            "edit_task_text": "✏️Редактировать задачу",
             "save_changes_text": "Сохранить изменения",
             "completed_text": "✓ Выполнена",
             "mark_text": "Отметить завершённой",
@@ -62,6 +62,7 @@ def f():
             "days_text": "Дни недели",
             "habit_reminder_text": "Часы напоминания (0-23)",
             "create_new_habit_text": "Создать новую привычку",
+            "edit_habit_text": "✏️Редактировать привычку",
         },
         "en": {
             "app_text": "Tasks and Habits",
@@ -87,7 +88,7 @@ def f():
             "reminder_text": "Remind me in (hours)",
             "reminder_constraint_text": "1 to 24 hours",
             "cancel_text": "Cancel",
-            "edit_task_text": "Edit task",
+            "edit_task_text": "✏️Edit task",
             "save_changes_text": "Save changes",
             "completed_text": "✓ Completed",
             "mark_text": "Mark Completed",
@@ -104,6 +105,7 @@ def f():
             "days_text": "Days of the week",
             "habit_reminder_text": "Reminder hours (0-23)",
             "create_new_habit_text": "Create a new habit",
+            "edit_habit_text": "✏️Edit habit",
         },
     }
 
