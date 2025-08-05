@@ -28,6 +28,12 @@ router = APIRouter(tags=["Задачи"])
     "",
     response_model=tasks_schemas.TaskOutSchema,
     status_code=status.HTTP_201_CREATED,
+    responses={
+        409: {
+            "description": "Дата и время выполнения задачи не могут "
+            "быть меньше текущего времени"
+        }
+    },
 )
 async def create_task(
     task_in: tasks_schemas.TaskInSchema,
@@ -101,6 +107,7 @@ async def get_statistics(
 @router.get(
     "/{task_id}",
     response_model=tasks_schemas.TaskOutSchema,
+    responses={404: {"description": "Задача не найдена"}},
 )
 async def get_task_by_id(
     task_id: int,
@@ -117,6 +124,9 @@ async def get_task_by_id(
 @router.patch(
     "/{task_id}/completion",
     response_model=PaginationSchema,
+    responses={
+        404: {"description": "Задача не найдена или уже завершена"}
+    },
 )
 async def mark_task_completed(
     updated_date_of_completion: UpdateDateOfCompletionSchema,
@@ -146,6 +156,12 @@ async def mark_task_completed(
 @router.patch(
     "/{task_id}",
     response_model=tasks_schemas.TaskOutSchema,
+    responses={
+        404: {"description": "Задача не найдена"},
+        409: {
+            "description": "Дата и время выполнения задачи не могут быть меньше текущего времени"
+        },
+    },
 )
 async def update_task(
     updated_task_in: tasks_schemas.TaskUpdateSchema,
@@ -161,7 +177,11 @@ async def update_task(
     )
 
 
-@router.delete("/{task_id}", response_model=PaginationSchema)
+@router.delete(
+    "/{task_id}",
+    response_model=PaginationSchema,
+    responses={404: {"description": "Задача не найдена"}},
+)
 async def delete_task(
     task_id: int,
     user_id: UserId,

@@ -43,7 +43,8 @@ async def create_habit(
 
 
 @router.get(
-    "/schedules", response_model=habits_schemas.HabitsWithUserSchema
+    "/schedules",
+    response_model=habits_schemas.HabitsWithUserSchema,
 )
 async def get_habits_on_schedule(
     day: Weekday,
@@ -69,7 +70,8 @@ async def get_statistics(
 
 
 @router.get(
-    "", response_model=habits_schemas.PaginatedHabitsOutSchema
+    "",
+    response_model=habits_schemas.PaginatedHabitsOutSchema,
 )
 async def get_active_user_habits(
     user_id: UserId,
@@ -102,6 +104,11 @@ async def get_active_user_habits(
 @router.patch(
     "/{task_id}/completion",
     response_model=PaginationSchema,
+    responses={
+        404: {
+            "description": "Привычка не найдена или уже завершена",
+        },
+    },
 )
 async def mark_habit_completed(
     updated_date_of_completion: UpdateDateOfCompletionSchema,
@@ -131,6 +138,11 @@ async def mark_habit_completed(
 @router.patch(
     "/{habit_id}",
     response_model=habits_schemas.HabitOutSchema,
+    responses={
+        404: {
+            "description": "Привычка не найдена",
+        },
+    },
 )
 async def update_habit(
     updated_habit_in: habits_schemas.HabitUpdateSchema,
@@ -149,6 +161,11 @@ async def update_habit(
 @router.delete(
     "/{habit_id}",
     response_model=PaginationSchema,
+    responses={
+        404: {
+            "description": "Привычка не найдена",
+        },
+    },
 )
 async def delete_habit(
     habit_id: int,
@@ -176,7 +193,10 @@ async def delete_habit(
 @router.post(
     "/{habit_id}/mark",
     response_model=ResultSchema,
-    status_code=status.HTTP_201_CREATED,
+    responses={
+        404: {"description": "Привычка не найдена"},
+        409: {"description": "Привычка уже отмечена"},
+    },
 )
 async def mark_habit(
     habit_id: int,
@@ -195,6 +215,7 @@ async def mark_habit(
 @router.get(
     "/{habit_id}",
     response_model=habits_schemas.HabitOutSchema,
+    responses={404: {"description": "Привычка не найдена"}},
 )
 async def get_habit_by_id(
     habit_id: int,

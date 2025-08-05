@@ -25,6 +25,7 @@ router = APIRouter(tags=["Пользователи"])
     "/sign-up",
     status_code=status.HTTP_201_CREATED,
     response_model=TokenSchema,
+    responses={409: {"description": "Пользователь уже существует"}},
 )
 async def sign_up(
     user_in: UserCreateSchema,
@@ -40,6 +41,7 @@ async def sign_up(
     "/sign-in",
     status_code=status.HTTP_201_CREATED,
     response_model=TokenSchema,
+    responses={401: {"description": "Неверный логин или пароль"}},
 )
 async def sign_in(
     user_in: UserInSchema,
@@ -68,6 +70,7 @@ async def check_username_for_existence(
 @router.patch(
     "/{telegram_id}",
     response_model=ResultSchema,
+    responses={404: {"description": "Пользователь не найден"}},
 )
 async def change_activity(
     user_activity: UserActivitySchema,
