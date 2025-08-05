@@ -65,6 +65,10 @@ def f():
             "edit_habit_text": "✏️Редактировать привычку",
             "habits_stats_text": "📊Статистика выполнения привычек",
             "habit_completed_text": "Всего завершено привычек",
+            "index_tasks_text": "Задачи",
+            "manage_tasks_text": "Управлять ежедневными задачами",
+            "index_habits_text": "Привычки",
+            "track_habits_text": "Отслеживать привычки",
         },
         "en": {
             "app_text": "Tasks and Habits",
@@ -110,6 +114,10 @@ def f():
             "edit_habit_text": "✏️Edit habit",
             "habits_stats_text": "📊 Habits completion statistics",
             "habit_completed_text": "Habits completed",
+            "index_tasks_text": "Tasks",
+            "manage_tasks_text": "Manage daily tasks",
+            "index_habits_text": "Habits",
+            "track_habits_text": "Track habits",
         },
     }
 
