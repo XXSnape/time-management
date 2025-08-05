@@ -1,4 +1,5 @@
-from httpx import AsyncClient
+import pytest
+from httpx import AsyncClient, Request
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -11,7 +12,7 @@ async def test_sign_up(ac: AsyncClient, async_session: AsyncSession):
         json={
             "username": "newuser",
             "password": "newpass",
-            "telegram_id": 222,
+            "telegram_id": 333,
         },
     )
     assert response.status_code == 201
@@ -21,7 +22,7 @@ async def test_sign_up(ac: AsyncClient, async_session: AsyncSession):
     )
     user = result.scalar_one_or_none()
     assert user is not None
-    assert user.telegram_id == 222
+    assert user.telegram_id == 333
     assert user.is_active is True
 
 
@@ -85,3 +86,14 @@ async def test_change_activity_not_found(ac: AsyncClient):
         "/users/999999", json={"is_active": False}
     )
     assert response.status_code == 404
+
+
+@pytest.mark.parametrize("endpoint", ["tasks", "habits"])
+async def test_auth_failure(ac: AsyncClient, endpoint: str):
+    request = Request(
+        "GET",
+        f"http://test/api/v1/{endpoint}",
+        cookies={"access-token": "invalid_token"},
+    )
+    response = await ac.send(request)
+    assert response.status_code == 401

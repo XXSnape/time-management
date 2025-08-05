@@ -41,6 +41,18 @@ async def test_get_all_tasks_by_hour(ac: AsyncClient):
     assert [1, 2] == [task["id"] for task in data["items"]]
 
 
+async def test_get_task_statistics(ac: AsyncClient):
+    response = await ac.get("/tasks/statistics")
+    assert response.status_code == 200
+    data = response.json()
+    assert len(data["items"]) == 7
+    item = data["items"][0]
+    assert item["completed"] == 1
+    assert item["not_completed"] == 1
+    assert item["total"] == 5
+    assert item["performance"] == 20
+
+
 @pytest.mark.parametrize(
     "name, description, deadline_delta, hour_before_reminder",
     [
