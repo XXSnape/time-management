@@ -19,6 +19,7 @@ from core.dependencies.db import (
     SessionWithoutCommit,
     SessionWithCommit,
 )
+from core.dependencies.language import Translations
 from core.schemas.common import UpdateDateOfCompletionSchema
 from core.schemas.tasks import TaskInSchema, TaskUpdateSchema
 from core.utils.dt import convert_utc_to_moscow, validate_dt
@@ -41,6 +42,7 @@ async def get_tasks(
     request: Request,
     user: UserDep,
     session: SessionWithoutCommit,
+    translations: Translations,
     page: int = 1,
     per_page: int = 10,
 ):
@@ -61,6 +63,7 @@ async def get_tasks(
             "request": request,
             "username": user.username,
             **tasks.model_dump(),
+            **translations,
         },
     )
 
