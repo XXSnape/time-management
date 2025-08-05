@@ -27,9 +27,6 @@ from services.habits import (
     exc,
     get_habit_statistics,
 )
-from services.tasks import (
-    get_tasks_statistics,
-)
 
 router = APIRouter()
 
