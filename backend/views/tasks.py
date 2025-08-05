@@ -2,7 +2,15 @@ import datetime
 from datetime import timedelta
 from typing import Annotated
 
-from fastapi import APIRouter, Request, Form, HTTPException
+from fastapi import (
+    APIRouter,
+    Request,
+    Form,
+    HTTPException,
+    Query,
+    status,
+)
+from starlette.responses import RedirectResponse
 
 from core.dao.tasks import TasksDao
 from core.dependencies.auth import UserDep
@@ -27,7 +35,7 @@ from services.tasks import (
 router = APIRouter()
 
 
-@router.get("/tasks")
+@router.get("/tasks", name="tasks:view")
 async def get_tasks(
     request: Request,
     user: UserDep,
@@ -196,7 +204,29 @@ async def delete_task(
     user: UserDep,
     task_id: int,
     session: SessionWithCommit,
+    page: Annotated[
+        int,
+        Query(
+            ge=1,
+            le=1_000_000,
+            description="Страница для пагинации (начиная с 1)",
+        ),
+    ] = 1,
+    per_page: Annotated[
+        int,
+        Query(
+            ge=1,
+            le=100,
+            description="Количество записей на странице (макс. 100)",
+        ),
+    ] = 10,
 ):
+    redirect_url = request.url_for(
+        "tasks:view"
+    ).include_query_params(
+        page=page,
+        per_page=per_page,
+    )
     await delete_entity(
         session=session,
         user_id=user.id,
@@ -215,18 +245,13 @@ async def delete_task(
         task.deadline_datetime = convert_utc_to_moscow(
             task.deadline_datetime
         )
-
-    return templates.TemplateResponse(
-        "tasks-list.html",
-        {
-            "request": request,
-            "username": user.username,
-            **tasks.model_dump(),
-        },
+    return RedirectResponse(
+        url=redirect_url,
+        status_code=status.HTTP_303_SEE_OTHER,
     )
 
 
-@router.get("/tasks/stats")
+@router.get("/tasks/stats", name="tasks:stats")
 async def get_stats(
     request: Request,
     user: UserDep,

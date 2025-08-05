@@ -5,7 +5,7 @@
     <div class="tasks-header">
         <h1>Мои задачи</h1>
         <div class="header-actions">
-            <a href="/tasks/stats" class="stats-btn">📊 Статистика</a>
+            <a href="{{ url_for('tasks:stats') }}" class="stats-btn">📊 Статистика</a>
             <a href="/tasks/create" class="create-btn">+ Создать</a>
         </div>
     </div>
@@ -20,9 +20,9 @@
                 <p>Срок: {{ task.deadline_datetime }}</p>
                 <div class="task-actions">
                     <a href="/tasks/{{ task.id }}/edit">Редактировать</a>
-                    <form action="/tasks/{{ task.id }}/delete" method="post" style="display:inline;">
-                        <button type="submit">Удалить</button>
-                    </form>
+                <form action="/tasks/{{ task.id }}/delete{% if request.query_params %}?{{ request.query_params }}{% endif %}" method="post" style="display:inline;">
+                    <button type="submit">Удалить</button>
+                </form>
                 </div>
             </div>
             {% endfor %}
