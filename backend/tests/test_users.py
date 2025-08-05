@@ -25,6 +25,18 @@ async def test_sign_up(ac: AsyncClient, async_session: AsyncSession):
     assert user.is_active is True
 
 
+async def test_sign_up_existing_username(ac: AsyncClient):
+    response = await ac.post(
+        "users/sign-up",
+        json={
+            "username": "user1",
+            "password": "anypass",
+            "telegram_id": 444,
+        },
+    )
+    assert response.status_code == 409
+
+
 async def test_sign_in(ac: AsyncClient):
     response = await ac.post(
         "/users/sign-in",
@@ -34,13 +46,21 @@ async def test_sign_in(ac: AsyncClient):
     assert "access_token" in response.json()
 
 
+async def test_sign_in_wrong_password(ac: AsyncClient):
+    response = await ac.post(
+        "/users/sign-in",
+        json={"username": "user1", "password": "wrongpass"},
+    )
+    assert response.status_code == 401
+
+
 async def test_check_username_for_existence(ac: AsyncClient):
     response = await ac.get("/users/user1")
     assert response.status_code == 200
     assert response.json()["result"] is True
 
-    response = await ac.get("/nonexistentuser")
-    assert response.status_code == 404
+    response = await ac.get("/users/nonexistentuser")
+    assert response.json()["result"] is False
 
 
 async def test_change_activity(
@@ -58,3 +78,10 @@ async def test_change_activity(
     user = result.scalar_one_or_none()
     assert user is not None
     assert user.is_active is False
+
+
+async def test_change_activity_not_found(ac: AsyncClient):
+    response = await ac.patch(
+        "/users/999999", json={"is_active": False}
+    )
+    assert response.status_code == 404
