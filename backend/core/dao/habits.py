@@ -28,6 +28,7 @@ class HabitsDAO(BaseDAO[Habit]):
     async def get_habit_with_all_data(
         self, filter: BaseModel
     ) -> Habit | None:
+        filter_data = filter.model_dump(exclude_unset=True)
         query = (
             select(self.model)
             .options(
@@ -37,7 +38,7 @@ class HabitsDAO(BaseDAO[Habit]):
                     Tracker.is_completed
                 ),
             )
-            .filter_by(**filter.model_dump())
+            .filter_by(**filter_data)
         )
         result = await self._session.execute(query)
         return result.scalar_one_or_none()
