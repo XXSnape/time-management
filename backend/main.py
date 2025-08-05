@@ -56,6 +56,12 @@ def f():
             "performance_text": "Процент выполнения:",
             "my_habits_text": "Мои привычки",
             "no_habits_text": "Нет привычек",
+            "create_habit_text": "Создать привычку",
+            "habit_name_text": "Название привычки",
+            "habit_purpose_text": "Цель привычки",
+            "days_text": "Дни недели",
+            "habit_reminder_text": "Часы напоминания (0-23)",
+            "create_new_habit_text": "Создать новую привычку",
         },
         "en": {
             "app_text": "Tasks and Habits",
@@ -92,6 +98,12 @@ def f():
             "performance_text": "Percentage of completion:",
             "my_habits_text": "My habits",
             "no_habits_text": "No habits",
+            "create_habit_text": "Create a habit",
+            "habit_name_text": "Name of the habit",
+            "habit_purpose_text": "Purpose of the habit",
+            "days_text": "Days of the week",
+            "habit_reminder_text": "Reminder hours (0-23)",
+            "create_new_habit_text": "Create a new habit",
         },
     }
 

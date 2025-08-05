@@ -16,7 +16,7 @@ from core.dependencies.db import (
     SessionWithoutCommit,
     SessionWithCommit,
 )
-from core.dependencies.language import Translations
+from core.dependencies.language import Translations, Language
 from core.schemas.common import UpdateDateOfCompletionSchema
 from core.schemas.habits import HabitInSchema, HabitUpdateSchema
 from core.utils.enums import Weekday
@@ -59,21 +59,34 @@ async def get_habits(
 
 
 @router.get("/habits/create", name="habits:create")
-async def create_habit_get(request: Request, user: UserDep):
+async def create_habit_get(
+    request: Request,
+    user: UserDep,
+    language: Language,
+    translations: Translations,
+):
+    if language == "ru":
+        days = [
+            "Понедельник",
+            "Вторник",
+            "Среда",
+            "Четверг",
+            "Пятница",
+            "Суббота",
+            "Воскресенье",
+        ]
+    else:
+        days = [day.title() for day in Weekday]
+
     return templates.TemplateResponse(
         "habits-create.html",
         {
             "request": request,
             "username": user.username,
             "days": [
-                ("Понедельник", Weekday.MONDAY),
-                ("Вторник", Weekday.TUESDAY),
-                ("Среда", Weekday.WEDNESDAY),
-                ("Четверг", Weekday.THURSDAY),
-                ("Пятница", Weekday.FRIDAY),
-                ("Суббота", Weekday.SATURDAY),
-                ("Воскресенье", Weekday.SUNDAY),
+                (day, value) for day, value in zip(days, Weekday)
             ],
+            **translations,
         },
     )
 

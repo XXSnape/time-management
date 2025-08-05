@@ -351,7 +351,7 @@ input[type="text"] {
 .day-checkbox {
     display: flex;
     align-items: center;
-    padding: 27px;
+    padding: 30px;
     background: #fff;
     border: 1px solid #ddd;
     border-radius: 4px;

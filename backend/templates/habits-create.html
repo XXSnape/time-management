@@ -2,23 +2,23 @@
 
 {% block content %}
 <div class="form-container">
-    <h1>Создать новую привычку</h1>
+    <h1>{{ create_new_habit_text }}</h1>
     
     <form method="post" action="/habits/create" class="item-form">
         <div class="form-group">
-            <label for="name">Название привычки*</label>
+            <label for="name">{{ habit_name_text }}*</label>
             <input type="text" id="name" name="name" maxlength="40" required>
-            <small>Максимум 40 символов</small>
+            <small>{{ max_40_text }}</small>
         </div>
 
         <div class="form-group">
-            <label for="purpose">Цель привычки*</label>
+            <label for="purpose">{{ habit_purpose_text }}*</label>
             <textarea id="purpose" name="purpose" maxlength="250" rows="3" required></textarea>
-            <small>Максимум 250 символов</small>
+            <small>{{ max_250 }}</small>
         </div>
 
         <div class="form-group">
-            <label>Дни недели*</label>
+            <label>{{ days_text }}*</label>
             <div class="multiselect-days">
                 {% for day in days  %}
                 <label class="day-checkbox">
@@ -30,7 +30,7 @@
         </div>
 
         <div class="form-group">
-            <label>Часы напоминания (0-23)*</label>
+            <label>{{ habit_reminder_text }}*</label>
             <div class="multiselect-hours">
                 {% for hour in range(24) %}
                 <label class="hour-checkbox">
@@ -42,8 +42,8 @@
         </div>
         
         <div class="form-actions">
-            <button type="submit" class="submit-btn">Создать задачу</button>
-            <a href="/habits" class="cancel-btn">Отмена</a>
+            <button type="submit" class="submit-btn">{{ create_habit_text }}</button>
+            <a href="/habits" class="cancel-btn">{{ cancel_text }}</a>
         </div>
     </form>
 </div>
