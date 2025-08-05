@@ -2,36 +2,36 @@
 
 {% block content %}
 <div class="form-container">
-    <h1>Создать новую задачу</h1>
+    <h1>{{ create_task_text }}</h1>
     
     <form method="post" action="/tasks/create" class="item-form">
         <div class="form-group">
-            <label for="name">Название задачи*</label>
+            <label for="name">{{ task_name }}*</label>
             <input type="text" id="name" name="name" maxlength="40" required>
-            <small>Максимум 40 символов</small>
+            <small>{{ max_40_text }}</small>
         </div>
         
         <div class="form-group">
-            <label for="deadline_datetime">Срок выполнения*</label>
+            <label for="deadline_datetime">{{ deadline_text }}*</label>
             <input type="datetime-local" id="deadline_datetime" name="deadline_datetime" required>
         </div>
         
         <div class="form-group">
-            <label for="description">Описание*</label>
+            <label for="description">{{ description_text }}*</label>
             <textarea id="description" name="description" maxlength="250" rows="4" required></textarea>
-            <small>Максимум 250 символов</small>
+            <small>{{ max_250 }}</small>
         </div>
         
         <div class="form-group">
-            <label for="hour_before_reminder">Напомнить за (часов)*</label>
+            <label for="hour_before_reminder">{{ reminder_text }}*</label>
             <input type="number" id="hour_before_reminder" name="hour_before_reminder" 
                    min="1" max="24" value="1" required>
-            <small>От 1 до 24 часов</small>
+            <small>{{ reminder_constraint_text }}</small>
         </div>
         
         <div class="form-actions">
-            <button type="submit" class="submit-btn">Создать задачу</button>
-            <a href="/tasks" class="cancel-btn">Отмена</a>
+            <button type="submit" class="submit-btn">{{ create_task_text }}</button>
+            <a href="/tasks" class="cancel-btn">{{ cancel_text }}</a>
         </div>
     </form>
 </div>

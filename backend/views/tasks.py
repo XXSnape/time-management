@@ -69,12 +69,17 @@ async def get_tasks(
 
 
 @router.get("/tasks/create", name="tasks:create")
-async def create_task_get(request: Request, user: UserDep):
+async def create_task_get(
+    request: Request,
+    user: UserDep,
+    translations: Translations,
+):
     return templates.TemplateResponse(
         "tasks-create.html",
         {
             "request": request,
             "username": user.username,
+            **translations,
         },
     )
 
