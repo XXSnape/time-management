@@ -5,6 +5,7 @@ from typing_extensions import Annotated
 
 from core.config import settings
 from core.dependencies.db import SessionWithoutCommit
+from core.dependencies.language import Translations
 from core.schemas.users import UserInSchema
 from core.utils.templates import templates
 from services.users import create_new_access_token
@@ -15,9 +16,9 @@ router = APIRouter(
 
 
 @router.get("/login", response_class=HTMLResponse)
-async def login_page(request: Request):
+async def login_page(request: Request, translations: Translations):
     return templates.TemplateResponse(
-        "login.html", {"request": request}
+        "login.html", {"request": request, **translations}
     )
 
 

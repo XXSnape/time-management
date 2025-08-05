@@ -1,23 +1,23 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h1>Login</h1>
+    <h1>{{ login_text }}</h1>
 
     {% if request.query_params.get('error') %}
-        <p style="color: red;">Invalid username or password</p>
+        <p style="color: red;">{{ invalid_login_text }}</p>
     {% endif %}
 
     <form action="/login" method="post">
         <div>
-            <label for="username">Username:</label>
+            <label for="username">{{ username_text }}</label>
             <input type="text" id="username" name="username" required>
         </div>
 
         <div>
-            <label for="password">Password:</label>
+            <label for="password">{{ password_text }}</label>
             <input type="password" id="password" name="password" required>
         </div>
 
-        <button type="submit">Login</button>
+        <button type="submit">{{ login_text }}</button>
     </form>
 {% endblock %}

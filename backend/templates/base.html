@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Task App</title>
+    <title>{{ app_text }}</title>
     <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
@@ -9,7 +9,7 @@
         {% if username %}
             <span><a href="/login">{{ username }}</a></span>
         {% else %}
-            <a href="/login">Login</a>
+            <a href="/login">{{ login_text }}</a>
         {% endif %}
     </header>
     <main>
