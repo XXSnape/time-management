@@ -13,7 +13,7 @@ pyjwt = {extras = ["crypto"], version = "^2.10.1"}
 bcrypt = "^4.3.0"
 pydantic = "^2.11.7"
 python-multipart = "^0.0.20"
-sqladmin = "^0.21.0"
+sqladmin = {extras = ["full"], version = "^0.21.0"}
 
 [tool.poetry.group.lint.dependencies]
 black = "^25.1.0"

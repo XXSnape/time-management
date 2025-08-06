@@ -11,4 +11,5 @@ class UserAdmin(ModelView, model=User):
         User.is_admin,
     ]
     column_details_exclude_list = [User.password]
+    form_excluded_columns = [User.password]
     can_delete = False

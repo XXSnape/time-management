@@ -10,11 +10,12 @@ from starlette.responses import RedirectResponse
 from starlette.staticfiles import StaticFiles
 
 from api import router as api_router
+from core.admin.auth import AdminAuth
 from core.config import settings
 from core.dependencies.db import db_helper
 from core.locales.localization import get_translations
 from core.utils.exc import RedirectException
-from core import admin as admin_models
+from core.admin import views as admin_views
 from services.users import create_admin
 from views import router as views_router
 
@@ -53,14 +54,18 @@ main_app.mount(
     name="static",
 )
 views = [
-    admin_models.HabitAdmin,
-    admin_models.ScheduleAdmin,
-    admin_models.TaskAdmin,
-    admin_models.TimerAdmin,
-    admin_models.TrackerAdmin,
-    admin_models.UserAdmin,
+    admin_views.HabitAdmin,
+    admin_views.ScheduleAdmin,
+    admin_views.TaskAdmin,
+    admin_views.TimerAdmin,
+    admin_views.TrackerAdmin,
+    admin_views.UserAdmin,
 ]
-admin = Admin(main_app, db_helper.engine)
+admin = Admin(
+    main_app,
+    db_helper.engine,
+    authentication_backend=AdminAuth(settings.auth_jwt.session_key),
+)
 
 for view in views:
     admin.add_view(view)

@@ -17,17 +17,12 @@ BASE_DIR = Path(__file__).parent.parent
 
 
 class AuthJWTSettings(BaseSettings):
-    """
-    private_key_path - путь к закрытому ключу
-    public_key_path - путь к открытому ключу
-    access_token_expire_minutes - действие токена в минутах
-    algorithm - алгоритм шифрования
-    """
 
     private_key_path: Path = BASE_DIR / "certs" / "private.pem"
     public_key_path: Path = BASE_DIR / "certs" / "public.pem"
     cookie_key_token: str = "access-token"
     access_token_expire_days: int = 5
+    session_key: str = "sessionId"
     algorithm: str = "RS256"
 
 
