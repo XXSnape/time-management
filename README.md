@@ -103,7 +103,7 @@ cd tests
 ```
 
 ```sh
-cd pytest -q
+pytest -q
 ```
 
 
