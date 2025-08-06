@@ -24,6 +24,7 @@ async def test_sign_up(ac: AsyncClient, async_session: AsyncSession):
     assert user is not None
     assert user.telegram_id == 333
     assert user.is_active is True
+    assert user.is_admin is False
 
 
 async def test_sign_up_existing_username(ac: AsyncClient):
@@ -97,3 +98,18 @@ async def test_auth_failure(ac: AsyncClient, endpoint: str):
     )
     response = await ac.send(request)
     assert response.status_code == 401
+
+
+@pytest.mark.parametrize("endpoint", ["tasks", "habits"])
+async def test_forbidden_access(
+    ac: AsyncClient, endpoint: str, user2_token: str
+):
+    request = Request(
+        "GET",
+        f"http://test/api/v1/{endpoint}/schedules",
+        cookies={"access-token": user2_token},
+    )
+    response = await ac.send(request)
+    assert response.status_code == 403
+    data = response.json()
+    assert data["detail"] == "You are not an admin"

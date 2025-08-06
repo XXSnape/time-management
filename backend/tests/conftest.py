@@ -42,8 +42,7 @@ def user2_token():
     Генерирует токен для второго пользователя.
     """
     return get_access_token(
-        user_id=2,
-        username="user2",
+        user_id=2, username="user2", is_admin=False
     )
 
 
@@ -57,6 +56,7 @@ async def init_db():
             username="user1",
             telegram_id=111,
             password=hash_password("123"),
+            is_admin=True,
         )
         session.add(user1)
         user2 = User(
@@ -65,7 +65,6 @@ async def init_db():
             password=hash_password("456"),
         )
         session.add(user2)
-        print("hello")
         await session.flush()
 
         now = datetime.now(UTC)
@@ -214,6 +213,7 @@ async def ac() -> AsyncGenerator[AsyncClient, None]:
             "access-token": get_access_token(
                 user_id=1,
                 username="user1",
+                is_admin=True,
             )
         },
     ) as ac:
