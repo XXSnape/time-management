@@ -57,3 +57,19 @@ jobs:
           python create_certs.py
           poetry run pytest --maxfail=2 --disable-warnings -v
 
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - name: Deploy to Timeweb via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.TIMEWEB_HOST }}
+          username: ${{ secrets.TIMEWEB_USER }}
+          key: ${{ secrets.TIMEWEB_KEY }}
+          script: |
+            cd /root/time-management
+            docker compose down
+            git pull
+            docker compose up -d --build
