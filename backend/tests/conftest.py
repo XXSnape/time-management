@@ -2,6 +2,7 @@
 Модуль с настройками для тестов.
 """
 
+from pathlib import Path
 from typing import AsyncGenerator
 from datetime import datetime, timedelta, UTC, date
 
@@ -48,8 +49,17 @@ def user2_token():
 
 
 @pytest.fixture(scope="session", autouse=True)
-async def init_workspace():
+def init_certs():
+    """
+    Создает закрытый и открытый ключи в директории certs, если их нет.
+    """
+    path = Path(__file__).resolve().parent.parent / "certs"
+    path.mkdir(exist_ok=True)
     create_private_and_public_keys()
+
+
+@pytest.fixture(scope="session", autouse=True)
+async def init_db():
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.drop_all)
         await conn.run_sync(Base.metadata.create_all)
