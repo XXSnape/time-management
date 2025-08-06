@@ -11,6 +11,7 @@ from faststream import FastStream
 from faststream.rabbit import RabbitBroker
 from pydantic import BaseModel
 from pathlib import Path
+from redis.asyncio import Redis
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -60,6 +61,9 @@ class LoggingConfig(BaseModel):
 
 class BotConfig(BaseSettings):
     token: str
+    login: str
+    password: str
+    access_token: str = "access_token"
     max_login_length: int = 40
     max_name_length: int = 50
     max_description_length: int = 250
@@ -160,3 +164,8 @@ scheduler = AsyncIOScheduler(
 
 broker = RabbitBroker(settings.rabbit.url)
 app = FastStream(broker)
+redis = Redis(
+    host=settings.redis.host,
+    port=settings.redis.port,
+    decode_responses=True,
+)
