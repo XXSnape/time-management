@@ -1,10 +1,11 @@
-import asyncio
 import datetime
 import logging
 
-from dependencies import HttpClient, Session
+from faststream import FastStream
 
-from core.config import app, bot, broker
+from .dependencies import HttpClient, Session
+
+from core.config import bot, broker
 from core.enums import Weekday
 from core.utils.dt import get_moscow_dt
 from routers.habits.repository import repository as habit_repository
@@ -42,5 +43,4 @@ async def reminder_about_habits(
     )
 
 
-if __name__ == "__main__":
-    asyncio.run(app.run())
+app = FastStream(broker)

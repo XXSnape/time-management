@@ -28,6 +28,8 @@ async def make_request(
     if access_token:
         cookies = {"access-token": access_token}
     try:
+        url = settings.api.get_url(endpoint)
+        print("url", url)
         response = await client.send(
             request=Request(
                 method=method,

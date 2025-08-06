@@ -8,7 +8,6 @@ from aiogram.enums import ParseMode
 from apscheduler.jobstores.redis import RedisJobStore
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from dotenv import load_dotenv
-from faststream import FastStream
 from faststream.rabbit import RabbitBroker
 from pydantic import BaseModel
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -21,17 +20,19 @@ LOG_DEFAULT_FORMAT = "[%(asctime)s.%(msecs)03d] %(module)10s:%(lineno)-3d %(leve
 load_dotenv()
 
 
-class ApiConfig(BaseModel):
+class ApiConfig(BaseSettings):
     url_schema: str = "http"
-    base_url: str = "localhost"
+    base_api_url: str
     port: str = "8000"
-    path: str = "api/v1"
+    api_path: str = "api/v1"
+
+    model_config = SettingsConfigDict(case_sensitive=False)
 
     def get_url(self, endpoint: str) -> str:
         port = f":{self.port}" if self.port else ""
         return (
-            f"{self.url_schema}://{self.base_url}"
-            f"{port}/{self.path}/{endpoint}"
+            f"{self.url_schema}://{self.base_api_url}"
+            f"{port}/{self.api_path}/{endpoint}"
         )
 
 
@@ -159,18 +160,16 @@ bot = Bot(
 )
 
 scheduler = AsyncIOScheduler(
-    # jobstores={
-    #     "default": RedisJobStore(
-    #         host=settings.redis.host,
-    #         port=settings.redis.port,
-    #     )
-    # }
-    # CHANGE TO REDIS
+    jobstores={
+        "default": RedisJobStore(
+            host=settings.redis.host,
+            port=settings.redis.port,
+        )
+    }
 )
 
 
 broker = RabbitBroker(settings.rabbit.url)
-app = FastStream(broker)
 redis = Redis(
     host=settings.redis.host,
     port=settings.redis.port,
