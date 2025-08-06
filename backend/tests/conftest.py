@@ -14,6 +14,7 @@ from sqlalchemy.ext.asyncio import (
     create_async_engine,
 )
 
+from create_certs import create_private_and_public_keys
 from core.config import settings
 from core.dependencies.db import db_helper
 from core.models import (
@@ -47,7 +48,8 @@ def user2_token():
 
 
 @pytest.fixture(scope="session", autouse=True)
-async def init_db():
+async def init_workspace():
+    create_private_and_public_keys()
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.drop_all)
         await conn.run_sync(Base.metadata.create_all)
