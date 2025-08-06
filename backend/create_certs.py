@@ -8,6 +8,7 @@ def create_private_and_public_keys() -> None:
     Генерирует закрытый и открытый ключи в директории certs, если их нет
     """
     path = Path(__file__).resolve().parent / "certs"
+    path.mkdir(exist_ok=True)
     if not len(os.listdir(path)) == 0:
         return
     subprocess.run(
