@@ -21,6 +21,9 @@ class User(Base):
     is_active: Mapped[bool] = mapped_column(
         default=True, server_default="1"
     )
+    is_admin: Mapped[bool] = mapped_column(
+        default=False, server_default="0"
+    )
     tasks: Mapped[list["Task"]] = relationship(
         back_populates="user",
     )
