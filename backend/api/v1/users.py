@@ -1,7 +1,5 @@
 import logging
 
-from fastapi import APIRouter, status
-
 from core.dependencies.auth import IsAdmin
 from core.dependencies.db import (
     SessionWithCommit,
@@ -14,6 +12,7 @@ from core.schemas.users import (
     UserCreateSchema,
     UserInSchema,
 )
+from fastapi import APIRouter, status
 from services import users
 
 log = logging.getLogger(__name__)

@@ -1,10 +1,9 @@
+from aiogram.filters.callback_data import CallbackData
 from aiogram.types import InlineKeyboardButton
 
-from .common import generate_inline_kb
-
-from aiogram.filters.callback_data import CallbackData
-
 from core.enums import Languages
+
+from .common import generate_inline_kb
 
 
 class TaskCbData(CallbackData, prefix="task_completed"):

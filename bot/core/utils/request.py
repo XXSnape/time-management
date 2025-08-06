@@ -1,15 +1,16 @@
+import logging
+
 from httpx import (
     AsyncClient,
-    RequestError,
-    Request,
-    codes,
     HTTPStatusError,
+    Request,
+    RequestError,
+    codes,
 )
 
-from core.config import settings, redis
+from core.config import redis, settings
 from core.enums import Methods
-from core.exc import UnauthorizedExc, ServerIsUnavailableExc
-import logging
+from core.exc import ServerIsUnavailableExc, UnauthorizedExc
 
 logger = logging.getLogger(__name__)
 

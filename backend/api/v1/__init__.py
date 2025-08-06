@@ -1,6 +1,5 @@
-from fastapi import APIRouter
-
 from core.config import settings
+from fastapi import APIRouter
 
 from .habits import router as habits_router
 from .tasks import router as tasks_router

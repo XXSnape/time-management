@@ -1,10 +1,10 @@
 from aiogram.types import CallbackQuery
+from aiogram.utils.i18n import gettext as _
 from aiogram_dialog import DialogManager
 from aiogram_dialog.widgets.kbd import Button
 
 from core.enums import Methods
-from core.utils.request import make_request, make_request_by_admin
-from aiogram.utils.i18n import gettext as _
+from core.utils.request import make_request_by_admin
 
 
 def activate_or_deactivate_bot(is_active: bool):

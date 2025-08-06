@@ -1,7 +1,3 @@
-from fastapi import HTTPException, status
-from sqlalchemy.exc import IntegrityError
-from sqlalchemy.ext.asyncio import AsyncSession
-
 from core.dao.habits import HabitsDAO
 from core.dao.schedules import SchedulesDAO
 from core.dao.timers import TimersDAO
@@ -14,6 +10,9 @@ from core.schemas.common import (
 )
 from core.schemas.result import ResultSchema
 from core.utils.enums import Weekday
+from fastapi import HTTPException, status
+from sqlalchemy.exc import IntegrityError
+from sqlalchemy.ext.asyncio import AsyncSession
 
 exc = HTTPException(
     status_code=status.HTTP_404_NOT_FOUND,

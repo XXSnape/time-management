@@ -1,11 +1,11 @@
 from aiogram.types import (
+    CallbackQuery,
     ErrorEvent,
     Message,
-    CallbackQuery,
     TelegramObject,
 )
-from aiogram_dialog import DialogManager
 from aiogram.utils.i18n import gettext as _
+from aiogram_dialog import DialogManager
 
 from core.commands import Commands
 

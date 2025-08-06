@@ -1,5 +1,4 @@
 from core.models import Task
-
 from sqladmin import ModelView
 
 

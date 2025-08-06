@@ -8,27 +8,27 @@ from aiogram_dialog.widgets.kbd import (
     Button,
     Calendar,
     Group,
-    Select,
     ScrollingGroup,
+    Select,
     SwitchTo,
 )
 from aiogram_dialog.widgets.text import Format
 
 from core.config import settings
-from . import getters
-from . import handlers
-from .states import CreateTaskStates, TasksManagementStates
-from routers.common.handlers import (
-    back_to_creation_selection,
-    is_short_text,
-    on_incorrect_text,
-    save_text_by_key,
-    back_to_view_selection,
-)
 from routers.common.getters import (
     edit_name,
 )
+from routers.common.handlers import (
+    back_to_creation_selection,
+    back_to_view_selection,
+    is_short_text,
+    on_incorrect_text,
+    save_text_by_key,
+)
+
+from . import getters, handlers
 from .repository import repository
+from .states import CreateTaskStates, TasksManagementStates
 
 create_task_dialog = Dialog(
     Window(

@@ -2,10 +2,9 @@ import datetime
 from typing import Sequence
 
 import sqlalchemy
+from core.models import Task, User
 from sqlalchemy.dialects.postgresql import INTERVAL
 from sqlalchemy.orm import joinedload, load_only
-
-from core.models import Task, User
 
 from .base import BaseDAO
 

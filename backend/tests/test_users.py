@@ -1,9 +1,8 @@
 import pytest
+from core.models import User
 from httpx import AsyncClient, Request
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
-
-from core.models import User
 
 
 async def test_sign_up(ac: AsyncClient, async_session: AsyncSession):

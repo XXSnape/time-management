@@ -3,18 +3,17 @@ from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 
 import uvicorn
-from fastapi import FastAPI, Request
-from sqladmin import Admin
-from starlette.responses import RedirectResponse
-
 from api import router as api_router
+from core.admin import views as admin_views
 from core.admin.auth import AdminAuth
 from core.config import settings
 from core.dependencies.db import db_helper
 from core.locales.localization import get_translations
 from core.utils.exc import RedirectException
-from core.admin import views as admin_views
+from fastapi import FastAPI, Request
 from services.users import create_admin
+from sqladmin import Admin
+from starlette.responses import RedirectResponse
 from views import router as views_router
 
 logging.basicConfig(

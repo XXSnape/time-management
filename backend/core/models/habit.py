@@ -1,7 +1,7 @@
 from datetime import date
 from typing import TYPE_CHECKING
 
-from sqlalchemy import TEXT, ForeignKey, func
+from sqlalchemy import TEXT, ForeignKey
 from sqlalchemy.ext.associationproxy import (
     AssociationProxy,
     association_proxy,

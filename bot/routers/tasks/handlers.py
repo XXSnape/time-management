@@ -2,6 +2,7 @@ import datetime
 from datetime import date
 
 from aiogram.types import CallbackQuery
+from aiogram.utils.i18n import gettext as _
 from aiogram_dialog import DialogManager, StartMode
 from aiogram_dialog.widgets.kbd import Button, Select
 from httpx import AsyncClient, codes
@@ -10,17 +11,15 @@ from core.enums import Methods
 from core.exc import ServerIsUnavailableExc
 from core.schemas.users import UserTelegramIdSchema
 from core.utils.dt import (
-    selected_date_validator,
     convert_moscow_dt_to_utc,
+    selected_date_validator,
 )
 from core.utils.request import make_request
 from database.dao.users import UsersDAO
-
 from routers.tasks.states import (
     CreateTaskStates,
     TasksManagementStates,
 )
-from aiogram.utils.i18n import gettext as _
 
 
 async def start_create_task(

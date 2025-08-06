@@ -1,12 +1,11 @@
-from fastapi import HTTPException
-from sqlalchemy.ext.asyncio import AsyncSession
-
 from core.dao.base import BaseDAO
 from core.schemas.common import (
     DateOfCompletionSchema,
     PaginationSchema,
     UpdateDateOfCompletionSchema,
 )
+from fastapi import HTTPException
+from sqlalchemy.ext.asyncio import AsyncSession
 
 
 async def mark_completed(

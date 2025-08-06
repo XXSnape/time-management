@@ -1,20 +1,18 @@
 import logging
 from typing import Annotated
 
-from fastapi import APIRouter, Query, status
-
 from core.dao.tasks import TasksDao
-from core.dependencies.auth import UserId, IsAdmin
+from core.dependencies.auth import IsAdmin, UserId
 from core.dependencies.db import (
     SessionWithCommit,
     SessionWithoutCommit,
 )
-
+from core.schemas import tasks as tasks_schemas
 from core.schemas.common import (
     PaginationSchema,
     UpdateDateOfCompletionSchema,
 )
-from core.schemas import tasks as tasks_schemas
+from fastapi import APIRouter, Query, status
 from services import tasks
 from services.common import delete_entity, mark_completed
 

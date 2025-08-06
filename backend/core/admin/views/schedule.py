@@ -1,5 +1,4 @@
 from core.models import Schedule
-
 from sqladmin import ModelView
 
 

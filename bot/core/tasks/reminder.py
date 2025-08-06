@@ -2,12 +2,13 @@ import asyncio
 import datetime
 import logging
 
-from core.config import broker, app, bot
-from core.utils.dt import get_moscow_dt
 from dependencies import HttpClient, Session
+
+from core.config import app, bot, broker
 from core.enums import Weekday
-from routers.tasks.repository import repository as task_repository
+from core.utils.dt import get_moscow_dt
 from routers.habits.repository import repository as habit_repository
+from routers.tasks.repository import repository as task_repository
 
 logger = logging.getLogger(__name__)
 

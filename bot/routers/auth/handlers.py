@@ -1,8 +1,8 @@
 from functools import partial
 
 from aiogram.types import CallbackQuery, Message
-from aiogram_dialog import DialogManager
 from aiogram.utils.i18n import gettext as _
+from aiogram_dialog import DialogManager
 from aiogram_dialog.widgets.input import ManagedTextInput
 from aiogram_dialog.widgets.kbd import Button
 from httpx import AsyncClient
@@ -16,6 +16,7 @@ from core.schemas.users import (
 )
 from core.utils.request import make_request
 from database.dao.users import UsersDAO
+
 from .states import AuthState
 
 

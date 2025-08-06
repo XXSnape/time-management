@@ -4,7 +4,7 @@ from aiogram.utils.i18n import gettext as _
 from aiogram_dialog import DialogManager
 from httpx import AsyncClient
 
-from core.enums import Resources, Weekday, Methods, Languages
+from core.enums import Languages, Methods, Resources, Weekday
 from core.keyboards.habits import completed_or_not_completed_habit_kb
 from core.utils.quotes import add_motivation
 from core.utils.request import make_request

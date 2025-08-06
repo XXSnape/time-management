@@ -6,8 +6,8 @@ from aiogram_dialog.widgets.kbd import (
     Back,
     Button,
     Column,
-    Multiselect,
     Group,
+    Multiselect,
     ScrollingGroup,
     Select,
     SwitchTo,
@@ -15,20 +15,20 @@ from aiogram_dialog.widgets.kbd import (
 from aiogram_dialog.widgets.text import Format
 
 from core.config import settings
-from . import getters, handlers
-from .states import CreateHabitStates, HabitsManagementStates
-from routers.common.handlers import (
-    back_to_creation_selection,
-    is_short_text,
-    on_incorrect_text,
-    save_text_by_key,
-    back_to_view_selection,
-)
-
 from routers.common.getters import (
     edit_name,
 )
+from routers.common.handlers import (
+    back_to_creation_selection,
+    back_to_view_selection,
+    is_short_text,
+    on_incorrect_text,
+    save_text_by_key,
+)
+
+from . import getters, handlers
 from .repository import repository
+from .states import CreateHabitStates, HabitsManagementStates
 
 create_habit_dialog = Dialog(
     Window(

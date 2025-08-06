@@ -3,7 +3,7 @@ import datetime
 from aiogram.utils.i18n import gettext as _
 from aiogram_dialog import DialogManager
 
-from core.utils.dt import get_pretty_dt, get_moscow_dt
+from core.utils.dt import get_moscow_dt, get_pretty_dt
 from core.utils.generator import generate_hours
 
 

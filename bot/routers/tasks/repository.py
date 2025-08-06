@@ -2,27 +2,27 @@ from datetime import date
 
 from aiogram.filters.callback_data import CallbackData
 from aiogram.types import CallbackQuery
+from aiogram.utils.i18n import gettext as _
 from aiogram_dialog import DialogManager
 from aiogram_dialog.widgets.kbd import Select
 from httpx import AsyncClient
 
-from core.enums import Resources, Methods, Languages
+from core.enums import Languages, Methods, Resources
 from core.exc import ServerIsUnavailableExc
 from core.keyboards.tasks import complete_task_kb
-from core.utils.quotes import add_motivation
 from core.utils.dt import (
+    convert_moscow_dt_to_utc,
+    convert_utc_to_moscow,
+    get_moscow_dt,
     get_pretty_dt,
     parse_utc_string_to_dt,
-    convert_utc_to_moscow,
-    convert_moscow_dt_to_utc,
     selected_date_validator,
-    get_moscow_dt,
 )
+from core.utils.quotes import add_motivation
 from core.utils.request import make_request
 from routers.common.repository import BaseRepository
 from routers.tasks.handlers import catching_deadline_error
 from routers.tasks.states import TasksManagementStates
-from aiogram.utils.i18n import gettext as _
 
 
 class TaskRepository(BaseRepository):

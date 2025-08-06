@@ -1,8 +1,6 @@
 import datetime
 from typing import Annotated
 
-from pydantic import BaseModel, Field
-
 from core.schemas.common import (
     BaseStatisticSchema,
     IdSchema,
@@ -10,6 +8,7 @@ from core.schemas.common import (
 )
 from core.schemas.users import UserTelegramIdSchema
 from core.utils.enums import Weekday
+from pydantic import BaseModel, Field
 
 type HourLimits = Annotated[int, Field(ge=0, le=23)]
 

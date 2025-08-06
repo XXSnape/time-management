@@ -1,10 +1,9 @@
 from aiogram_dialog import Dialog, Window
-from aiogram_dialog.widgets.kbd import Button, Back, SwitchTo
+from aiogram_dialog.widgets.kbd import Back, Button
 from aiogram_dialog.widgets.text import Format
 
-from .states import StatsTasksHabitsStates
 from . import getters, handlers
-
+from .states import StatsTasksHabitsStates
 
 stats_tasks_or_habits_dialog = Dialog(
     Window(

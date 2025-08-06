@@ -5,24 +5,24 @@ from aiogram.utils.i18n import I18n
 from aiogram_dialog import setup_dialogs
 from httpx import AsyncClient
 
+from core.commands import Commands
 from core.config import settings
 from core.exc import (
+    DataIsOutdated,
     ServerIsUnavailableExc,
     UnauthorizedExc,
-    DataIsOutdated,
 )
 from middlewares.db import (
-    DatabaseMiddlewareWithoutCommit,
     DatabaseMiddlewareWithCommit,
+    DatabaseMiddlewareWithoutCommit,
 )
 from middlewares.http import HttpClientMiddleware
 from middlewares.i18n import LocaleFromDatabaseMiddleware
 from routers import router
-from core.commands import Commands
 from routers.common_handlers import (
+    on_data_is_outdated,
     on_server_is_unavailable,
     on_unauthorized,
-    on_data_is_outdated,
 )
 
 

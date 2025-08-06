@@ -1,11 +1,11 @@
 import operator
 
 from aiogram_dialog import Dialog, Window
-from aiogram_dialog.widgets.kbd import Radio, Button
+from aiogram_dialog.widgets.kbd import Button, Radio
 from aiogram_dialog.widgets.text import Format
 
-from .states import LanguagesStates
 from . import getters, handlers
+from .states import LanguagesStates
 
 change_language_dialog = Dialog(
     Window(

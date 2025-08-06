@@ -1,10 +1,10 @@
 from aiogram.types import Message
+from aiogram.utils.i18n import gettext as _
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.commands import Commands
 from core.schemas.users import UserTelegramIdSchema
 from database.dao.users import UsersDAO
-from aiogram.utils.i18n import gettext as _
 
 
 async def check_user_in_database(

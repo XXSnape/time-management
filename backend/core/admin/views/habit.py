@@ -1,5 +1,4 @@
 from core.models import Habit
-
 from sqladmin import ModelView
 
 

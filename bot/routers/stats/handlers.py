@@ -1,19 +1,18 @@
+import csv
+import io
 from typing import Literal
 
-from aiogram.types import CallbackQuery
+from aiogram.types import BufferedInputFile, CallbackQuery
 from aiogram.utils.chat_action import ChatActionSender
+from aiogram.utils.i18n import gettext as _
 from aiogram_dialog import DialogManager
 from aiogram_dialog.widgets.kbd import Button
 from httpx import AsyncClient
 
-from core.schemas.users import UserTelegramIdSchema
 from core.enums import Methods
+from core.schemas.users import UserTelegramIdSchema
 from core.utils.request import make_request
 from database.dao.users import UsersDAO
-import io
-import csv
-from aiogram.types import BufferedInputFile
-from aiogram.utils.i18n import gettext as _
 
 
 def choosing_statistics(stats_type: Literal["tasks", "habits"]):

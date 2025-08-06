@@ -1,13 +1,12 @@
-from fastapi import APIRouter, Request, Form, HTTPException, status
-from fastapi.responses import RedirectResponse
-from typing_extensions import Annotated
-
 from core.config import settings
 from core.dependencies.db import SessionWithoutCommit
 from core.dependencies.language import Translations
 from core.schemas.users import UserInSchema
 from core.utils.templates import templates
+from fastapi import APIRouter, Form, HTTPException, Request, status
+from fastapi.responses import RedirectResponse
 from services.users import create_new_access_token
+from typing_extensions import Annotated
 
 router = APIRouter()
 

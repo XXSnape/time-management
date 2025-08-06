@@ -1,13 +1,12 @@
 import logging
 from typing import Iterable
 
-from pydantic import BaseModel
-from sqlalchemy import select, delete
+from sqlalchemy import select
 from sqlalchemy.exc import SQLAlchemyError
 
+from core.enums import Languages
 from database.dao.base import BaseDAO
 from database.models import User
-from core.enums import Languages
 
 logger = logging.getLogger(__name__)
 

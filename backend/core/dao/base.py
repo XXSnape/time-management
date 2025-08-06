@@ -1,13 +1,12 @@
 import logging
 from datetime import timedelta
 
-from pydantic import BaseModel
-from sqlalchemy import delete, select, update, func
-from sqlalchemy.exc import SQLAlchemyError
-from sqlalchemy.ext.asyncio import AsyncSession
-
 from core.models import Base
 from core.utils.enums import Periods
+from pydantic import BaseModel
+from sqlalchemy import delete, select, update
+from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.ext.asyncio import AsyncSession
 
 logger = logging.getLogger(__name__)
 

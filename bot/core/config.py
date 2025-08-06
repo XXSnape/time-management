@@ -1,4 +1,5 @@
 import logging
+from pathlib import Path
 from typing import Literal
 
 from aiogram import Bot
@@ -10,10 +11,8 @@ from dotenv import load_dotenv
 from faststream import FastStream
 from faststream.rabbit import RabbitBroker
 from pydantic import BaseModel
-from pathlib import Path
-from redis.asyncio import Redis
-
 from pydantic_settings import BaseSettings, SettingsConfigDict
+from redis.asyncio import Redis
 
 from core.enums import Languages
 

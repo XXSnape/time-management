@@ -1,5 +1,4 @@
 from core.models import Tracker
-
 from sqladmin import ModelView
 
 

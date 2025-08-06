@@ -1,9 +1,8 @@
 import datetime
 from typing import Annotated
 
-from pydantic import BaseModel, Field, computed_field
-
 from core.utils.enums import Periods
+from pydantic import BaseModel, Field, computed_field
 
 
 class IdSchema(BaseModel):

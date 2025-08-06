@@ -1,19 +1,17 @@
 import logging
 
-from jwt import InvalidTokenError
-from sqladmin.authentication import AuthenticationBackend
-from starlette.requests import Request
-
 from core.config import settings
-
 from core.dao.users import UsersDao
 from core.dependencies.db import db_helper
 from core.schemas.users import UserSchema
+from jwt import InvalidTokenError
 from services.auth import (
-    validate_password,
-    get_access_token,
     decode_jwt,
+    get_access_token,
+    validate_password,
 )
+from sqladmin.authentication import AuthenticationBackend
+from starlette.requests import Request
 
 logger = logging.getLogger(__name__)
 

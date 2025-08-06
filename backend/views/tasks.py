@@ -3,36 +3,35 @@ from contextlib import suppress
 from datetime import timedelta
 from typing import Annotated
 
-from fastapi import (
-    APIRouter,
-    Request,
-    Form,
-    HTTPException,
-    Query,
-    status,
-)
-from fastapi.responses import RedirectResponse
-
 from core.dao.tasks import TasksDao
 from core.dependencies.auth import UserDep
 from core.dependencies.db import (
-    SessionWithoutCommit,
     SessionWithCommit,
+    SessionWithoutCommit,
 )
-from core.dependencies.language import Translations, Language
+from core.dependencies.language import Language, Translations
+from core.locales.localization import localize_periods
 from core.schemas.common import UpdateDateOfCompletionSchema
 from core.schemas.tasks import TaskInSchema, TaskUpdateSchema
 from core.utils.dt import convert_utc_to_moscow
-from core.locales.localization import localize_periods
 from core.utils.templates import templates
-from services.common import mark_completed, delete_entity
+from fastapi import (
+    APIRouter,
+    Form,
+    HTTPException,
+    Query,
+    Request,
+    status,
+)
+from fastapi.responses import RedirectResponse
+from services.common import delete_entity, mark_completed
 from services.tasks import (
-    get_active_user_tasks,
     create_task,
-    get_task_by_id,
-    update_task,
     exc,
+    get_active_user_tasks,
+    get_task_by_id,
     get_tasks_statistics,
+    update_task,
 )
 
 router = APIRouter()

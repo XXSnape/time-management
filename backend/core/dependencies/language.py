@@ -1,6 +1,6 @@
 from typing import Annotated, TypeAlias
 
-from fastapi import Header, Depends, Request
+from fastapi import Depends, Header, Request
 
 
 def get_locale(

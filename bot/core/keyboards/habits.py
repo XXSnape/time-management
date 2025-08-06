@@ -1,10 +1,9 @@
+from aiogram.filters.callback_data import CallbackData
 from aiogram.types import InlineKeyboardButton
 
-from .common import generate_inline_kb
-
-from aiogram.filters.callback_data import CallbackData
-
 from core.enums import Languages
+
+from .common import generate_inline_kb
 
 
 class HabitCbData(CallbackData, prefix="habit_execution"):

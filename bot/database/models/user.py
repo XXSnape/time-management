@@ -1,8 +1,9 @@
 from sqlalchemy import BigInteger
 from sqlalchemy.orm import Mapped, mapped_column
 
-from .base import Base
 from core.enums import Languages
+
+from .base import Base
 
 
 class User(Base):

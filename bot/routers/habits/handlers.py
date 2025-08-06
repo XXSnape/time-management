@@ -1,14 +1,14 @@
 from aiogram.types import CallbackQuery
+from aiogram.utils.i18n import gettext as _
 from aiogram_dialog import DialogManager, StartMode
 from aiogram_dialog.widgets.kbd import Button
-from aiogram.utils.i18n import gettext as _
-
 from httpx import AsyncClient
 
 from core.enums import Methods
 from core.schemas.users import UserTelegramIdSchema
 from core.utils.request import make_request
 from database.dao.users import UsersDAO
+
 from .states import CreateHabitStates, HabitsManagementStates
 
 

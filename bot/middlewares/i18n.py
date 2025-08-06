@@ -1,10 +1,10 @@
-from typing import Dict, Any, Optional
+from typing import Any, Dict, Optional
 
 from aiogram.types import TelegramObject, User
 from aiogram.utils.i18n import I18nMiddleware
 
-from database.dao.users import UsersDAO
 from core.enums import Languages
+from database.dao.users import UsersDAO
 
 
 class LocaleFromDatabaseMiddleware(I18nMiddleware):

@@ -1,35 +1,34 @@
 import datetime
 from typing import Annotated
 
-from fastapi import (
-    APIRouter,
-    Request,
-    Form,
-    status,
-)
-from fastapi.responses import RedirectResponse
-
 from api.v1.habits import get_active_user_habits, get_habit_by_id
 from core.dao.habits import HabitsDAO
 from core.dependencies.auth import UserDep
 from core.dependencies.db import (
-    SessionWithoutCommit,
     SessionWithCommit,
+    SessionWithoutCommit,
 )
-from core.dependencies.language import Translations, Language
-from core.schemas.common import UpdateDateOfCompletionSchema
-from core.schemas.habits import HabitInSchema, HabitUpdateSchema
+from core.dependencies.language import Language, Translations
 from core.locales.localization import (
     localize_periods,
     localize_weekdays,
 )
+from core.schemas.common import UpdateDateOfCompletionSchema
+from core.schemas.habits import HabitInSchema, HabitUpdateSchema
 from core.utils.templates import templates
-from services.common import mark_completed, delete_entity
+from fastapi import (
+    APIRouter,
+    Form,
+    Request,
+    status,
+)
+from fastapi.responses import RedirectResponse
+from services.common import delete_entity, mark_completed
 from services.habits import (
     create_habit,
-    update_habit,
     exc,
     get_habit_statistics,
+    update_habit,
 )
 
 router = APIRouter()

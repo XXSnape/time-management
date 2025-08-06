@@ -6,7 +6,6 @@ from routers.common.states import (
     CreateTaskHabitStates,
     ViewTasksHabitsStates,
 )
-from . import getters
 from routers.habits.handlers import (
     start_create_habit,
     start_view_habits,
@@ -15,6 +14,8 @@ from routers.tasks.handlers import (
     start_create_task,
     start_view_tasks,
 )
+
+from . import getters
 
 create_task_or_habit_dialog = Dialog(
     Window(

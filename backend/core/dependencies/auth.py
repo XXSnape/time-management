@@ -1,14 +1,11 @@
 from typing import Annotated, TypeAlias
 
-from fastapi import Depends, HTTPException, status, Cookie
-from jwt import InvalidTokenError
-
+from core.config import settings
 from core.schemas.users import UserForTemplateSchema
 from core.utils.exc import RedirectException
+from fastapi import Cookie, Depends, HTTPException, status
+from jwt import InvalidTokenError
 from services import auth
-
-from core.config import settings
-
 
 type token_payload = dict[str, str | int]
 

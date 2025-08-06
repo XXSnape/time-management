@@ -1,37 +1,36 @@
 import asyncio
 import logging
+from abc import ABC, abstractmethod
 from contextlib import suppress
 
 from aiogram import Bot
 from aiogram.exceptions import (
+    TelegramAPIError,
     TelegramForbiddenError,
     TelegramRetryAfter,
-    TelegramAPIError,
 )
 from aiogram.filters.callback_data import CallbackData
 from aiogram.fsm.state import StatesGroup
 from aiogram.types import CallbackQuery, Message
+from aiogram.utils.i18n import gettext as _
+from aiogram_dialog import DialogManager
 from aiogram_dialog.widgets.input import ManagedTextInput
 from aiogram_dialog.widgets.kbd import Button, ManagedMultiselect
-from httpx import AsyncClient, codes, HTTPError
+from httpx import AsyncClient, codes
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from core.enums import Resources, Methods, Languages
+from core.enums import Languages, Methods, Resources
+from core.exc import (
+    DataIsOutdated,
+    ServerIsUnavailableExc,
+    UnauthorizedExc,
+)
 from core.schemas.users import UserTelegramIdSchema
 from core.utils.dt import get_moscow_dt
 from core.utils.locales import get_users_locales
 from core.utils.quotes import get_ru_and_en_quotes
 from core.utils.request import make_request, make_request_by_admin
 from database.dao.users import UsersDAO
-from abc import ABC, abstractmethod
-from aiogram_dialog import DialogManager
-from core.exc import (
-    DataIsOutdated,
-    ServerIsUnavailableExc,
-    UnauthorizedExc,
-)
-from aiogram.utils.i18n import gettext as _
-
 
 logger = logging.getLogger(__name__)
 

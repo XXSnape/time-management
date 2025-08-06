@@ -1,6 +1,5 @@
-from pydantic import BaseModel
-
 from core.schemas.common import IdSchema
+from pydantic import BaseModel
 
 
 class UserSchema(BaseModel):

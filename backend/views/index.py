@@ -1,8 +1,7 @@
-from fastapi import APIRouter, Request
 from core.dependencies.auth import UserDep
 from core.dependencies.language import Translations
 from core.utils.templates import templates
-
+from fastapi import APIRouter, Request
 
 router = APIRouter()
 

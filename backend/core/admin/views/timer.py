@@ -1,5 +1,4 @@
 from core.models import Timer
-
 from sqladmin import ModelView
 
 

@@ -1,9 +1,8 @@
 from typing import TYPE_CHECKING
 
+from core.utils.enums import Weekday
 from sqlalchemy import ForeignKey, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-
-from core.utils.enums import Weekday
 
 from .base import Base
 

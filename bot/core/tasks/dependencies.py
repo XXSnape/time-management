@@ -1,6 +1,6 @@
-from typing import TypeAlias, Annotated
-from fast_depends import Depends
+from typing import Annotated, TypeAlias
 
+from fast_depends import Depends
 from httpx import AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession
 

@@ -1,14 +1,13 @@
 import datetime
 from typing import Annotated
 
-from pydantic import BaseModel, Field
-
 from core.schemas.common import (
     BaseStatisticSchema,
     IdSchema,
     PaginatedSchema,
 )
 from core.schemas.users import UserTelegramIdSchema
+from pydantic import BaseModel, Field
 
 
 class LittleInfoTaskSchema(BaseModel):

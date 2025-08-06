@@ -1,25 +1,19 @@
 import logging
 from typing import Annotated
 
-from fastapi import APIRouter, Query, status
-
 from core.dao.habits import HabitsDAO
-from core.dependencies.auth import UserId, IsAdmin
+from core.dependencies.auth import IsAdmin, UserId
 from core.dependencies.db import (
     SessionWithCommit,
     SessionWithoutCommit,
 )
-
-from core.schemas.common import PaginationSchema
-
-from core.schemas.common import UpdateDateOfCompletionSchema
-
-from services.common import mark_completed
 from core.schemas import habits as habits_schemas
+from core.schemas.common import PaginationSchema, UpdateDateOfCompletionSchema
 from core.schemas.result import ResultSchema
 from core.utils.enums import Weekday
+from fastapi import APIRouter, Query, status
 from services import habits
-from services.common import delete_entity
+from services.common import delete_entity, mark_completed
 
 log = logging.getLogger(__name__)
 

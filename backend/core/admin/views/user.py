@@ -1,6 +1,5 @@
-from sqladmin import ModelView
-
 from core.models import User
+from sqladmin import ModelView
 
 
 class UserAdmin(ModelView, model=User):

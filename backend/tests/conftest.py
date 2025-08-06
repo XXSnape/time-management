@@ -2,35 +2,31 @@
 Модуль с настройками для тестов.
 """
 
-from pathlib import Path
+from datetime import UTC, date, datetime, timedelta
 from typing import AsyncGenerator
-from datetime import datetime, timedelta, UTC, date
 
 import pytest
+from core.config import settings
+from core.dependencies.db import db_helper
+from core.models import (
+    Base,
+    Habit,
+    Schedule,
+    Task,
+    Timer,
+    Tracker,
+    User,
+)
+from core.utils.enums import Weekday
 from httpx import ASGITransport, AsyncClient
+from main import main_app
+from services.auth import get_access_token, hash_password
 from sqlalchemy import NullPool
 from sqlalchemy.ext.asyncio import (
     AsyncSession,
     async_sessionmaker,
     create_async_engine,
 )
-
-from create_certs import create_private_and_public_keys
-from core.config import settings
-from core.dependencies.db import db_helper
-from core.models import (
-    Base,
-    User,
-    Task,
-    Habit,
-    Timer,
-    Tracker,
-    Schedule,
-)
-from core.utils.enums import Weekday
-from services.auth import get_access_token, hash_password
-from main import main_app
-
 
 engine = create_async_engine(settings.db.url, poolclass=NullPool)
 async_session_maker = async_sessionmaker(

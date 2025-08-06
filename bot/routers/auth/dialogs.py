@@ -1,14 +1,14 @@
 from aiogram.types import CallbackQuery
-from aiogram_dialog import Dialog, Window, DialogManager
+from aiogram_dialog import Dialog, DialogManager, Window
 from aiogram_dialog.widgets.input import TextInput
-from aiogram_dialog.widgets.kbd import Button, SwitchTo, Back, Cancel
+from aiogram_dialog.widgets.kbd import Button, SwitchTo
 from aiogram_dialog.widgets.text import Format
 
 from core.config import settings
 from routers.auth.states import AuthState
-from . import getters
-from . import handlers
 from routers.common.handlers import is_short_text, on_incorrect_text
+
+from . import getters, handlers
 
 
 async def click_process(
