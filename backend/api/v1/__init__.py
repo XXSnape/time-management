@@ -8,6 +8,7 @@ from .users import router as users_router
 
 router = APIRouter(
     prefix=settings.api.v1.prefix,
+    responses={401: {"description": "Не авторизован"}},
 )
 
 router.include_router(

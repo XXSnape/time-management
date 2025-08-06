@@ -11,7 +11,7 @@ from fastapi import (
     Query,
     status,
 )
-from starlette.responses import RedirectResponse
+from fastapi.responses import RedirectResponse
 
 from core.dao.tasks import TasksDao
 from core.dependencies.auth import UserDep
@@ -38,7 +38,10 @@ from services.tasks import (
 router = APIRouter()
 
 
-@router.get("/tasks", name="tasks:view")
+@router.get(
+    "/tasks",
+    name="tasks:view",
+)
 async def get_tasks(
     request: Request,
     user: UserDep,
@@ -69,7 +72,10 @@ async def get_tasks(
     )
 
 
-@router.get("/tasks/create", name="tasks:create")
+@router.get(
+    "/tasks/create",
+    name="tasks:create",
+)
 async def create_task_get(
     request: Request,
     user: UserDep,
@@ -85,7 +91,9 @@ async def create_task_get(
     )
 
 
-@router.post("/tasks/create")
+@router.post(
+    "/tasks/create",
+)
 async def create_task_post(
     request: Request,
     user: UserDep,
@@ -107,7 +115,10 @@ async def create_task_post(
     )
 
 
-@router.get("/tasks/{task_id}/edit", name="tasks:edit")
+@router.get(
+    "/tasks/{task_id}/edit",
+    name="tasks:edit",
+)
 async def edit_task_get(
     request: Request,
     user: UserDep,
@@ -133,7 +144,9 @@ async def edit_task_get(
     )
 
 
-@router.post("/tasks/{task_id}/edit")
+@router.post(
+    "/tasks/{task_id}/edit",
+)
 async def edit_task_post(
     request: Request,
     user: UserDep,
@@ -155,7 +168,10 @@ async def edit_task_post(
     )
 
 
-@router.get("/tasks/{task_id}/completion", name="tasks:mark")
+@router.get(
+    "/tasks/{task_id}/completion",
+    name="tasks:mark",
+)
 async def mark_task(
     request: Request,
     user: UserDep,
@@ -177,7 +193,9 @@ async def mark_task(
     return RedirectResponse(request.url_for("tasks:view"))
 
 
-@router.post("/tasks/{task_id}/delete")
+@router.post(
+    "/tasks/{task_id}/delete",
+)
 async def delete_task(
     request: Request,
     user: UserDep,
@@ -220,7 +238,10 @@ async def delete_task(
     )
 
 
-@router.get("/tasks/stats", name="tasks:stats")
+@router.get(
+    "/tasks/stats",
+    name="tasks:stats",
+)
 async def get_stats(
     request: Request,
     user: UserDep,

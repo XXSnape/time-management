@@ -7,7 +7,7 @@ from fastapi import (
     Form,
     status,
 )
-from starlette.responses import RedirectResponse
+from fastapi.responses import RedirectResponse
 
 from api.v1.habits import get_active_user_habits, get_habit_by_id
 from core.dao.habits import HabitsDAO
@@ -61,7 +61,10 @@ async def get_habits(
     )
 
 
-@router.get("/habits/create", name="habits:create")
+@router.get(
+    "/habits/create",
+    name="habits:create",
+)
 async def create_habit_get(
     request: Request,
     user: UserDep,
@@ -95,7 +98,10 @@ async def create_habit_post(
     )
 
 
-@router.get("/habits/{habit_id}/edit", name="habits:edit")
+@router.get(
+    "/habits/{habit_id}/edit",
+    name="habits:edit",
+)
 async def edit_habit_get(
     request: Request,
     user: UserDep,
@@ -140,7 +146,10 @@ async def edit_habit_post(
     )
 
 
-@router.get("/habits/{habit_id}/completion", name="habits:mark")
+@router.get(
+    "/habits/{habit_id}/completion",
+    name="habits:mark",
+)
 async def mark_habit(
     request: Request,
     user: UserDep,
