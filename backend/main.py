@@ -5,6 +5,7 @@ from pathlib import Path
 
 import uvicorn
 from fastapi import FastAPI, Request
+from sqladmin import Admin
 from starlette.responses import RedirectResponse
 from starlette.staticfiles import StaticFiles
 
@@ -13,6 +14,7 @@ from core.config import settings
 from core.dependencies.db import db_helper
 from core.locales.localization import get_translations
 from core.utils.exc import RedirectException
+from core import admin as admin_models
 from services.users import create_admin
 from views import router as views_router
 
@@ -50,6 +52,18 @@ main_app.mount(
     ),
     name="static",
 )
+views = [
+    admin_models.HabitAdmin,
+    admin_models.ScheduleAdmin,
+    admin_models.TaskAdmin,
+    admin_models.TimerAdmin,
+    admin_models.TrackerAdmin,
+    admin_models.UserAdmin,
+]
+admin = Admin(main_app, db_helper.engine)
+
+for view in views:
+    admin.add_view(view)
 
 
 @main_app.exception_handler(RedirectException)
