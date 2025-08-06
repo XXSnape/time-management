@@ -10,6 +10,7 @@ from aiogram.utils.i18n import (
 from aiogram_dialog import setup_dialogs
 from httpx import AsyncClient
 
+from core.bot import configure_bot
 from core.commands import Commands
 from core.exc import (
     ServerIsUnavailableExc,
@@ -44,14 +45,6 @@ async def main():
         level=settings.logging.log_level_value,
         format=settings.logging.log_format,
     )
-    commands = [
-        BotCommand(command=command.name, description=command)
-        for command in Commands
-    ]
-    await bot.set_my_commands(
-        commands, BotCommandScopeAllPrivateChats()
-    )
-    await bot.delete_webhook(drop_pending_updates=True)
     storage = RedisStorage(
         redis,
         key_builder=DefaultKeyBuilder(with_destiny=True),
@@ -59,39 +52,52 @@ async def main():
     dp = Dispatcher(
         storage=storage,
     )
-    setup_dialogs(dp)
-    dp.include_router(router)
-    dp.update.middleware.register(DatabaseMiddlewareWithoutCommit())
-    dp.update.middleware.register(DatabaseMiddlewareWithCommit())
-    i18n = I18n(
-        path=settings.locale.path,
-        default_locale=settings.locale.default_locale,
-        domain=settings.locale.domain,
-    )
-    dp.update.middleware(LocaleFromDatabaseMiddleware(i18n=i18n))
+    # commands = [
+    #     BotCommand(command=command.name, description=command)
+    #     for command in Commands
+    # ]
+    # await bot.set_my_commands(
+    #     commands, BotCommandScopeAllPrivateChats()
+    # )
+    # await bot.delete_webhook(drop_pending_updates=True)
+    # setup_dialogs(dp)
+    # dp.include_router(router)
+    # dp.update.middleware.register(DatabaseMiddlewareWithoutCommit())
+    # dp.update.middleware.register(DatabaseMiddlewareWithCommit())
+    # i18n = I18n(
+    #     path=settings.locale.path,
+    #     default_locale=settings.locale.default_locale,
+    #     domain=settings.locale.domain,
+    # )
+    # dp.update.middleware(LocaleFromDatabaseMiddleware(i18n=i18n))
     client = AsyncClient()
-    dp.update.middleware(HttpClientMiddleware(client=client))
-    dp.errors.middleware(DatabaseMiddlewareWithoutCommit())
-    dp.errors.middleware(LocaleFromDatabaseMiddleware(i18n=i18n))
-    setup_dialogs(dp)
-    dp.errors.register(
-        on_server_is_unavailable,
-        ExceptionTypeFilter(ServerIsUnavailableExc),
-    )
-    dp.errors.register(
-        on_unauthorized,
-        ExceptionTypeFilter(UnauthorizedExc),
-    )
-    dp.errors.register(
-        on_data_is_outdated,
-        ExceptionTypeFilter(DataIsOutdated),
+    # dp.update.middleware(HttpClientMiddleware(client=client))
+    # dp.errors.middleware(DatabaseMiddlewareWithoutCommit())
+    # dp.errors.middleware(LocaleFromDatabaseMiddleware(i18n=i18n))
+    # setup_dialogs(dp)
+    # dp.errors.register(
+    #     on_server_is_unavailable,
+    #     ExceptionTypeFilter(ServerIsUnavailableExc),
+    # )
+    # dp.errors.register(
+    #     on_unauthorized,
+    #     ExceptionTypeFilter(UnauthorizedExc),
+    # )
+    # dp.errors.register(
+    #     on_data_is_outdated,
+    #     ExceptionTypeFilter(DataIsOutdated),
+    # )
+    await configure_bot(
+        bot=bot,
+        dp=dp,
+        client=client,
     )
     try:
         logger.info("Запускаем бота...")
         try:
             await set_new_admin_token(client=client)
         except (ServerIsUnavailableExc, UnauthorizedExc):
-            logger.exception(
+            logger.warning(
                 "Не удалось получить токен администратора. "
                 "Проверьте настройки и запустите бота снова."
             )
@@ -105,6 +111,13 @@ async def main():
     finally:
         logger.info("Останавливаем бота...")
         await client.aclose()
+        await broker.stop()
+        await engine.dispose()
+        try:
+            scheduler.shutdown(wait=False)
+        except AttributeError:
+            logger.warning("Планировщик не был запущен.")
+
         logger.info("Ресурсы освобождены!")
 
 

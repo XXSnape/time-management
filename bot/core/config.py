@@ -127,6 +127,13 @@ class RabbitConfig(BaseSettings):
         )
 
 
+class QuotesConfig(BaseModel):
+    ru_api: str = "http://api.forismatic.com/api/1.0/"
+    en_api: str = (
+        "https://quote-generator-api-six.vercel.app/api/quotes/random"
+    )
+
+
 class Settings(BaseSettings):
     """
     Основные настройки приложения.
@@ -139,6 +146,7 @@ class Settings(BaseSettings):
     api: ApiConfig = ApiConfig()
     redis: RedisConfig = RedisConfig()
     rabbit: RabbitConfig = RabbitConfig()
+    quotes: QuotesConfig = QuotesConfig()
     model_config = SettingsConfigDict(
         case_sensitive=False,
     )

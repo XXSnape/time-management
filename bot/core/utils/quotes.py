@@ -2,6 +2,7 @@ import logging
 
 from httpx import AsyncClient
 
+from core.config import settings
 from core.enums import Languages
 
 logger = logging.getLogger(__name__)
@@ -14,7 +15,7 @@ async def get_ru_and_en_quotes(
     en_quote = None
     try:
         ru_result = await client.get(
-            "http://api.forismatic.com/api/1.0/",
+            settings.quotes.ru_api,
             params={
                 "format": "json",
                 "method": "getQuote",
@@ -26,7 +27,7 @@ async def get_ru_and_en_quotes(
         logger.exception("Не удалось получить цитату на русском")
     try:
         en_result = await client.get(
-            "https://quote-generator-api-six.vercel.app/api/quotes/random",
+            settings.quotes.en_api,
             params={"category": "motivational"},
         )
         en_quote = en_result.json()["quote"]
