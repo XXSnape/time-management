@@ -13,7 +13,8 @@ httpx = "^0.28.1"
 apscheduler = "^3.11.0"
 babel = "^2.17.0"
 redis = "^6.2.0"
-faststream = {extras = ["rabbit"], version = "^0.5.48"}
+faststream = {extras = ["cli"], version = "^0.5.48"}
+aio-pika = "^9.5.7"
 
 [tool.poetry.group.lint.dependencies]
 black = "^25.1.0"
