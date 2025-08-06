@@ -13,6 +13,7 @@ from core.config import settings
 from core.dependencies.db import db_helper
 from core.locales.localization import get_translations
 from core.utils.exc import RedirectException
+from services.users import create_admin
 from views import router as views_router
 
 logging.basicConfig(
@@ -26,6 +27,11 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     """
     Завершает соединение с базой данных.
     """
+    await create_admin(
+        username=settings.db.admin_login,
+        password=settings.db.admin_password,
+        telegram_id=settings.db.admin_telegram_id,
+    )
     app.state.translations = get_translations()
 
     yield

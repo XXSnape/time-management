@@ -71,7 +71,10 @@ async def check_username_for_existence(
 @router.patch(
     "/{telegram_id}",
     response_model=ResultSchema,
-    responses={404: {"description": "Пользователь не найден"}},
+    responses={
+        404: {"description": "Пользователь не найден"},
+        403: {"description": "Только для администраторов"},
+    },
     dependencies=[IsAdmin],
 )
 async def change_activity(

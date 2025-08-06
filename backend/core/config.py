@@ -94,6 +94,9 @@ class DatabaseConfig(BaseSettings):
     postgres_password: str
     postgres_db: str
     echo: bool = False
+    admin_login: str
+    admin_password: str
+    admin_telegram_id: int
 
     naming_convention: dict[str, str] = {
         "ix": "ix_%(column_0_label)s",

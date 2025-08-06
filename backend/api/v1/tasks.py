@@ -83,6 +83,7 @@ async def get_active_user_tasks(
     "/schedules",
     response_model=tasks_schemas.TasksWithUserSchema,
     dependencies=[IsAdmin],
+    responses={403: {"description": "Только для администраторов"}},
 )
 async def get_all_tasks_by_hour(
     session: SessionWithoutCommit,

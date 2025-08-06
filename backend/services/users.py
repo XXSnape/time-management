@@ -1,23 +1,30 @@
+import logging
+
 from fastapi import HTTPException, status
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.dao.users import UsersDao
+from core.dependencies.db import db_helper
 from core.schemas import users as users_schemas
 from core.schemas.result import ResultSchema
 
 from .auth import get_access_token, hash_password, validate_password
 
+logger = logging.getLogger(__name__)
+
 
 async def create_user(
     session: AsyncSession,
     user_in: users_schemas.UserCreateSchema,
+    is_admin: bool = False,
 ) -> users_schemas.TokenSchema:
 
     credentials = users_schemas.CredentialsSchema(
         username=user_in.username,
         password=hash_password(user_in.password),
         telegram_id=user_in.telegram_id,
+        is_admin=is_admin,
     )
     dao = UsersDao(session=session)
     try:
@@ -93,3 +100,26 @@ async def make_user_inactive_or_active(
             status_code=status.HTTP_404_NOT_FOUND,
         )
     return ResultSchema()
+
+
+async def create_admin(
+    username: str,
+    password: str,
+    telegram_id: int,
+) -> None:
+    async with db_helper.session_factory() as session:
+        try:
+            await create_user(
+                session=session,
+                user_in=users_schemas.UserCreateSchema(
+                    username=username,
+                    password=password,
+                    telegram_id=telegram_id,
+                ),
+                is_admin=True,
+            )
+            await session.commit()
+            logger.info("Админ %s успешно создан", username)
+        except HTTPException:
+            await session.rollback()
+            logger.info("Админ %s уже существует", username)

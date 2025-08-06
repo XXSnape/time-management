@@ -25,6 +25,7 @@ class UserTelegramIdSchema(BaseModel):
 
 class CredentialsSchema(UserCreateSchema):
     password: bytes
+    is_admin: bool = False
 
 
 class TokenSchema(BaseModel):

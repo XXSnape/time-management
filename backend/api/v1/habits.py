@@ -46,6 +46,7 @@ async def create_habit(
     "/schedules",
     response_model=habits_schemas.HabitsWithUserSchema,
     dependencies=[IsAdmin],
+    responses={403: {"description": "Только для администраторов"}},
 )
 async def get_habits_on_schedule(
     day: Weekday,
