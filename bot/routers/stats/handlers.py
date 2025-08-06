@@ -6,7 +6,7 @@ from aiogram_dialog import DialogManager
 from aiogram_dialog.widgets.kbd import Button
 from httpx import AsyncClient
 
-from backend.core.schemas.users import UserTelegramIdSchema
+from core.schemas.users import UserTelegramIdSchema
 from core.enums import Methods
 from core.utils.request import make_request
 from database.dao.users import UsersDAO

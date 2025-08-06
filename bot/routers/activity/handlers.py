@@ -3,7 +3,7 @@ from aiogram_dialog import DialogManager
 from aiogram_dialog.widgets.kbd import Button
 
 from core.enums import Methods
-from core.utils.request import make_request
+from core.utils.request import make_request, make_request_by_admin
 from aiogram.utils.i18n import gettext as _
 
 
@@ -14,7 +14,7 @@ def activate_or_deactivate_bot(is_active: bool):
         dialog_manager: DialogManager,
     ):
         client = dialog_manager.middleware_data["client"]
-        await make_request(
+        await make_request_by_admin(
             client=client,
             endpoint=f"users/{callback.from_user.id}",
             method=Methods.patch,

@@ -17,17 +17,17 @@ from core.exc import (
     DataIsOutdated,
 )
 from core.scheduler.settings import register_tasks
+from core.utils.request import set_new_admin_token
 from database.utils.sessions import engine
 from middlewares.http import HttpClientMiddleware
 from routers import router
 
-from core.config import settings, bot, broker, scheduler
+from core.config import settings, bot, broker, scheduler, redis
 from middlewares.db import (
     DatabaseMiddlewareWithoutCommit,
     DatabaseMiddlewareWithCommit,
 )
 from middlewares.i18n import LocaleFromDatabaseMiddleware
-from redis.asyncio import Redis
 from aiogram.fsm.storage.redis import DefaultKeyBuilder, RedisStorage
 
 from routers.common_handlers import (
@@ -52,7 +52,6 @@ async def main():
         commands, BotCommandScopeAllPrivateChats()
     )
     await bot.delete_webhook(drop_pending_updates=True)
-    redis = Redis(host=settings.redis.host, port=settings.redis.port)
     storage = RedisStorage(
         redis,
         key_builder=DefaultKeyBuilder(with_destiny=True),
@@ -89,9 +88,7 @@ async def main():
     )
     try:
         logger.info("Запускаем бота...")
-        register_tasks()
-        await broker.connect()
-        scheduler.start()
+        await set_new_admin_token(client=client)
         await dp.start_polling(bot)
     except (KeyboardInterrupt, asyncio.CancelledError):
         logger.info("Завершение работы пользователем")

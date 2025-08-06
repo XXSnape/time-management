@@ -6,7 +6,7 @@ from httpx import (
     HTTPStatusError,
 )
 
-from core.config import settings
+from core.config import settings, redis
 from core.enums import Methods
 from core.exc import UnauthorizedExc, ServerIsUnavailableExc
 import logging
@@ -52,3 +52,60 @@ async def make_request(
     except RequestError:
         logger.exception("Ошибка при запросе к серверу")
         raise ServerIsUnavailableExc(delete_markup=delete_markup)
+
+
+async def set_new_admin_token(
+    client: AsyncClient,
+) -> str:
+    """
+    Получает токен администратора.
+    """
+    try:
+        response = await make_request(
+            client=client,
+            endpoint="users/sign-in",
+            method=Methods.post,
+            json={
+                "username": settings.bot.login,
+                "password": settings.bot.password,
+            },
+        )
+        access_token = response["access_token"]
+        await redis.set(settings.bot.access_token, access_token)
+        return access_token
+    except UnauthorizedExc:
+        logger.exception(
+            "Неверный логин или пароль администратора. Проверьте настройки."
+        )
+        raise ServerIsUnavailableExc
+
+
+async def make_request_by_admin(
+    client: AsyncClient,
+    endpoint: str,
+    method: Methods,
+    json: dict | None = None,
+    params: dict | None = None,
+    delete_markup: bool = True,
+) -> dict | None:
+    """
+    Выполняет запрос к серверу от имени администратора.
+    """
+    access_token = await redis.get(settings.bot.access_token)
+    if not access_token:
+        access_token = await set_new_admin_token(client)
+    data = dict(
+        client=client,
+        endpoint=endpoint,
+        method=method,
+        json=json,
+        access_token=access_token,
+        params=params,
+        delete_markup=delete_markup,
+    )
+    try:
+        await make_request(**data)
+    except UnauthorizedExc:
+        access_token = await set_new_admin_token(client)
+        data["access_token"] = access_token
+        await make_request(**data)
