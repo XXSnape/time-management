@@ -2,6 +2,7 @@ import logging
 
 from fastapi import APIRouter, status
 
+from core.dependencies.auth import IsAdmin
 from core.dependencies.db import (
     SessionWithCommit,
     SessionWithoutCommit,
@@ -71,6 +72,7 @@ async def check_username_for_existence(
     "/{telegram_id}",
     response_model=ResultSchema,
     responses={404: {"description": "Пользователь не найден"}},
+    dependencies=[IsAdmin],
 )
 async def change_activity(
     user_activity: UserActivitySchema,

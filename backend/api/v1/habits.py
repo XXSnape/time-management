@@ -4,7 +4,7 @@ from typing import Annotated
 from fastapi import APIRouter, Query, status
 
 from core.dao.habits import HabitsDAO
-from core.dependencies.auth import UserId
+from core.dependencies.auth import UserId, IsAdmin
 from core.dependencies.db import (
     SessionWithCommit,
     SessionWithoutCommit,
@@ -45,6 +45,7 @@ async def create_habit(
 @router.get(
     "/schedules",
     response_model=habits_schemas.HabitsWithUserSchema,
+    dependencies=[IsAdmin],
 )
 async def get_habits_on_schedule(
     day: Weekday,

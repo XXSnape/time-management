@@ -63,7 +63,23 @@ def get_user_for_template(
     )
 
 
+def is_admin(
+    payload: Annotated[dict, Depends(get_token_payload)],
+):
+    """
+    Проверяет, является ли пользователь администратором
+    :param payload: полезная нагрузка токена
+    :return: True, если пользователь администратор, иначе False
+    """
+    if not bool(payload.get("is_admin", False)):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You are not an admin",
+        )
+
+
 UserId: TypeAlias = Annotated[int, Depends(get_user_id)]
 UserDep: TypeAlias = Annotated[
     UserForTemplateSchema, Depends(get_user_for_template)
 ]
+IsAdmin: TypeAlias = Depends(is_admin)

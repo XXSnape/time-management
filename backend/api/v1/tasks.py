@@ -4,7 +4,7 @@ from typing import Annotated
 from fastapi import APIRouter, Query, status
 
 from core.dao.tasks import TasksDao
-from core.dependencies.auth import UserId
+from core.dependencies.auth import UserId, IsAdmin
 from core.dependencies.db import (
     SessionWithCommit,
     SessionWithoutCommit,
@@ -82,6 +82,7 @@ async def get_active_user_tasks(
 @router.get(
     "/schedules",
     response_model=tasks_schemas.TasksWithUserSchema,
+    dependencies=[IsAdmin],
 )
 async def get_all_tasks_by_hour(
     session: SessionWithoutCommit,

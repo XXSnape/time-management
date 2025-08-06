@@ -84,13 +84,14 @@ def validate_password(
     )
 
 
-def get_access_token(user_id: int, username: str) -> str:
-    """
-    Создает токен доступа с полезной нагрузкой в виде id пользователя,
-    которому принадлежит токен
-    :param user_id: id пользователя
-    :return: токен доcтупа
-    """
-    payload = {"sub": str(user_id), "username": username}
+def get_access_token(
+    user_id: int, username: str, is_admin: bool
+) -> str:
+
+    payload = {
+        "sub": str(user_id),
+        "username": username,
+        "is_admin": is_admin,
+    }
     token = encode_jwt(payload=payload)
     return token

@@ -31,6 +31,7 @@ async def create_user(
         access_token=get_access_token(
             user_id=user.id,
             username=user.username,
+            is_admin=user.is_admin,
         )
     )
 
@@ -57,6 +58,7 @@ async def create_new_access_token(
         access_token=get_access_token(
             user_id=user.id,
             username=user.username,
+            is_admin=user.is_admin,
         ),
     )
 
