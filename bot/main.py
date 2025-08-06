@@ -88,14 +88,23 @@ async def main():
     )
     try:
         logger.info("Запускаем бота...")
-        await set_new_admin_token(client=client)
+        try:
+            await set_new_admin_token(client=client)
+        except (ServerIsUnavailableExc, UnauthorizedExc):
+            logger.exception(
+                "Не удалось получить токен администратора. "
+                "Проверьте настройки и запустите бота снова."
+            )
+            return
+        register_tasks()
+        await broker.connect()
+        scheduler.start()
         await dp.start_polling(bot)
     except (KeyboardInterrupt, asyncio.CancelledError):
         logger.info("Завершение работы пользователем")
     finally:
         logger.info("Останавливаем бота...")
         await client.aclose()
-        await engine.dispose()
         logger.info("Ресурсы освобождены!")
 
 

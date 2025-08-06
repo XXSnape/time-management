@@ -104,8 +104,12 @@ async def make_request_by_admin(
         delete_markup=delete_markup,
     )
     try:
-        await make_request(**data)
+        return await make_request(**data)
     except UnauthorizedExc:
+        logger.warning(
+            "Токен администратора устарел или недействителен. "
+            "Попытка обновления токена."
+        )
         access_token = await set_new_admin_token(client)
         data["access_token"] = access_token
-        await make_request(**data)
+        return await make_request(**data)

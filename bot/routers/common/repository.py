@@ -21,7 +21,7 @@ from core.schemas.users import UserTelegramIdSchema
 from core.utils.dt import get_moscow_dt
 from core.utils.locales import get_users_locales
 from core.utils.quotes import get_ru_and_en_quotes
-from core.utils.request import make_request
+from core.utils.request import make_request, make_request_by_admin
 from database.dao.users import UsersDAO
 from abc import ABC, abstractmethod
 from aiogram_dialog import DialogManager
@@ -104,7 +104,7 @@ class BaseRepository(ABC):
         **generate_kb_kwargs,
     ):
         try:
-            result = await make_request(
+            result = await make_request_by_admin(
                 client=client,
                 endpoint=f"{self.resource}/schedules",
                 method=Methods.get,
