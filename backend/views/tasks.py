@@ -112,8 +112,8 @@ async def create_task_post(
     return RedirectResponse(
         request.url_for(
             "tasks:view",
-            status_code=status.HTTP_303_SEE_OTHER,
-        )
+        ),
+        status_code=status.HTTP_303_SEE_OTHER,
     )
 
 
