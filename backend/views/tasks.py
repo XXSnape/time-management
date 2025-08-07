@@ -110,7 +110,11 @@ async def create_task_post(
             status_code=status.HTTP_303_SEE_OTHER,
         )
     return RedirectResponse(
-        request.url_for("tasks:edit", task_id=task.id)
+        request.url_for(
+            "tasks:view",
+            task_id=task.id,
+            status_code=status.HTTP_303_SEE_OTHER,
+        )
     )
 
 
