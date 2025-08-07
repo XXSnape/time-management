@@ -101,7 +101,7 @@ async def create_task_post(
 ):
     task_in.deadline_datetime -= timedelta(hours=3)
     try:
-        task = await create_task(
+        await create_task(
             user_id=user.id, task_in=task_in, session=session
         )
     except HTTPException:
@@ -112,7 +112,6 @@ async def create_task_post(
     return RedirectResponse(
         request.url_for(
             "tasks:view",
-            task_id=task.id,
             status_code=status.HTTP_303_SEE_OTHER,
         )
     )
