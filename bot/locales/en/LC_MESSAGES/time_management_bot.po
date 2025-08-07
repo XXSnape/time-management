@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-08-06 18:38+0300\n"
+"POT-Creation-Date: 2025-08-07 14:31+0300\n"
 "PO-Revision-Date: 2025-08-04 18:34+0300\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -27,24 +27,8 @@ msgstr "🪪Please register first /{command}"
 msgid "❗Дата должна быть позже или равна сегодняшней по Москве"
 msgstr "❗The date must be later than or equal to today's date in Moscow"
 
-#: routers/common_handlers.py:37
-msgid "😥Извините, сервер временно недоступен. Попробуйте позже!"
-msgstr "😥Sorry, the server is temporarily unavailable. Try later!"
-
-#: routers/common_handlers.py:55
+#: core/utils/start_text.py:8
 #, python-brace-format
-msgid ""
-"⌛Видимо, ваша сессия устарела! Пожалуйста, войдите снова через команду "
-"/{command}"
-msgstr ""
-"⌛It seems that your session is outdated! Please log in again using the "
-"command /{command}"
-
-#: routers/common_handlers.py:73
-msgid "⚠️Данные кажутся устаревшими! Пожалуйста, введите команду снова"
-msgstr "⚠️The data seems to be outdated! Please enter the command again"
-
-#: routers/start.py:15
 msgid ""
 "👋Здравствуйте, {name}!\n"
 "\n"
@@ -107,50 +91,72 @@ msgstr ""
 "\n"
 "🤖Existing commands:\n"
 "\n"
-"🆔/{auth} - authorization command. To use the bot, you need to "
-"register on the server using your login and password. The bot will "
-"automatically register and will not save this data, so you need to remember it. After some time, the session may expire and for further work you will need to log in through the bot as well (refresh the "
-"session with the /{auth} command)\n"
+"🆔/{auth} - authorization command. To use the bot, you need to register on"
+" the server using your login and password. The bot will automatically "
+"register and will not save this data, so you need to remember it. After "
+"some time, the session may expire and for further work you will need to "
+"log in through the bot as well (refresh the session with the /{auth} "
+"command)\n"
 "\n"
-"➕/{create} - a command for creating tasks or habits. After entering, you need to "
-"complete a certain survey to collect information, for example, the name,
-" deadline, sending frequency, etc. next\n"
+"➕/{create} - a command for creating tasks or habits. After entering, you "
+"need to complete a certain survey to collect information, for example, "
+"the name deadline, sending frequency, etc. next\n"
 "\n"
-"🔍/{view} - a command for viewing tasks or habits. To view, "
-"edit, delete a task or habit, you need to enter this command. If"
-" you have already created something, an interface with pagination of elements will appear. You can click on each one, see details and perform any actions\n"
+"🔍/{view} - a command for viewing tasks or habits. To view, edit, delete a"
+" task or habit, you need to enter this command. If you have already "
+"created something, an interface with pagination of elements will appear. "
+"You can click on each one, see details and perform any actions\n"
 "\n"
-"📊/{stats} - a command for viewing statistics about tasks or habits. "
-"There are 2 options for viewing statistics: via a text message or in the "
-"form of a csv file with information about the period, relevance of data\n"
+"📊/{stats} - a command for viewing statistics about tasks or habits. There"
+" are 2 options for viewing statistics: via a text message or in the form "
+"of a csv file with information about the period, relevance of data\n"
 "\n"
-"🌐/{lang} - a command for changing the language of the bot. The bot is multilingual and supports"
-" both Russian and English languages\n"
+"🌐/{lang} - a command for changing the language of the bot. The bot is "
+"multilingual and supports both Russian and English languages\n"
 "\n"
-"🚀/{activity} - a command for stopping or resuming the bot. In accordance with your tasks and habits the bot sends reminders about them. If you want to temporarily disable sending reminders, "
-"just deactivate the bot instead of blocking. You can "
-"restart the bot at any time\n"
+"🚀/{activity} - a command for stopping or resuming the bot. In accordance "
+"with your tasks and habits the bot sends reminders about them. If you "
+"want to temporarily disable sending reminders, just deactivate the bot "
+"instead of blocking. You can restart the bot at any time\n"
 "\n"
 "✖️/{cancel} - AN IMPORTANT COMMAND FOR CANCELLING ANY COMMAND. If you "
-"want to completely leave creating a task or habit, viewing, "
-"authorization - just enter this command and the dialogue will start \"from a clean "
+"want to completely leave creating a task or habit, viewing, authorization"
+" - just enter this command and the dialogue will start \"from a clean "
 "slate\n"
 "\n"
 "\n"
 "\n"
 "❗A task notification comes 1-24 hours before the deadline (at your "
-"choice) and at the deadline hour. It can be marked as successfully completed for "
-"statistics. When a notification about a habit comes, there are 2 options: "
-"mark that the actions to achieve the goal have been completed or not. In any "
-"in this case, notifications about it will continue to come unless you mark it "
-"as completed via the /{view} command\n"
+"choice) and at the deadline hour. It can be marked as successfully "
+"completed for statistics. When a notification about a habit comes, there "
+"are 2 options: mark that the actions to achieve the goal have been "
+"completed or not. In any in this case, notifications about it will "
+"continue to come unless you mark it as completed via the /{view} command"
 "\n"
-"ℹ️Please note that the bot works in the Moscow time zone (UTC+3)."
-" Keep this in mind when creating tasks and habits so as not to miss the "
+"\n"
+"ℹ️Please note that the bot works in the Moscow time zone (UTC+3). Keep "
+"this in mind when creating tasks and habits so as not to miss the "
 "deadline or receive a notification at an inconvenient time\n"
 "\n"
 "\n"
 "❤️We hope this bot will be useful for you!"
+
+#: routers/common_handlers.py:40
+msgid "😥Извините, сервер временно недоступен. Попробуйте позже!"
+msgstr "😥Sorry, the server is temporarily unavailable. Try later!"
+
+#: routers/common_handlers.py:58
+#, python-brace-format
+msgid ""
+"⌛Видимо, ваша сессия устарела! Пожалуйста, войдите снова через команду "
+"/{command}"
+msgstr ""
+"⌛It seems that your session is outdated! Please log in again using the "
+"command /{command}"
+
+#: routers/common_handlers.py:76
+msgid "⚠️Данные кажутся устаревшими! Пожалуйста, введите команду снова"
+msgstr "⚠️The data seems to be outdated! Please enter the command again"
 
 #: routers/activity/getters.py:7
 msgid ""
@@ -205,12 +211,12 @@ msgstr "🔑 Please enter your password"
 msgid "⬅️Исправить логин"
 msgstr "⬅️Correct the login"
 
-#: routers/auth/handlers.py:50
+#: routers/auth/handlers.py:51
 #, python-brace-format
 msgid "⚠️Пользователь «{username}» уже существует!"
 msgstr "⚠️The user «{username}» already exists!"
 
-#: routers/auth/handlers.py:96
+#: routers/auth/handlers.py:97
 #, python-brace-format
 msgid ""
 "🏆Регистрация пользователя «{username}» успешно завершена!\n"
@@ -221,11 +227,11 @@ msgstr ""
 "\n"
 "Please remove the password from the correspondence and remember it!"
 
-#: routers/auth/handlers.py:131
+#: routers/auth/handlers.py:132
 msgid "🔄Сессия успешно обновлена!"
 msgstr "🔄The session has been successfully updated!"
 
-#: routers/auth/handlers.py:133
+#: routers/auth/handlers.py:134
 msgid "❗Неверный логин или пароль"
 msgstr "❗Invalid username or password"
 
@@ -261,33 +267,33 @@ msgstr "🏷️Enter a new name"
 msgid "⬅️Отменить ввод названия"
 msgstr "⬅️Cancel entering a name"
 
-#: routers/common/handlers.py:51
+#: routers/common/handlers.py:52
 #, python-brace-format
 msgid "❗Текст должен быть не длиннее {max_length} символов"
 msgstr "❗The text should be no longer than {max_length} characters"
 
-#: routers/common/repository.py:256
+#: routers/common/repository.py:255
 msgid "📥Загрузить еще"
 msgstr "📥Upload more"
 
-#: routers/common/repository.py:257
+#: routers/common/repository.py:256
 msgid "🔎Нажмите, чтобы посмотреть подробности"
 msgstr "🔎Click to view details"
 
-#: routers/common/repository.py:258 routers/habits/getters.py:11
+#: routers/common/repository.py:257 routers/habits/getters.py:11
 #: routers/tasks/getters.py:13
 msgid "⬅️Вернуться к выбору"
 msgstr "⬅️Return to selection"
 
-#: routers/common/repository.py:533
+#: routers/common/repository.py:532
 msgid "✏️Редактировать"
 msgstr "✏️Edit"
 
-#: routers/common/repository.py:534
+#: routers/common/repository.py:533
 msgid "🗑️Удалить"
 msgstr "🗑️Delete"
 
-#: routers/common/repository.py:535
+#: routers/common/repository.py:534
 msgid "⬅️Вернуться"
 msgstr "⬅️Back"
 
@@ -508,35 +514,35 @@ msgstr "📂File"
 msgid "⬅️Назад к выбору"
 msgstr "⬅️Back to selection"
 
-#: routers/stats/handlers.py:54
+#: routers/stats/handlers.py:53
 msgid "За последнюю неделю:"
 msgstr "For the last week:"
 
-#: routers/stats/handlers.py:55
+#: routers/stats/handlers.py:54
 msgid "За последний месяц:"
 msgstr "For the last month:"
 
-#: routers/stats/handlers.py:56
+#: routers/stats/handlers.py:55
 msgid "За последние 3 месяца:"
 msgstr "For the last 3 months:"
 
-#: routers/stats/handlers.py:57
+#: routers/stats/handlers.py:56
 msgid "За последние 6 месяцев:"
 msgstr "For the last 6 months:"
 
-#: routers/stats/handlers.py:58
+#: routers/stats/handlers.py:57
 msgid "За последние 9 месяцев:"
 msgstr "For the last 9 months:"
 
-#: routers/stats/handlers.py:59
+#: routers/stats/handlers.py:58
 msgid "За последний год:"
 msgstr "Over the last year:"
 
-#: routers/stats/handlers.py:60
+#: routers/stats/handlers.py:59
 msgid "За все время:"
 msgstr "For all the time:"
 
-#: routers/stats/handlers.py:65
+#: routers/stats/handlers.py:64
 msgid ""
 "📊Статистика по задачам за последнее время\n"
 "\n"
@@ -546,7 +552,7 @@ msgstr ""
 "\n"
 "\n"
 
-#: routers/stats/handlers.py:68
+#: routers/stats/handlers.py:67
 #, python-brace-format
 msgid ""
 "📅{time}\n"
@@ -567,7 +573,7 @@ msgstr ""
 "\n"
 "\n"
 
-#: routers/stats/handlers.py:86
+#: routers/stats/handlers.py:85
 msgid ""
 "📊Статистика по количеству завершенных привычек за последнее время\n"
 "\n"
@@ -577,7 +583,7 @@ msgstr ""
 "\n"
 "\n"
 
-#: routers/stats/handlers.py:89
+#: routers/stats/handlers.py:88
 #, python-brace-format
 msgid ""
 "📅{time}\n"
@@ -695,17 +701,17 @@ msgstr "⏰Select a new deadline hour"
 msgid "⬅️Отменить выбор часа дедлайна"
 msgstr "⬅️Cancel the deadline hour selection"
 
-#: routers/tasks/handlers.py:80
+#: routers/tasks/handlers.py:79
 #, python-brace-format
 msgid "❌Не удалось создать задачу: {detail}"
 msgstr "❌Unable to create a task: {detail}"
 
-#: routers/tasks/handlers.py:84
+#: routers/tasks/handlers.py:83
 #, python-brace-format
 msgid "❌Не удалось обновить дедлайн: {detail}"
 msgstr "❌Unable to update the deadline: {detail}"
 
-#: routers/tasks/handlers.py:142
+#: routers/tasks/handlers.py:141
 msgid "✅Задача успешно создана!"
 msgstr "✅The task was successfully created!"
 

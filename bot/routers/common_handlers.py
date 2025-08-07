@@ -1,3 +1,5 @@
+import logging
+
 from aiogram.types import (
     CallbackQuery,
     ErrorEvent,
@@ -8,6 +10,9 @@ from aiogram.utils.i18n import gettext as _
 from aiogram_dialog import DialogManager
 
 from core.commands import Commands
+from core.utils.start_text import get_start_text
+
+logger = logging.getLogger(__name__)
 
 
 async def end_dialog(
@@ -72,6 +77,34 @@ async def on_data_is_outdated(
         text=_(
             "⚠️Данные кажутся устаревшими! Пожалуйста, введите команду снова"
         ).format(command=Commands.auth.name),
+    )
+    await end_dialog(
+        dialog_manager=dialog_manager,
+        event=event,
+        delete_markup=True,
+    )
+
+
+async def on_unknown_intent(event, dialog_manager: DialogManager):
+    logger.error("Перезапускаем диалог: %s", event.exception)
+    event = event.update.event
+    await event.bot.send_message(
+        chat_id=event.from_user.id,
+        text=get_start_text(event.from_user),
+    )
+    await end_dialog(
+        dialog_manager=dialog_manager,
+        event=event,
+        delete_markup=True,
+    )
+
+
+async def on_unknown_state(event, dialog_manager: DialogManager):
+    logger.error("Перезапускаем диалог: %s", event.exception)
+    event = event.update.event
+    await event.bot.send_message(
+        chat_id=event.from_user.id,
+        text=get_start_text(event.from_user),
     )
     await end_dialog(
         dialog_manager=dialog_manager,

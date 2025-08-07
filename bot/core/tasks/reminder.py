@@ -3,13 +3,13 @@ import logging
 
 from faststream import FastStream
 
-from .dependencies import HttpClient, Session
-
 from core.config import bot, broker
 from core.enums import Weekday
 from core.utils.dt import get_moscow_dt
 from routers.habits.repository import repository as habit_repository
 from routers.tasks.repository import repository as task_repository
+
+from .dependencies import HttpClient, Session
 
 logger = logging.getLogger(__name__)
 

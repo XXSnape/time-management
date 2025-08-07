@@ -3,6 +3,7 @@ from aiogram.filters import ExceptionTypeFilter
 from aiogram.types import BotCommand, BotCommandScopeAllPrivateChats
 from aiogram.utils.i18n import I18n
 from aiogram_dialog import setup_dialogs
+from aiogram_dialog.api.exceptions import UnknownIntent, UnknownState
 from httpx import AsyncClient
 
 from core.commands import Commands
@@ -23,6 +24,8 @@ from routers.common_handlers import (
     on_data_is_outdated,
     on_server_is_unavailable,
     on_unauthorized,
+    on_unknown_intent,
+    on_unknown_state,
 )
 
 
@@ -53,6 +56,14 @@ async def configure_bot(
     dp.errors.middleware(DatabaseMiddlewareWithoutCommit())
     dp.errors.middleware(LocaleFromDatabaseMiddleware(i18n=i18n))
     setup_dialogs(dp)
+    dp.errors.register(
+        on_unknown_intent,
+        ExceptionTypeFilter(UnknownIntent),
+    )
+    dp.errors.register(
+        on_unknown_state,
+        ExceptionTypeFilter(UnknownState),
+    )
     dp.errors.register(
         on_server_is_unavailable,
         ExceptionTypeFilter(ServerIsUnavailableExc),
